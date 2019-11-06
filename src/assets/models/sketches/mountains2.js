@@ -1,0 +1,10 @@
+﻿var model = elise.model(1024, 640);
+model.setFill('White');
+var modelUrl = 'https://s3-us-west-2.amazonaws.com/schematrix.elise/Elise/Models/Mountains2.mdl';
+var sketcher = elise.sketcher(modelUrl).addTo(model);
+sketcher.timerDelay = 100;
+sketcher.strokeBatchSize = 1;
+sketcher.fillBatchSize = 1;
+sketcher.sketchColor = false;
+sketcher.strokeOpacity = 64;
+return model;

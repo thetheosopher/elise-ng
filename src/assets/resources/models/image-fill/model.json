@@ -1,0 +1,27 @@
+{
+   "size":"160x160",
+   "resources":[
+      {
+         "type":"bitmap",
+         "key":"fire",
+         "uri":"/r/images/fire.gif",
+         "size":"40x40",
+         "format":"image/gif"
+      }
+   ],
+   "elements":[
+      {
+         "type":"image",
+         "location":"10,10",
+         "size":"40x40",
+         "source":"fire"
+      },
+      {
+         "type":"ellipse",
+         "center":"80,110",
+         "radiusX":75.0,
+         "radiusY":40.0,
+         "fill":"image(fire)"
+      }
+   ]
+}

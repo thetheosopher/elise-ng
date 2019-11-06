@@ -1,0 +1,28 @@
+{
+   "size":"160x160",
+   "resources":[
+      {
+         "type":"bitmap",
+         "key":"food1",
+         "locale":"en",
+         "uri":"/r/images/en/food1.jpeg",
+         "size":"160x106",
+         "format":"image/jpeg"
+      },
+      {
+         "type":"bitmap",
+         "key":"food1",
+         "locale":"es",
+         "uri":"/r/images/es/food1.jpeg",
+         "size":"160x106",
+         "format":"image/jpeg"
+      }
+   ],
+   "elements":[
+      {
+         "type":"image",
+         "size":"160x106",
+         "source":"food1"
+      }
+   ]
+}

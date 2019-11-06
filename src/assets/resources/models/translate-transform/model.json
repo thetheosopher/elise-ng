@@ -1,0 +1,18 @@
+{
+   "size":"160x160",
+   "elements":[
+      {
+         "type":"rectangle",
+         "location":"30,30",
+         "size":"80x80",
+         "stroke":"Black,5"
+      },
+      {
+         "type":"rectangle",
+         "location":"30,30",
+         "size":"80x80",
+         "stroke":"Red,5",
+         "transform":"translate(30,30)"
+      }
+   ]
+}

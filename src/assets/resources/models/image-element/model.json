@@ -1,0 +1,20 @@
+{
+   "size":"160x160",
+   "resources":[
+      {
+         "type":"bitmap",
+         "key":"bulb",
+         "uri":"r/bulb.png",
+         "size":"128x128",
+         "format":"image/png"
+      }
+   ],
+   "elements":[
+      {
+         "type":"image",
+         "location":"16,16",
+         "size":"128x128",
+         "source":"bulb"
+      }
+   ]
+}

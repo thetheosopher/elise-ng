@@ -1,0 +1,10 @@
+﻿var model = elise.model(320, 320);
+elise.ellipse(70, 140, 50, 90).setStroke('Blue,2').setFill('#50FFFF00').addTo(model);
+var e1 = elise.ellipse();
+e1.center = '210,80';
+e1.radiusX = 80;
+e1.radiusY = 60;
+e1.stroke = 'Green,3';
+e1.fill = 'Pink';
+model.add(e1);
+return model;

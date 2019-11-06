@@ -1,0 +1,31 @@
+{
+   "size":"160x160",
+   "elements":[
+      {
+         "type":"rectangle",
+         "location":"70,10",
+         "size":"40x40",
+         "stroke":"Black,2"
+      },
+      {
+         "type":"rectangle",
+         "location":"70,10",
+         "size":"40x40",
+         "stroke":"Red,2",
+         "transform":"skew(30,0)"
+      },
+      {
+         "type":"rectangle",
+         "location":"70,90",
+         "size":"40x40",
+         "stroke":"Black,2"
+      },
+      {
+         "type":"rectangle",
+         "location":"70,90",
+         "size":"40x40",
+         "stroke":"Red,2",
+         "transform":"skew(30,0(20,20))"
+      }
+   ]
+}

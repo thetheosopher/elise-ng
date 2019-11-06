@@ -1,0 +1,12 @@
+{
+   "size":"160x160",
+   "elements":[
+      {
+         "type":"ellipse",
+         "center":"80,80",
+         "radiusX":40.0,
+         "radiusY":60.0,
+         "stroke":"Black,4"
+      }
+   ]
+}

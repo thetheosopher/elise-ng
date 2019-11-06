@@ -1,0 +1,17 @@
+{
+   "size":"160x160",
+   "fill":"LemonChiffon",
+   "elements":[
+      {
+         "type":"text",
+         "text":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas in condimentum justo.",
+         "typeface":"sans-serif",
+         "typesize":15.0,
+         "typestyle":"bold",
+         "alignment":"center",
+         "location":"10,10",
+         "size":"140x140",
+         "fill":"Black"
+      }
+   ]
+}

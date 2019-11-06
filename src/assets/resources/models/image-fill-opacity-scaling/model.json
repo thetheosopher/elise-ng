@@ -1,0 +1,22 @@
+{
+   "size":"160x160",
+   "resources":[
+      {
+         "type":"bitmap",
+         "key":"clouds",
+         "uri":"/r/images/clouds.jpeg",
+         "size":"160x160",
+         "format":"image/jpeg"
+      }
+   ],
+   "elements":[
+      {
+         "type":"ellipse",
+         "center":"80,80",
+         "radiusX":75.0,
+         "radiusY":75.0,
+         "fillTransform":"scale(0.25)",
+         "fill":"image(0.4;clouds)"
+      }
+   ]
+}

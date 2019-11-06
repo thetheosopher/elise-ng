@@ -1,0 +1,11 @@
+{
+   "size":"160x160",
+   "elements":[
+      {
+         "type":"polygon",
+         "points":"133,80 107,126 53,126 27,80",
+         "stroke":"Black,4",
+         "fill":"Orange"
+      }
+   ]
+}

@@ -1,0 +1,4 @@
+<div [innerHtml]="modelDescription"></div>
+<app-elise-view #elise [model]="model" [scale]="scale"></app-elise-view>
+<h3 *ngIf='errorMessage' style='color: red;'>{{errorMessage}}</h3>
+<pre>{{modelCode}}</pre>

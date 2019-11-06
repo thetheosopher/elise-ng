@@ -1,0 +1,30 @@
+{
+    "size": "160x160",
+    "elements": [
+        {
+            "type": "ellipse",
+            "center": "80,80",
+            "radiusX": 60.0,
+            "radiusY": 60.0,
+            "fill": {
+                "type": "radialGradient",
+                "center": "30,30",
+                "focus": "15,15",
+                "radiusX": 60.0,
+                "radiusY": 60.0,
+                "stops": [
+                    {
+                        "type": "stop",
+                        "color": "White",
+                        "offset": 0.0
+                    },
+                    {
+                        "type": "stop",
+                        "color": "Blue",
+                        "offset": 1.0
+                    }
+                ]
+            }
+        }
+    ]
+}

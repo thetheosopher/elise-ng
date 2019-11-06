@@ -1,0 +1,10 @@
+﻿var model = elise.model(564, 502);
+model.setBasePath('./assets/models/primitives');
+elise.bitmapResource('girl', '/images/girl-walking.png').addTo(model);
+var s = elise.sprite(0, 0, 281, 500);
+s.frames.push(elise.spriteFrame('girl', 0, 0, 281, 500));
+model.add(s);
+var s1 = elise.sprite(281, 0, 281, 500);
+s1.frames.push(elise.spriteFrame('girl', 281 * 2, 500, 281, 500));
+model.add(s1);
+return model;

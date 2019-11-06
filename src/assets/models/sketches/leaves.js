@@ -1,0 +1,10 @@
+﻿var model = elise.model(1024, 640);
+model.setFill('White');
+var modelUrl = 'https://s3-us-west-2.amazonaws.com/schematrix.elise/Elise/Models/Leaves1_low.mdl';
+var sketcher = elise.sketcher(modelUrl).addTo(model);
+sketcher.timerDelay = 50;
+sketcher.strokeBatchSize = 4;
+sketcher.fillBatchSize = 8;
+sketcher.sketchColor = false;
+sketcher.strokeOpacity = 64;
+return model;

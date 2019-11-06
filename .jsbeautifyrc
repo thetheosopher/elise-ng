@@ -1,0 +1,5 @@
+{
+    "brace_style": "end-expand,preserve-inline",
+    "end_with_newline": true,
+    "space_before_conditional": false
+}

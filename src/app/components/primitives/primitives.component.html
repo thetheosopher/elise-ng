@@ -1,0 +1,7 @@
+<h2>Primitives</h2>
+<h3 *ngIf='errorMessage' style='color: red;'>{{errorMessage}}</h3>
+<ul>
+    <li *ngFor='let model of models'>
+        <span><a routerLink='/primitives/{{model.data}}'>{{model.name}}</a></span>
+    </li>
+</ul>

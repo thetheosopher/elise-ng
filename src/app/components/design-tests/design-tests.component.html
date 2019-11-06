@@ -1,0 +1,7 @@
+<h2>Design Tests</h2>
+<h3 *ngIf='errorMessage' style='color: red;'>{{errorMessage}}</h3>
+<ul>
+    <li *ngFor='let test of tests'>
+        <span><a routerLink='/tests/design/{{test.id}}'>{{test.title}}</a></span>
+    </li>
+</ul>

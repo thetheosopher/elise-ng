@@ -1,0 +1,46 @@
+{
+   "size":"160x160",
+   "resources":[
+      {
+         "type":"bitmap",
+         "key":"foodimage",
+         "locale":"en",
+         "uri":"/r/images/en/food1.jpeg",
+         "size":"160x106",
+         "format":"image/jpeg"
+      },
+      {
+         "type":"bitmap",
+         "key":"foodimage",
+         "locale":"es",
+         "uri":"/r/images/es/food1.jpeg",
+         "size":"160x106",
+         "format":"image/jpeg"
+      },
+      {
+         "type":"text",
+         "key":"foodtext",
+         "locale":"en",
+         "content":"FOOD"
+      },
+      {
+         "type":"text",
+         "key":"foodtext",
+         "locale":"es",
+         "content":"COMIDA"
+      }
+   ],
+   "elements":[
+      {
+         "type":"text",
+         "source":"foodtext",
+         "typeface":"Arial Black",
+         "typesize":33.0,
+         "typestyle":"Bold",
+         "alignment":"Center",
+         "location":"0,25",
+         "size":"160x106",
+         "fill":"image(foodimage)"
+      }
+   ]
+}

@@ -1,0 +1,23 @@
+{
+   "size":"160x160",
+   "elements":[
+      {
+         "type":"rectangle",
+         "location":"20,20",
+         "size":"120x120",
+         "stroke":"Black,20"
+      },
+      {
+         "type":"rectangle",
+         "location":"20,20",
+         "size":"120x120",
+         "stroke":"Green,12"
+      },
+      {
+         "type":"rectangle",
+         "location":"20,20",
+         "size":"120x120",
+         "stroke":"Red,6"
+      }
+   ]
+}

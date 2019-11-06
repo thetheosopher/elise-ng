@@ -1,0 +1,18 @@
+<app-elise-view #elise [model]="model"
+    (mouseMovedView)="mouseMovedView($event)"
+    (mouseEnteredView)="mouseEnteredView($event)"
+    (mouseLeftView)="mouseLeftView($event)"
+    (mouseDownView)="mouseDownView($event)"
+    (mouseUpView)="mouseUpView($event)"
+    (mouseEnteredElement)="mouseEnteredElement($event)"
+    (mouseLeftElement)="mouseLeftElement($event)"
+    (mouseDownElement)="mouseDownElement($event)"
+    (mouseUpElement)="mouseUpElement($event)"
+    (elementClicked)="elementClicked($event)"
+    (controllerSet)="controllerSet($event)"
+>
+</app-elise-view>
+<button (click)="red()" >Red</button>
+<button (click)="green()" >Green</button>
+<button (click)="blue()" >Blue</button>
+<div *ngFor="let message of logMessages">{{message}}</div>

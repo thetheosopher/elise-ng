@@ -1,0 +1,10 @@
+﻿var model = elise.model(1024, 577);
+model.setFill('White');
+var modelUrl = 'https://s3-us-west-2.amazonaws.com/schematrix.elise/Elise/Models/Cathedral.mdl';
+var sketcher = elise.sketcher(modelUrl).addTo(model);
+sketcher.timerDelay = 100;
+sketcher.strokeBatchSize = 8;
+sketcher.fillBatchSize = 4;
+sketcher.sketchColor = true;
+sketcher.strokeOpacity = 48;
+return model;

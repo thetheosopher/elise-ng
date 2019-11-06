@@ -1,0 +1,50 @@
+{
+ "size": "320x320",
+ "resources": [
+  {
+   "type": "model",
+   "key": "red",
+   "model": {
+    "size": "32x32",
+    "elements": [
+     {
+      "type": "ellipse",
+      "fill": "Red",
+      "center": "16,16",
+      "radiusX": "16",
+      "radiusY": "16"
+     }
+    ]
+   }
+  },
+  {
+   "type": "model",
+   "key": "blue",
+   "model": {
+    "size": "32x32",
+    "elements": [
+     {
+      "type": "rectangle",
+      "size": "32x32",
+      "location": "0,0",
+      "fill": "Blue"
+     }
+    ]
+   }
+  }
+ ],
+ "elements": [
+  {
+   "type": "model",
+   "size": "64x64",
+   "location": "60,60",
+   "source": "red"
+  },
+  {
+   "type": "model",
+   "size": "96x96",
+   "location": "160,160",
+   "source": "blue"
+  }
+ ]
+}

@@ -1,0 +1,35 @@
+{
+   "size":"160x160",
+   "elements":[
+      {
+         "type":"ellipse",
+         "center":"110,50",
+         "radiusX":30.0,
+         "radiusY":20.0,
+         "stroke":"Black,2"
+      },
+      {
+         "type":"ellipse",
+         "center":"110,50",
+         "radiusX":30.0,
+         "radiusY":20.0,
+         "stroke":"Red,2",
+         "transform":"matrix(-1,0,0,1,0,0)"
+      },
+      {
+         "type":"ellipse",
+         "center":"50,110",
+         "radiusX":30.0,
+         "radiusY":20.0,
+         "stroke":"Black,2"
+      },
+      {
+         "type":"ellipse",
+         "center":"50,110",
+         "radiusX":30.0,
+         "radiusY":20.0,
+         "stroke":"Red,2",
+         "transform":"matrix(-1,0,0,1,0,0(60,0))"
+      }
+   ]
+}

@@ -1,0 +1,28 @@
+{
+   "size":"160x160",
+   "fill":"LemonChiffon",
+   "resources":[
+      {
+         "type":"text",
+         "key":"bluesky",
+         "locale":"en",
+         "content":"The sky is blue."
+      },
+      {
+         "type":"text",
+         "key":"bluesky",
+         "locale":"es",
+         "content":"El cielo es azul."
+      }
+   ],
+   "elements":[
+      {
+         "type":"text",
+         "source":"bluesky",
+         "typesize":24.0,
+         "location":"10,10",
+         "size":"140x140",
+         "fill":"Black"
+      }
+   ]
+}

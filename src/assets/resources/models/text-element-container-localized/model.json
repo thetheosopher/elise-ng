@@ -1,0 +1,28 @@
+{
+   "size":"160x160",
+   "fill":"LemonChiffon",
+   "resources":[
+      {
+         "type":"text",
+         "key":"bluesky",
+         "locale":"en",
+         "uri":"/r/text/en/bluesky.txt"
+      },
+      {
+         "type":"text",
+         "key":"bluesky",
+         "locale":"es",
+         "uri":"/r/text/es/bluesky.txt"
+      }
+   ],
+   "elements":[
+      {
+         "type":"text",
+         "source":"bluesky",
+         "typesize":24.0,
+         "location":"10,10",
+         "size":"140x140",
+         "fill":"Black"
+      }
+   ]
+}

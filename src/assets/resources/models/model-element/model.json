@@ -1,0 +1,25 @@
+{
+   "size":"160x160",
+   "resources":[
+      {
+         "type":"model",
+         "key":"rect1",
+         "uri":"/r/models/rect1/",
+         "size":"160x160"
+      }
+   ],
+   "elements":[
+      {
+         "type":"model",
+         "source":"rect1",
+         "location":"30,30",
+         "size":"80x80"
+      },
+      {
+         "type":"model",
+         "source":"rect1",
+         "location":"50,50",
+         "size":"80x80"
+      }
+   ]
+}

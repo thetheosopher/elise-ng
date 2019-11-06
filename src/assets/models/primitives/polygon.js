@@ -1,0 +1,10 @@
+﻿var model = elise.model(320, 320);
+var p = elise.polygon();
+p.addPoint(elise.point(266, 160));
+p.addPoint(elise.point(214, 252));
+p.addPoint(elise.point(106, 252));
+p.addPoint(elise.point(54, 160));
+p.stroke = 'Black,5';
+p.fill = '#5040A4DF';
+model.add(p);
+return model;
