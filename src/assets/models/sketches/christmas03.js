@@ -2,9 +2,9 @@
 model.setFill('White');
 var modelUrl = 'https://s3-us-west-2.amazonaws.com/schematrix.elise/Elise/Models/Christmas03.mdl';
 var sketcher = elise.sketcher(modelUrl).addTo(model);
-sketcher.timerDelay = 200;
+sketcher.timerDelay = 20;
 sketcher.strokeBatchSize = 16;
-sketcher.fillBatchSize = 8;
+sketcher.fillBatchSize = 16;
 sketcher.sketchColor = true;
-sketcher.strokeOpacity = 48;
+sketcher.strokeOpacity = 32;
 return model;

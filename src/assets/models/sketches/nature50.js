@@ -2,9 +2,9 @@
 model.setFill('White');
 var modelUrl = 'https://s3-us-west-2.amazonaws.com/schematrix.elise/Elise/Models/Nature50.mdl';
 var sketcher = elise.sketcher(modelUrl).addTo(model);
-sketcher.timerDelay = 100;
-sketcher.strokeBatchSize = 32;
+sketcher.timerDelay = 50;
+sketcher.strokeBatchSize = 64;
 sketcher.fillBatchSize = 64;
-sketcher.sketchColor = false;
-sketcher.strokeOpacity = 64;
+sketcher.sketchColor = true;
+sketcher.strokeOpacity = 48;
 return model;
