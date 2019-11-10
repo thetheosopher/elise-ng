@@ -1,26 +1,29 @@
 import { Injectable } from '@angular/core';
 
-import { Model } from '../elise/core/model';
+import { Model } from 'elise-graphics/lib/core/model';
 import { DesignSample } from '../interfaces/design-sample';
 import { Observable, of } from 'rxjs';
 import { ISampleDesigner } from '../interfaces/sample-designer';
-import { PolylineElement } from '../elise/elements/polyline-element';
-import { PolygonElement } from '../elise/elements/polygon-element';
-import { Point } from '../elise/core/point';
-import { ComponentRegistry } from '../elise/design/component/component-registry';
-import { GenericComponentProps } from '../elise/design/component/generic-component-props';
-import { DesignController } from '../elise/design/design-controller';
-import { Region } from '../elise/core/region';
-import { ElementBase } from '../elise/elements/element-base';
-import { Component } from '../elise/design/component/component';
-import { NavigateComponentProps } from '../elise/design/component/navigate-component-props';
-import { HtmlComponentProps } from '../elise/design/component/html-component-props';
-import { ComponentElement } from '../elise/design/component/component-element';
-import { ElementDragArgs } from '../elise/elements/element-drag-args';
+import { PolylineElement } from 'elise-graphics/lib/elements/polyline-element';
+import { PolygonElement } from 'elise-graphics/lib/elements/polygon-element';
+import { Point } from 'elise-graphics/lib/core/point';
+import { ComponentRegistry } from 'elise-graphics/lib/design/component/component-registry';
+import { GenericComponentProps } from 'elise-graphics/lib/design/component/generic-component-props';
+import { DesignController } from 'elise-graphics/lib/design/design-controller';
+import { Region } from 'elise-graphics/lib/core/region';
+import { ElementBase } from 'elise-graphics/lib/elements/element-base';
+import { Component } from 'elise-graphics/lib/design/component/component';
+import { NavigateComponentProps } from 'elise-graphics/lib/design/component/navigate-component-props';
+import { HtmlComponentProps } from 'elise-graphics/lib/design/component/html-component-props';
+import { ComponentElement } from 'elise-graphics/lib/design/component/component-element';
+import { ElementDragArgs } from 'elise-graphics/lib/elements/element-drag-args';
+import { WindingMode } from 'elise-graphics/lib/core/winding-mode';
+import { Color } from 'elise-graphics/lib/core/color';
+
 import { loremipsum } from './loremipsum';
 import { yinyang } from './yinyang';
 
-import elise from '../elise/elise';
+import elise from 'elise-graphics/lib/index';
 
 function defaultModel(): Model {
     const model = Model.create(320, 320);
@@ -104,7 +107,7 @@ const tests: DesignSample[] = [
             const xc = 160;
             const yc = 170;
             drawstar(p, xc, yc, radius);
-            p.setStroke('Gold,2').setFill('Blue').setWinding(elise.WindingMode.NonZero).addTo(model);
+            p.setStroke('Gold,2').setFill('Blue').setWinding(WindingMode.NonZero).addTo(model);
             viewer.model = model;
         }
     },
@@ -119,7 +122,7 @@ const tests: DesignSample[] = [
             const xc = 160;
             const yc = 170;
             drawstar(p, xc, yc, radius);
-            p.setStroke('Gold,2').setFill('Blue').setWinding(elise.WindingMode.EvenOdd).addTo(model);
+            p.setStroke('Gold,2').setFill('Blue').setWinding(WindingMode.EvenOdd).addTo(model);
             viewer.model = model;
         }
     },
@@ -131,7 +134,7 @@ const tests: DesignSample[] = [
             const model = defaultModel();
             const p = elise.path();
             p.commands = 'm160,20 l248,291 l17,124 l303,124 l72,291 l160,20 z';
-            p.setWinding(elise.WindingMode.NonZero).setFill('Blue').setStroke('Gold,2').addTo(model);
+            p.setWinding(WindingMode.NonZero).setFill('Blue').setStroke('Gold,2').addTo(model);
             viewer.model = model;
         }
     },
@@ -143,7 +146,7 @@ const tests: DesignSample[] = [
             const model = defaultModel();
             const p = elise.path();
             p.commands = 'm160,20 l248,291 l17,124 l303,124 l72,291 l160,20 z';
-            p.setWinding(elise.WindingMode.EvenOdd).setFill('Blue').setStroke('Gold,2').addTo(model);
+            p.setWinding(WindingMode.EvenOdd).setFill('Blue').setStroke('Gold,2').addTo(model);
             viewer.model = model;
         }
     },
@@ -223,7 +226,7 @@ const tests: DesignSample[] = [
         description: 'Tests sprite element rendering.',
         configure: (viewer) => {
             const model = defaultModel();
-            model.setFill(elise.Color.DarkGreen.name);
+            model.setFill(Color.DarkGreen.name);
             model.setBasePath('/assets/test');
             const sx = 4;
             const sy = 4;
@@ -568,11 +571,11 @@ const tests: DesignSample[] = [
             const yc = 120;
             const p1 = elise.polygon();
             drawstar(p1, xc, yc, radius);
-            p1.setWinding(elise.WindingMode.EvenOdd).setStroke('White,2').setFill('0.4;White').addTo(model);
+            p1.setWinding(WindingMode.EvenOdd).setStroke('White,2').setFill('0.4;White').addTo(model);
             const p2 = elise.polygon();
             drawstar(p2, xc, yc, radius);
             p2
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Gold,2')
                 .setFill('0.4;Gold')
                 .setTransform('translate(90,90)')
@@ -591,12 +594,12 @@ const tests: DesignSample[] = [
             const yc = 140;
             const p1 = elise.polygon();
             drawstar(p1, xc, yc, radius);
-            p1.setWinding(elise.WindingMode.EvenOdd).setStroke('White').setFill('0.4;White').addTo(model);
+            p1.setWinding(WindingMode.EvenOdd).setStroke('White').setFill('0.4;White').addTo(model);
             p1.getBounds();
             const p2 = elise.polygon();
             drawstar(p2, xc, yc, radius);
             p2
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Gold')
                 .setFill('0.4;Gold')
                 .setTransform('scale(2)')
@@ -605,7 +608,7 @@ const tests: DesignSample[] = [
             const p3 = elise.polygon();
             drawstar(p3, xc, yc, radius);
             p3
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Blue')
                 .setFill('0.4;Blue')
                 .setTransform('scale(2(' + b.width / 2 + ',' + b.height / 2 + '))')
@@ -625,12 +628,12 @@ const tests: DesignSample[] = [
             const yc = 160;
             const p1 = elise.polygon();
             drawstar(p1, xc, yc, radius);
-            p1.setWinding(elise.WindingMode.EvenOdd).setStroke('White,2').setFill('0.4;White').addTo(model);
+            p1.setWinding(WindingMode.EvenOdd).setStroke('White,2').setFill('0.4;White').addTo(model);
             p1.getBounds();
             const p2 = elise.polygon();
             drawstar(p2, xc, yc, radius);
             p2
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Gold,2')
                 .setFill('0.4;Gold')
                 .setTransform('rotate(45)')
@@ -639,7 +642,7 @@ const tests: DesignSample[] = [
             const p3 = elise.polygon();
             drawstar(p3, xc, yc, radius);
             p3
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Blue,2')
                 .setFill('0.4;Blue')
                 .setTransform('rotate(45(' + b.width / 2 + ',' + b.height / 2 + '))')
@@ -660,7 +663,7 @@ const tests: DesignSample[] = [
             const p2 = elise.polygon();
             drawstar(p2, xc, yc, radius);
             p2
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Gold,2')
                 .setFill('0.4;Gold')
                 .setTransform('skew(30,0)')
@@ -669,7 +672,7 @@ const tests: DesignSample[] = [
             const p3 = elise.polygon();
             drawstar(p3, xc, yc, radius);
             p3
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Blue,2')
                 .setFill('0.4;Blue')
                 .setTransform('skew(30,0(' + b.width / 2 + ',' + b.height / 2 + '))')
@@ -677,7 +680,7 @@ const tests: DesignSample[] = [
             p3.getBounds();
             const p1 = elise.polygon();
             drawstar(p1, xc, yc, radius);
-            p1.setWinding(elise.WindingMode.EvenOdd).setStroke('White,1').setFill('0.4;White').addTo(model);
+            p1.setWinding(WindingMode.EvenOdd).setStroke('White,1').setFill('0.4;White').addTo(model);
             p1.getBounds();
             viewer.model = model;
         }
@@ -694,7 +697,7 @@ const tests: DesignSample[] = [
             const p2 = elise.polygon();
             drawstar(p2, xc, yc, radius);
             p2
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Gold,2')
                 .setFill('0.4;Gold')
                 .setTransform('skew(0,30)')
@@ -703,7 +706,7 @@ const tests: DesignSample[] = [
             const p3 = elise.polygon();
             drawstar(p3, xc, yc, radius);
             p3
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Blue,2')
                 .setFill('0.4;Blue')
                 .setTransform('skew(0,30(' + b.width / 2 + ',' + b.height / 2 + '))')
@@ -711,7 +714,7 @@ const tests: DesignSample[] = [
             p3.getBounds();
             const p1 = elise.polygon();
             drawstar(p1, xc, yc, radius);
-            p1.setWinding(elise.WindingMode.EvenOdd).setStroke('White,1').setFill('0.4;White').addTo(model);
+            p1.setWinding(WindingMode.EvenOdd).setStroke('White,1').setFill('0.4;White').addTo(model);
             p1.getBounds();
             viewer.model = model;
         }
@@ -728,7 +731,7 @@ const tests: DesignSample[] = [
             const p2 = elise.polygon();
             drawstar(p2, xc, yc, radius);
             p2
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Gold,3')
                 .setFill('0.4;Gold')
                 .setTransform('matrix(-1,0,0,1,0,0)')
@@ -737,7 +740,7 @@ const tests: DesignSample[] = [
             const p3 = elise.polygon();
             drawstar(p3, xc, yc, radius);
             p3
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Blue,3')
                 .setFill('0.4;Blue')
                 .setTransform('matrix(-1,0,0,1,0,0(' + b.width / 2 + ',' + b.height / 2 + '))')
@@ -745,7 +748,7 @@ const tests: DesignSample[] = [
             p3.getBounds();
             const p1 = elise.polygon();
             drawstar(p1, xc, yc, radius);
-            p1.setWinding(elise.WindingMode.EvenOdd).setStroke('White,1.5').addTo(model);
+            p1.setWinding(WindingMode.EvenOdd).setStroke('White,1.5').addTo(model);
             p1.getBounds();
             viewer.model = model;
         }
@@ -759,12 +762,12 @@ const tests: DesignSample[] = [
             const p1 = elise.path();
             p1.commands = yinyang;
             p1.translate(25, 25);
-            p1.setWinding(elise.WindingMode.EvenOdd).setStroke('White,2').setFill('0.4;White').addTo(model);
+            p1.setWinding(WindingMode.EvenOdd).setStroke('White,2').setFill('0.4;White').addTo(model);
             const p2 = elise.path();
             p2.commands = yinyang;
             p2.translate(25, 25);
             p2
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Gold,2')
                 .setFill('0.4;Gold')
                 .setTransform('translate(120,120)')
@@ -781,13 +784,13 @@ const tests: DesignSample[] = [
             const p1 = elise.path();
             p1.commands = yinyang;
             p1.translate(80, 80).scale(0.7, 0.7);
-            p1.setWinding(elise.WindingMode.EvenOdd).setStroke('White').setFill('0.4;White').addTo(model);
+            p1.setWinding(WindingMode.EvenOdd).setStroke('White').setFill('0.4;White').addTo(model);
             p1.getBounds();
             const p2 = elise.path();
             p2.commands = yinyang;
             p2.translate(80, 80).scale(0.7, 0.7);
             p2
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Gold')
                 .setFill('0.4;Gold')
                 .setTransform('scale(2)')
@@ -797,7 +800,7 @@ const tests: DesignSample[] = [
             p3.commands = yinyang;
             p3.translate(80, 80).scale(0.7, 0.7);
             p3
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Blue')
                 .setFill('0.4;Blue')
                 .setTransform('scale(2(' + b.width / 2 + ',' + b.height / 2 + '))')
@@ -815,13 +818,13 @@ const tests: DesignSample[] = [
             const p1 = elise.path();
             p1.commands = yinyang;
             p1.translate(120, 60);
-            p1.setWinding(elise.WindingMode.EvenOdd).setStroke('White').setFill('0.4;White').addTo(model);
+            p1.setWinding(WindingMode.EvenOdd).setStroke('White').setFill('0.4;White').addTo(model);
             p1.getBounds();
             const p2 = elise.path();
             p2.commands = yinyang;
             p2.translate(120, 60);
             p2
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Gold')
                 .setFill('0.4;Gold')
                 .setTransform('rotate(45)')
@@ -831,7 +834,7 @@ const tests: DesignSample[] = [
             p3.commands = yinyang;
             p3.translate(120, 60);
             p3
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Blue')
                 .setFill('0.4;Blue')
                 .setTransform('rotate(45(' + b.width / 2 + ',' + b.height / 2 + '))')
@@ -850,7 +853,7 @@ const tests: DesignSample[] = [
             p2.commands = yinyang;
             p2.translate(60, 80);
             p2
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Gold')
                 .setFill('0.4;Gold')
                 .setTransform('skew(30,0)')
@@ -860,7 +863,7 @@ const tests: DesignSample[] = [
             p3.commands = yinyang;
             p3.translate(60, 80);
             p3
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Blue')
                 .setFill('0.4;Blue')
                 .setTransform('skew(30,0(' + b.width / 2 + ',' + b.height / 2 + '))')
@@ -869,7 +872,7 @@ const tests: DesignSample[] = [
             const p1 = elise.path();
             p1.commands = yinyang;
             p1.translate(60, 80);
-            p1.setWinding(elise.WindingMode.EvenOdd).setStroke('White').setFill('0.4;White').addTo(model);
+            p1.setWinding(WindingMode.EvenOdd).setStroke('White').setFill('0.4;White').addTo(model);
             p1.getBounds();
             viewer.model = model;
         }
@@ -884,7 +887,7 @@ const tests: DesignSample[] = [
             p2.commands = yinyang;
             p2.translate(80, 60);
             p2
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Gold')
                 .setFill('0.4;Gold')
                 .setTransform('skew(0,30)')
@@ -894,7 +897,7 @@ const tests: DesignSample[] = [
             p3.commands = yinyang;
             p3.translate(80, 60);
             p3
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Blue')
                 .setFill('0.4;Blue')
                 .setTransform('skew(0,30(' + b.width / 2 + ',' + b.height / 2 + '))')
@@ -903,7 +906,7 @@ const tests: DesignSample[] = [
             const p1 = elise.path();
             p1.commands = yinyang;
             p1.translate(80, 60);
-            p1.setWinding(elise.WindingMode.EvenOdd).setStroke('White').setFill('0.4;White').addTo(model);
+            p1.setWinding(WindingMode.EvenOdd).setStroke('White').setFill('0.4;White').addTo(model);
             p1.getBounds();
             viewer.model = model;
         }
@@ -918,7 +921,7 @@ const tests: DesignSample[] = [
             p2.commands = yinyang;
             p2.translate(154, 60);
             p2
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Gold')
                 .setFill('0.4;Gold')
                 .setTransform('matrix(-1,0,0,1,0,0)')
@@ -928,7 +931,7 @@ const tests: DesignSample[] = [
             p3.commands = yinyang;
             p3.translate(154, 60);
             p3
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Blue')
                 .setFill('0.4;Blue')
                 .setTransform('matrix(-1,0,0,1,0,0(' + b.width / 2 + ',' + b.height / 2 + '))')
@@ -937,7 +940,7 @@ const tests: DesignSample[] = [
             const p1 = elise.path();
             p1.commands = yinyang;
             p1.translate(154, 60);
-            p1.setWinding(elise.WindingMode.EvenOdd).setStroke('White').setFill('0.4;White').addTo(model);
+            p1.setWinding(WindingMode.EvenOdd).setStroke('White').setFill('0.4;White').addTo(model);
             p1.getBounds();
             viewer.model = model;
         }
@@ -1265,7 +1268,7 @@ const tests: DesignSample[] = [
         configure: (viewer) => {
             const model = defaultModel();
 
-            model.setFill(elise.Color.DarkGreen);
+            model.setFill(Color.DarkGreen);
             model.setBasePath('/assets/test');
             const sx = 4;
             const sy = 4;
@@ -1294,7 +1297,7 @@ const tests: DesignSample[] = [
         configure: (viewer) => {
             const model = defaultModel();
 
-            model.setFill(elise.Color.DarkGreen);
+            model.setFill(Color.DarkGreen);
             model.setBasePath('/assets/test');
             const sx = 4;
             const sy = 4;
@@ -1323,7 +1326,7 @@ const tests: DesignSample[] = [
         configure: (viewer) => {
             const model = defaultModel();
 
-            model.setFill(elise.Color.DarkGreen);
+            model.setFill(Color.DarkGreen);
             model.setBasePath('/assets/test');
             const sx = 4;
             const sy = 4;
@@ -1352,7 +1355,7 @@ const tests: DesignSample[] = [
         configure: (viewer) => {
             const model = defaultModel();
 
-            model.setFill(elise.Color.DarkGreen);
+            model.setFill(Color.DarkGreen);
             model.setBasePath('/assets/test');
             const sx = 4;
             const sy = 4;
@@ -1380,7 +1383,7 @@ const tests: DesignSample[] = [
         configure: (viewer) => {
             const model = defaultModel();
 
-            model.setFill(elise.Color.DarkGreen);
+            model.setFill(Color.DarkGreen);
             model.setBasePath('/assets/test');
             const sx = 4;
             const sy = 4;
@@ -1408,7 +1411,7 @@ const tests: DesignSample[] = [
         configure: (viewer) => {
             const model = defaultModel();
 
-            model.setFill(elise.Color.DarkGreen);
+            model.setFill(Color.DarkGreen);
             model.setBasePath('/assets/test');
             const sx = 4;
             const sy = 4;

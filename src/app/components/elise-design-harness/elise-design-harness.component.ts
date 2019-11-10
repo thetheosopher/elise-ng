@@ -1,13 +1,16 @@
 import { Component, OnInit, ElementRef, ViewChild, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Model } from '../../elise/core/model';
-import { Region } from '../../elise/core/Region';
+
+import { Model } from 'elise-graphics/lib/core/model';
+import { Region } from 'elise-graphics/lib/core/Region';
+import { PointEventParameters } from 'elise-graphics/lib/core/point-event-parameters';
+import { DesignController } from 'elise-graphics/lib/design/design-controller';
+import { ElementBase } from 'elise-graphics/lib/elements/element-base';
+
 import { EliseDesignComponent } from '../../elise/design/elise-design.component';
-import { PointEventParameters } from '../../elise/core/point-event-parameters';
-import { DesignController } from '../../elise/design/design-controller';
-import { ElementBase } from '../../elise/elements/element-base';
 import { DesignTestService } from '../../services/design-test.service';
 import { ISampleDesigner } from '../../interfaces/sample-designer';
+
 import { ViewEncapsulation } from '@angular/core';
 
 @Component({
@@ -70,6 +73,9 @@ export class EliseDesignHarnessComponent implements OnInit, ISampleDesigner {
             const self = this;
             model.prepareResources(null, function(result) {
                 if (result) {
+                    for(const el of model.elements) {
+                        el.setInteractive(true);
+                    }
                     self._model = model;
                     if (self.displayModel) {
                         self.formattedJson = model.formattedJSON();

@@ -2,8 +2,9 @@ import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ModelService } from '../../services/model.service';
 import { Location } from '@angular/common';
-import { Model } from '../../elise/core/model';
-import { default as elise } from '../../elise/elise';
+
+import { Model } from 'elise-graphics/lib/core/model';
+import { default as elise } from 'elise-graphics/lib/index';
 
 @Component({
     selector: 'app-primitive',

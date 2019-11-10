@@ -1,7 +1,7 @@
 import { Component, OnInit, ElementRef, ViewChild, Input, EventEmitter, Output } from '@angular/core';
 import { ModelService } from '../../services/model.service';
-import { Model } from '../../elise/core/model';
-import { Sketcher } from '../../elise/sketcher/sketcher';
+import { Model } from 'elise-graphics/lib/core/model';
+import { Sketcher } from 'elise-graphics/lib/sketcher/sketcher';
 
 @Component({
     selector: 'app-sketch-url',

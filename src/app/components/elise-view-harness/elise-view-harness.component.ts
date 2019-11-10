@@ -1,11 +1,13 @@
 import { Component, OnInit, ElementRef, ViewChild, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Model } from '../../elise/core/model';
+
+import { Model } from 'elise-graphics/lib/core/model';
+import { ViewController } from 'elise-graphics/lib/view/view-controller';
+import { ElementBase } from 'elise-graphics/lib/elements/element-base';
+import { TimerParameters } from 'elise-graphics/lib/core/timer-parameters';
+import { PointEventParameters } from 'elise-graphics/lib/core/point-event-parameters';
+
 import { EliseViewComponent } from '../../elise/view/elise-view.component';
-import { PointEventParameters } from '../../elise/core/point-event-parameters';
-import { ViewController } from '../../elise/view/view-controller';
-import { ElementBase } from '../../elise/elements/element-base';
-import { TimerParameters } from '../../elise/core/timer-parameters';
 import { ViewTestService } from '../../services/view-test.service';
 import { ISampleViewer } from '../../interfaces/sample-viewer';
 

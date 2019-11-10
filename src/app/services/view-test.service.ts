@@ -1,19 +1,22 @@
 import { Injectable } from '@angular/core';
-import { Model } from '../elise/core/model';
+import { Model } from 'elise-graphics/lib/core/model';
 import { ViewSample } from '../interfaces/view-sample';
 import { Observable, of } from 'rxjs';
 import { ISampleViewer } from '../interfaces/sample-viewer';
-import { PolylineElement } from '../elise/elements/polyline-element';
-import { PolygonElement } from '../elise/elements/polygon-element';
-import { Point } from '../elise/core/point';
-import { ViewController } from '../elise/view/view-controller';
-import { ElementCommandHandler } from '../elise/command/element-command-handler';
-import { TransitionRenderer } from '../elise/transitions/transitions';
-import { SpriteElement } from '../elise/elements/sprite-element';
+import { PolylineElement } from 'elise-graphics/lib/elements/polyline-element';
+import { PolygonElement } from 'elise-graphics/lib/elements/polygon-element';
+import { Point } from 'elise-graphics/lib/core/point';
+import { ViewController } from 'elise-graphics/lib/view/view-controller';
+import { ElementCommandHandler } from 'elise-graphics/lib/command/element-command-handler';
+import { TransitionRenderer } from 'elise-graphics/lib/transitions/transitions';
+import { SpriteElement } from 'elise-graphics/lib/elements/sprite-element';
+import { WindingMode } from 'elise-graphics/lib/core/winding-mode';
+import { Color } from 'elise-graphics/lib/core/color';
+
 import { loremipsum } from './loremipsum';
 import { yinyang } from './yinyang';
 
-import elise from '../elise/elise';
+import elise from 'elise-graphics/lib/index';
 
 function defaultModel(): Model {
     const model = Model.create(320, 320);
@@ -98,7 +101,7 @@ const tests: ViewSample[] = [
             const xc = 160;
             const yc = 170;
             drawstar(p, xc, yc, radius);
-            p.setStroke('Gold,2').setFill('Blue').setWinding(elise.WindingMode.NonZero).addTo(model);
+            p.setStroke('Gold,2').setFill('Blue').setWinding(WindingMode.NonZero).addTo(model);
             viewer.model = model;
         }
     },
@@ -113,7 +116,7 @@ const tests: ViewSample[] = [
             const xc = 160;
             const yc = 170;
             drawstar(p, xc, yc, radius);
-            p.setStroke('Gold,2').setFill('Blue').setWinding(elise.WindingMode.EvenOdd).addTo(model);
+            p.setStroke('Gold,2').setFill('Blue').setWinding(WindingMode.EvenOdd).addTo(model);
             viewer.model = model;
         }
     },
@@ -125,7 +128,7 @@ const tests: ViewSample[] = [
             const model = defaultModel();
             const p = elise.path();
             p.commands = 'm160,20 l248,291 l17,124 l303,124 l72,291 l160,20 z';
-            p.setWinding(elise.WindingMode.NonZero).setFill('Blue').setStroke('Gold,2').addTo(model);
+            p.setWinding(WindingMode.NonZero).setFill('Blue').setStroke('Gold,2').addTo(model);
             viewer.model = model;
         }
     },
@@ -137,7 +140,7 @@ const tests: ViewSample[] = [
             const model = defaultModel();
             const p = elise.path();
             p.commands = 'm160,20 l248,291 l17,124 l303,124 l72,291 l160,20 z';
-            p.setWinding(elise.WindingMode.EvenOdd).setFill('Blue').setStroke('Gold,2').addTo(model);
+            p.setWinding(WindingMode.EvenOdd).setFill('Blue').setStroke('Gold,2').addTo(model);
             viewer.model = model;
         }
     },
@@ -379,7 +382,7 @@ const tests: ViewSample[] = [
             const fontSize = 18;
             const fontFill = 'White';
             const typeface = 'Sans-Serif';
-            const borderStroke = elise.Color.LightGray.name;
+            const borderStroke = Color.LightGray.name;
 
             elise.rectangle(x, y, width, height).setStroke(borderStroke).addTo(model);
             elise
@@ -442,7 +445,7 @@ const tests: ViewSample[] = [
         description: 'Tests image element rendering with full and partial opacity.',
         configure: (viewer) => {
             const model = defaultModel();
-            elise.bitmapResource('bulb', './assets/models/primitives/images/bulb.png').addTo(model);
+            elise.bitmapResource('bulb', '/assets/models/primitives/images/bulb.png').addTo(model);
             elise.image('bulb', 10, 10, 128, 128).setInteractive(true).addTo(model);
             elise.image('bulb', 138, 138, 64, 64).setOpacity(0.6).setInteractive(true).addTo(model);
             elise.image('bulb', 234, 234, 32, 32).setOpacity(0.3).setInteractive(true).addTo(model);
@@ -602,8 +605,8 @@ const tests: ViewSample[] = [
             let y = 10;
             const x1 = 10;
             const x2 = 310;
-            for (let i = 0; i < elise.Color.NamedColors.length; i++) {
-                elise.line(x1, y, x2, y).setStroke(elise.Color.NamedColors[i].name).addTo(model);
+            for (let i = 0; i < Color.NamedColors.length; i++) {
+                elise.line(x1, y, x2, y).setStroke(Color.NamedColors[i].name).addTo(model);
                 y++;
             }
             let b = 0;
@@ -626,8 +629,8 @@ const tests: ViewSample[] = [
             let y = 0;
             const w = 20;
             const h = 20;
-            for (let i = 0; i < elise.Color.NamedColors.length; i++) {
-                elise.rectangle(x, y, w, h).setFill(elise.Color.NamedColors[i].name).addTo(model);
+            for (let i = 0; i < Color.NamedColors.length; i++) {
+                elise.rectangle(x, y, w, h).setFill(Color.NamedColors[i].name).addTo(model);
                 x += w;
                 if (x > model.getSize().width - w) {
                     x = 0;
@@ -710,11 +713,11 @@ const tests: ViewSample[] = [
             let xc = 80;
             const p1 = elise.polygon();
             drawstar(p1, xc, yc, radius);
-            p1.setWinding(elise.WindingMode.NonZero).setFill(fill).addTo(model);
+            p1.setWinding(WindingMode.NonZero).setFill(fill).addTo(model);
             const p2 = elise.polygon();
             xc = 240;
             drawstar(p2, xc, yc, radius);
-            p2.setWinding(elise.WindingMode.EvenOdd).setFill(fill).addTo(model);
+            p2.setWinding(WindingMode.EvenOdd).setFill(fill).addTo(model);
             viewer.model = model;
         }
     },
@@ -755,12 +758,12 @@ const tests: ViewSample[] = [
             let xc = 80;
             const p1 = elise.polygon();
             drawstar(p1, xc, yc, radius);
-            p1.setWinding(elise.WindingMode.NonZero).setFill(fill).setStroke(stroke).addTo(model);
+            p1.setWinding(WindingMode.NonZero).setFill(fill).setStroke(stroke).addTo(model);
 
             const p2 = elise.polygon();
             xc = 240;
             drawstar(p2, xc, yc, radius);
-            p2.setWinding(elise.WindingMode.EvenOdd).setFill(fill).setStroke(stroke).addTo(model);
+            p2.setWinding(WindingMode.EvenOdd).setFill(fill).setStroke(stroke).addTo(model);
             viewer.model = model;
         }
     },
@@ -793,7 +796,7 @@ const tests: ViewSample[] = [
         configure: (viewer) => {
             const model = defaultModel();
             viewer.background = 'grid';
-            elise.bitmapResource('t1', './assets/test/images/texture1.png').addTo(model);
+            elise.bitmapResource('t1', '/assets/test/images/texture1.png').addTo(model);
             elise.rectangle(10, 20, 150, 150).setFill('image(0.5;t1)').setStroke('Black').addTo(model);
             elise.ellipse(240, 95, 75, 75).setFill('image(0.75;t1)').setStroke('Black').addTo(model);
             const radius = 72;
@@ -801,11 +804,11 @@ const tests: ViewSample[] = [
             let xc = 80;
             const p1 = elise.polygon();
             drawstar(p1, xc, yc, radius);
-            p1.setWinding(elise.WindingMode.NonZero).setFill('image(0.85;t1)').setStroke('Black').addTo(model);
+            p1.setWinding(WindingMode.NonZero).setFill('image(0.85;t1)').setStroke('Black').addTo(model);
             const p2 = elise.polygon();
             xc = 240;
             drawstar(p2, xc, yc, radius);
-            p2.setWinding(elise.WindingMode.EvenOdd).setFill('image(t1)').setStroke('Black').addTo(model);
+            p2.setWinding(WindingMode.EvenOdd).setFill('image(t1)').setStroke('Black').addTo(model);
             viewer.model = model;
         }
     },
@@ -816,7 +819,7 @@ const tests: ViewSample[] = [
         configure: (viewer) => {
             const model = defaultModel();
             viewer.background = 'grid';
-            elise.bitmapResource('t1', './assets/test/images/texture1.png').addTo(model);
+            elise.bitmapResource('t1', '/assets/test/images/texture1.png').addTo(model);
             const p = elise.path();
             p.commands = yinyang;
             p.setFill('image(0.5;t1)').setStroke('Black').scale(1, 1).translate(78, 10).addTo(model);
@@ -837,7 +840,7 @@ const tests: ViewSample[] = [
         description: 'Tests scaled image fill of rectangle, ellipse and polygon shapes.',
         configure: (viewer) => {
             const model = defaultModel();
-            elise.bitmapResource('t1', './assets/test/images/texture2.jpg').addTo(model);
+            elise.bitmapResource('t1', '/assets/test/images/texture2.jpg').addTo(model);
             const fill = 'image(t1)';
             elise.rectangle(10, 20, 150, 150).setFill(fill).setFillScale(0.75).addTo(model);
             elise.ellipse(240, 95, 75, 75).setFill(fill).setFillScale(0.5).addTo(model);
@@ -846,11 +849,11 @@ const tests: ViewSample[] = [
             let xc = 80;
             const p1 = elise.polygon();
             drawstar(p1, xc, yc, r);
-            p1.setWinding(elise.WindingMode.NonZero).setFill(fill).setFillScale(0.25).addTo(model);
+            p1.setWinding(WindingMode.NonZero).setFill(fill).setFillScale(0.25).addTo(model);
             const p2 = elise.polygon();
             xc = 240;
             drawstar(p2, xc, yc, r);
-            p2.setWinding(elise.WindingMode.EvenOdd).setFill(fill).setFillScale(0.125).addTo(model);
+            p2.setWinding(WindingMode.EvenOdd).setFill(fill).setFillScale(0.125).addTo(model);
             viewer.model = model;
         }
     },
@@ -871,11 +874,11 @@ const tests: ViewSample[] = [
             let xc = 80;
             const p1 = elise.polygon();
             drawstar(p1, xc, yc, r);
-            p1.setWinding(elise.WindingMode.NonZero).setFill(fill).addTo(model);
+            p1.setWinding(WindingMode.NonZero).setFill(fill).addTo(model);
             const p2 = elise.polygon();
             xc = 240;
             drawstar(p2, xc, yc, r);
-            p2.setWinding(elise.WindingMode.EvenOdd).setFill(fill).addTo(model);
+            p2.setWinding(WindingMode.EvenOdd).setFill(fill).addTo(model);
             viewer.model = model;
         }
     },
@@ -917,11 +920,11 @@ const tests: ViewSample[] = [
             let xc = 80;
             const p1 = elise.polygon();
             drawstar(p1, xc, yc, r);
-            p1.setWinding(elise.WindingMode.NonZero).setFill(fill).addTo(model);
+            p1.setWinding(WindingMode.NonZero).setFill(fill).addTo(model);
             const p2 = elise.polygon();
             xc = 240;
             drawstar(p2, xc, yc, r);
-            p2.setWinding(elise.WindingMode.EvenOdd).setFill(fill).addTo(model);
+            p2.setWinding(WindingMode.EvenOdd).setFill(fill).addTo(model);
             viewer.model = model;
         }
     },
@@ -958,7 +961,7 @@ const tests: ViewSample[] = [
             const stroke = '0.5;DarkGreen';
             m1.setFill('0.5;Green');
             m1.basePath = model.basePath;
-            const br = elise.bitmapResource('bulb', './assets/test/images/bulb.png').addTo(m1);
+            const br = elise.bitmapResource('bulb', '/assets/test/images/bulb.png').addTo(m1);
             elise.image(br, 0, 0, 32, 32).addTo(m1);
             elise.ellipse(16, 16, 16, 16).setFill('0.3;White').addTo(m1);
             elise.modelResource('m1', m1).addTo(model);
@@ -970,11 +973,11 @@ const tests: ViewSample[] = [
             let xc = 80;
             const p1 = elise.polygon();
             drawstar(p1, xc, yc, r);
-            p1.setWinding(elise.WindingMode.NonZero).setFill(fill).setStroke(stroke).addTo(model);
+            p1.setWinding(WindingMode.NonZero).setFill(fill).setStroke(stroke).addTo(model);
             const p2 = elise.polygon();
             xc = 240;
             drawstar(p2, xc, yc, r);
-            p2.setWinding(elise.WindingMode.EvenOdd).setFill(fill).setStroke(stroke).addTo(model);
+            p2.setWinding(WindingMode.EvenOdd).setFill(fill).setStroke(stroke).addTo(model);
             viewer.model = model;
         }
     },
@@ -989,7 +992,7 @@ const tests: ViewSample[] = [
             const m1 = elise.model(32, 32);
             m1.setFill('0.5;Green');
             m1.basePath = model.basePath;
-            const br = elise.bitmapResource('bulb', './assets/test/images/bulb.png').addTo(m1);
+            const br = elise.bitmapResource('bulb', '/assets/test/images/bulb.png').addTo(m1);
             elise.image(br, 0, 0, 32, 32).addTo(m1);
             elise.ellipse(16, 16, 16, 16).setFill('0.3;White').addTo(m1);
             elise.modelResource('m1', m1).addTo(model);
@@ -1320,11 +1323,11 @@ const tests: ViewSample[] = [
             const yc = 120;
             const p1 = elise.polygon();
             drawstar(p1, xc, yc, radius);
-            p1.setWinding(elise.WindingMode.EvenOdd).setStroke('White,2').setFill('0.4;White').addTo(model);
+            p1.setWinding(WindingMode.EvenOdd).setStroke('White,2').setFill('0.4;White').addTo(model);
             const p2 = elise.polygon();
             drawstar(p2, xc, yc, radius);
             p2
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Gold,2')
                 .setFill('0.4;Gold')
                 .setTransform('translate(90,90)')
@@ -1343,12 +1346,12 @@ const tests: ViewSample[] = [
             const yc = 140;
             const p1 = elise.polygon();
             drawstar(p1, xc, yc, radius);
-            p1.setWinding(elise.WindingMode.EvenOdd).setStroke('White').setFill('0.4;White').addTo(model);
+            p1.setWinding(WindingMode.EvenOdd).setStroke('White').setFill('0.4;White').addTo(model);
             p1.getBounds();
             const p2 = elise.polygon();
             drawstar(p2, xc, yc, radius);
             p2
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Gold')
                 .setFill('0.4;Gold')
                 .setTransform('scale(2)')
@@ -1357,7 +1360,7 @@ const tests: ViewSample[] = [
             const p3 = elise.polygon();
             drawstar(p3, xc, yc, radius);
             p3
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Blue')
                 .setFill('0.4;Blue')
                 .setTransform('scale(2(' + Math.round(b.width / 2) + ',' + Math.round(b.height / 2) + '))')
@@ -1377,12 +1380,12 @@ const tests: ViewSample[] = [
             const yc = 160;
             const p1 = elise.polygon();
             drawstar(p1, xc, yc, radius);
-            p1.setWinding(elise.WindingMode.EvenOdd).setStroke('White,2').setFill('0.4;White').addTo(model);
+            p1.setWinding(WindingMode.EvenOdd).setStroke('White,2').setFill('0.4;White').addTo(model);
             p1.getBounds();
             const p2 = elise.polygon();
             drawstar(p2, xc, yc, radius);
             p2
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Gold,2')
                 .setFill('0.4;Gold')
                 .setTransform('rotate(45)')
@@ -1391,7 +1394,7 @@ const tests: ViewSample[] = [
             const p3 = elise.polygon();
             drawstar(p3, xc, yc, radius);
             p3
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Blue,2')
                 .setFill('0.4;Blue')
                 .setTransform('rotate(45(' + Math.round(b.width / 2) + ',' + Math.round(b.height / 2) + '))')
@@ -1412,7 +1415,7 @@ const tests: ViewSample[] = [
             const p2 = elise.polygon();
             drawstar(p2, xc, yc, radius);
             p2
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Gold,2')
                 .setFill('0.4;Gold')
                 .setTransform('skew(30,0)')
@@ -1421,7 +1424,7 @@ const tests: ViewSample[] = [
             const p3 = elise.polygon();
             drawstar(p3, xc, yc, radius);
             p3
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Blue,2')
                 .setFill('0.4;Blue')
                 .setTransform('skew(30,0(' + Math.round(b.width / 2) + ',' + Math.round(b.height / 2) + '))')
@@ -1429,7 +1432,7 @@ const tests: ViewSample[] = [
             p3.getBounds();
             const p1 = elise.polygon();
             drawstar(p1, xc, yc, radius);
-            p1.setWinding(elise.WindingMode.EvenOdd).setStroke('White,1').setFill('0.4;White').addTo(model);
+            p1.setWinding(WindingMode.EvenOdd).setStroke('White,1').setFill('0.4;White').addTo(model);
             p1.getBounds();
             viewer.model = model;
         }
@@ -1446,7 +1449,7 @@ const tests: ViewSample[] = [
             const p2 = elise.polygon();
             drawstar(p2, xc, yc, radius);
             p2
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Gold,2')
                 .setFill('0.4;Gold')
                 .setTransform('skew(0,30)')
@@ -1455,7 +1458,7 @@ const tests: ViewSample[] = [
             const p3 = elise.polygon();
             drawstar(p3, xc, yc, radius);
             p3
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Blue,2')
                 .setFill('0.4;Blue')
                 .setTransform('skew(0,30(' + b.width / 2 + ',' + b.height / 2 + '))')
@@ -1463,7 +1466,7 @@ const tests: ViewSample[] = [
             p3.getBounds();
             const p1 = elise.polygon();
             drawstar(p1, xc, yc, radius);
-            p1.setWinding(elise.WindingMode.EvenOdd).setStroke('White,1').setFill('0.4;White').addTo(model);
+            p1.setWinding(WindingMode.EvenOdd).setStroke('White,1').setFill('0.4;White').addTo(model);
             p1.getBounds();
             viewer.model = model;
         }
@@ -1480,7 +1483,7 @@ const tests: ViewSample[] = [
             const p2 = elise.polygon();
             drawstar(p2, xc, yc, radius);
             p2
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Gold,3')
                 .setFill('0.4;White')
                 .setFill('0.4;Gold')
@@ -1490,7 +1493,7 @@ const tests: ViewSample[] = [
             const p3 = elise.polygon();
             drawstar(p3, xc, yc, radius);
             p3
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Blue,3')
                 .setFill('0.4;Blue')
                 .setTransform('matrix(-1,0,0,1,0,0(' + Math.round(b.width / 2) + ',' + Math.round(b.height / 2) + '))')
@@ -1498,7 +1501,7 @@ const tests: ViewSample[] = [
             p3.getBounds();
             const p1 = elise.polygon();
             drawstar(p1, xc, yc, radius);
-            p1.setWinding(elise.WindingMode.EvenOdd).setStroke('White,1.5').addTo(model);
+            p1.setWinding(WindingMode.EvenOdd).setStroke('White,1.5').addTo(model);
             p1.getBounds();
             viewer.model = model;
         }
@@ -1512,12 +1515,12 @@ const tests: ViewSample[] = [
             const p1 = elise.path();
             p1.commands = yinyang;
             p1.translate(25, 25);
-            p1.setWinding(elise.WindingMode.EvenOdd).setStroke('White,2').setFill('0.4;White').addTo(model);
+            p1.setWinding(WindingMode.EvenOdd).setStroke('White,2').setFill('0.4;White').addTo(model);
             const p2 = elise.path();
             p2.commands = yinyang;
             p2.translate(25, 25);
             p2
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Gold,2')
                 .setFill('0.4;Gold')
                 .setTransform('translate(120,120)')
@@ -1534,13 +1537,13 @@ const tests: ViewSample[] = [
             const p1 = elise.path();
             p1.commands = yinyang;
             p1.translate(80, 80).scale(0.7, 0.7);
-            p1.setWinding(elise.WindingMode.EvenOdd).setStroke('White').setFill('0.4;White').addTo(model);
+            p1.setWinding(WindingMode.EvenOdd).setStroke('White').setFill('0.4;White').addTo(model);
             p1.getBounds();
             const p2 = elise.path();
             p2.commands = yinyang;
             p2.translate(80, 80).scale(0.7, 0.7);
             p2
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Gold')
                 .setFill('0.4;Gold')
                 .setTransform('scale(2)')
@@ -1550,7 +1553,7 @@ const tests: ViewSample[] = [
             p3.commands = yinyang;
             p3.translate(80, 80).scale(0.7, 0.7);
             p3
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Blue')
                 .setFill('0.4;Blue')
                 .setTransform('scale(2(' + b.width / 2 + ',' + b.height / 2 + '))')
@@ -1568,13 +1571,13 @@ const tests: ViewSample[] = [
             const p1 = elise.path();
             p1.commands = yinyang;
             p1.translate(120, 60);
-            p1.setWinding(elise.WindingMode.EvenOdd).setStroke('White').setFill('0.4;White').addTo(model);
+            p1.setWinding(WindingMode.EvenOdd).setStroke('White').setFill('0.4;White').addTo(model);
             p1.getBounds();
             const p2 = elise.path();
             p2.commands = yinyang;
             p2.translate(120, 60);
             p2
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Gold')
                 .setFill('0.4;Gold')
                 .setTransform('rotate(45)')
@@ -1584,7 +1587,7 @@ const tests: ViewSample[] = [
             p3.commands = yinyang;
             p3.translate(120, 60);
             p3
-                .setWinding(elise.WindingMode.EvenOdd)
+                .setWinding(WindingMode.EvenOdd)
                 .setStroke('Blue')
                 .setFill('0.4;Blue')
                 .setTransform('rotate(45(' + Math.round(b.width / 2) + ',' + Math.round(b.height / 2) + '))')
@@ -1602,19 +1605,19 @@ const tests: ViewSample[] = [
             const p2 = elise.path();
             p2.commands = yinyang;
             p2.translate(60, 80);
-            p2.setWinding(elise.WindingMode.EvenOdd).setStroke('Gold').setFill('0.4;Gold')
+            p2.setWinding(WindingMode.EvenOdd).setStroke('Gold').setFill('0.4;Gold')
                 .setTransform('skew(30,0)').addTo(model);
             const b = p2.getBounds();
             const p3 = elise.path();
             p3.commands = yinyang;
             p3.translate(60, 80);
-            p3.setWinding(elise.WindingMode.EvenOdd).setStroke('Blue').setFill('0.4;Blue')
+            p3.setWinding(WindingMode.EvenOdd).setStroke('Blue').setFill('0.4;Blue')
                 .setTransform('skew(30,0(' + b.width / 2 + ',' + b.height / 2 + '))').addTo(model);
             p3.getBounds();
             const p1 = elise.path();
             p1.commands = yinyang;
             p1.translate(60, 80);
-            p1.setWinding(elise.WindingMode.EvenOdd).setStroke('White')
+            p1.setWinding(WindingMode.EvenOdd).setStroke('White')
                 .setFill('0.4;White').addTo(model);
             p1.getBounds();
             viewer.model = model;
@@ -1629,19 +1632,19 @@ const tests: ViewSample[] = [
             const p2 = elise.path();
             p2.commands = yinyang;
             p2.translate(80, 60);
-            p2.setWinding(elise.WindingMode.EvenOdd).setStroke('Gold').setFill('0.4;Gold')
+            p2.setWinding(WindingMode.EvenOdd).setStroke('Gold').setFill('0.4;Gold')
                 .setTransform('skew(0,30)').addTo(model);
             const b = p2.getBounds();
             const p3 = elise.path();
             p3.commands = yinyang;
             p3.translate(80, 60);
-            p3.setWinding(elise.WindingMode.EvenOdd).setStroke('Blue').setFill('0.4;Blue')
+            p3.setWinding(WindingMode.EvenOdd).setStroke('Blue').setFill('0.4;Blue')
                 .setTransform('skew(0,30(' + b.width / 2 + ',' + b.height / 2 + '))').addTo(model);
             p3.getBounds();
             const p1 = elise.path();
             p1.commands = yinyang;
             p1.translate(80, 60);
-            p1.setWinding(elise.WindingMode.EvenOdd).setStroke('White')
+            p1.setWinding(WindingMode.EvenOdd).setStroke('White')
                 .setFill('0.4;White').addTo(model);
             p1.getBounds();
             viewer.model = model;
@@ -1656,21 +1659,21 @@ const tests: ViewSample[] = [
             const p2 = elise.path();
             p2.commands = yinyang;
             p2.translate(154, 60);
-            p2.setWinding(elise.WindingMode.EvenOdd).setStroke('Gold')
+            p2.setWinding(WindingMode.EvenOdd).setStroke('Gold')
                 .setFill('0.4;Gold').setFill('0.4;Gold')
                 .setTransform('matrix(-1,0,0,1,0,0)').addTo(model);
             const b = p2.getBounds();
             const p3 = elise.path();
             p3.commands = yinyang;
             p3.translate(154, 60);
-            p3.setWinding(elise.WindingMode.EvenOdd).setStroke('Blue').setFill('0.4;Blue')
+            p3.setWinding(WindingMode.EvenOdd).setStroke('Blue').setFill('0.4;Blue')
                 .setTransform('matrix(-1,0,0,1,0,0(' + Math.round(b.width / 2) +
                 ',' + Math.round(b.height / 2) + '))').addTo(model);
             p3.getBounds();
             const p1 = elise.path();
             p1.commands = yinyang;
             p1.translate(154, 60);
-            p1.setWinding(elise.WindingMode.EvenOdd).setStroke('White')
+            p1.setWinding(WindingMode.EvenOdd).setStroke('White')
                 .setFill('0.4;White').addTo(model);
             p1.getBounds();
             viewer.model = model;
@@ -1888,7 +1891,7 @@ const tests: ViewSample[] = [
             const y = 40;
             const width = 120;
             const height = 120;
-            const br = elise.bitmapResource('bulb', './assets/test/images/bulb.png').addTo(model);
+            const br = elise.bitmapResource('bulb', '/assets/test/images/bulb.png').addTo(model);
             elise.image(br, x, y, width, height).addTo(model);
             elise.image(br, x, y, width, height).setOpacity(0.5).setTransform('translate(120,120)').addTo(model);
             viewer.model = model;
@@ -1904,7 +1907,7 @@ const tests: ViewSample[] = [
             const y = 70;
             const width = 120;
             const height = 120;
-            const br = elise.bitmapResource('bulb', './assets/test/images/bulb.png').addTo(model);
+            const br = elise.bitmapResource('bulb', '/assets/test/images/bulb.png').addTo(model);
             elise.image(br, x, y, width, height).addTo(model);
             elise.image(br, x, y, width, height).setOpacity(0.5).setTransform('scale(2)').addTo(model);
             elise.image(br, x, y, width, height).setOpacity(0.5).setTransform('scale(2(60,60))').addTo(model);
@@ -1921,7 +1924,7 @@ const tests: ViewSample[] = [
             const y = 60;
             const width = 180;
             const height = 180;
-            const br = elise.bitmapResource('bulb', './assets/test/images/bulb.png').addTo(model);
+            const br = elise.bitmapResource('bulb', '/assets/test/images/bulb.png').addTo(model);
             elise.image(br, x, y, width, height).addTo(model);
             elise.image(br, x, y, width, height).setOpacity(0.5).setTransform('rotate(45)').addTo(model);
             elise.image(br, x, y, width, height).setOpacity(0.5).setTransform('rotate(45(90,90))').addTo(model);
@@ -1938,7 +1941,7 @@ const tests: ViewSample[] = [
             const y = 40;
             const width = 180;
             const height = 180;
-            const br = elise.bitmapResource('bulb', './assets/test/images/bulb.png').addTo(model);
+            const br = elise.bitmapResource('bulb', '/assets/test/images/bulb.png').addTo(model);
             elise.image(br, x, y, width, height).addTo(model);
             elise.image(br, x, y, width, height).setOpacity(0.5).setTransform('skew(30,0)').addTo(model);
             elise.image(br, x, y, width, height).setOpacity(0.5).setTransform('skew(30,0(90,90))').addTo(model);
@@ -1955,7 +1958,7 @@ const tests: ViewSample[] = [
             const y = 40;
             const width = 180;
             const height = 180;
-            const br = elise.bitmapResource('bulb', './assets/test/images/bulb.png').addTo(model);
+            const br = elise.bitmapResource('bulb', '/assets/test/images/bulb.png').addTo(model);
             elise.image(br, x, y, width, height).addTo(model);
             elise.image(br, x, y, width, height).setOpacity(0.5).setTransform('skew(0,30)').addTo(model);
             elise.image(br, x, y, width, height).setOpacity(0.5).setTransform('skew(0,30(90,90))').addTo(model);
@@ -1972,7 +1975,7 @@ const tests: ViewSample[] = [
             const y = 80;
             const width = 120;
             const height = 120;
-            const br = elise.bitmapResource('bulb', './assets/test/images/bulb.png').addTo(model);
+            const br = elise.bitmapResource('bulb', '/assets/test/images/bulb.png').addTo(model);
             elise.image(br, x, y, width, height).addTo(model);
             elise.image(br, x, y, width, height).setOpacity(0.5).setTransform('matrix(-1,0,0,1,0,0)').addTo(model);
             elise.image(br, x, y, width, height).setOpacity(0.5).setTransform('matrix(-1,0,0,1,0,0(60,60))').addTo(model);
@@ -1985,7 +1988,7 @@ const tests: ViewSample[] = [
         description: 'Tests translate transform applied to sprite element.',
         configure: (viewer) => {
             const model = defaultModel();
-            model.setFill(elise.Color.DarkGreen.toString());
+            model.setFill(Color.DarkGreen.toString());
             model.setBasePath('./assets/test');
             const sx = 4;
             const sy = 4;
@@ -2002,7 +2005,7 @@ const tests: ViewSample[] = [
             s2.createSheetFrames('santa', imageWidth, imageHeight, spriteWidth, spriteHeight, frameCount, 0.05, null, 0);
             s1.createSheetFrames('santa', imageWidth, imageHeight, spriteWidth, spriteHeight, frameCount, 0.05, null, 0);
             model.controllerAttached.add(function(_model, controller: ViewController) {
-                const commandHandler = new elise.ElementCommandHandler();
+                const commandHandler = new ElementCommandHandler();
                 commandHandler.attachController(controller);
                 commandHandler.addHandler('tick',
                     function (_controller: ViewController, element, command, trigger, parameters) {
@@ -2021,7 +2024,7 @@ const tests: ViewSample[] = [
         description: 'Tests scale transform applied to sprite element.',
         configure: (viewer) => {
             const model = defaultModel();
-            model.setFill(elise.Color.DarkGreen.toString());
+            model.setFill(Color.DarkGreen.toString());
             model.setBasePath('./assets/test');
             const sx = 4;
             const sy = 4;
@@ -2040,7 +2043,7 @@ const tests: ViewSample[] = [
             s2.createSheetFrames('santa', imageWidth, imageHeight, spriteWidth, spriteHeight, frameCount, 0.05, null, 0);
             s1.createSheetFrames('santa', imageWidth, imageHeight, spriteWidth, spriteHeight, frameCount, 0.05, null, 0, 0.5);
             model.controllerAttached.add(function(_model, controller: ViewController) {
-                const commandHandler = new elise.ElementCommandHandler();
+                const commandHandler = new ElementCommandHandler();
                 commandHandler.attachController(controller);
                 commandHandler.addHandler('tick',
                     function (_controller: ViewController, element, command, trigger, parameters) {
@@ -2059,7 +2062,7 @@ const tests: ViewSample[] = [
         description: 'Tests rotate transform applied to sprite element.',
         configure: (viewer) => {
             const model = defaultModel();
-            model.setFill(elise.Color.DarkGreen.toString());
+            model.setFill(Color.DarkGreen.toString());
             model.setBasePath('./assets/test');
             const sx = 4;
             const sy = 4;
@@ -2078,7 +2081,7 @@ const tests: ViewSample[] = [
             s2.createSheetFrames('santa', imageWidth, imageHeight, spriteWidth, spriteHeight, frameCount, 0.05, null, 0);
             s1.createSheetFrames('santa', imageWidth, imageHeight, spriteWidth, spriteHeight, frameCount, 0.05, null, 0, 0.5);
             model.controllerAttached.add(function(_model, controller: ViewController) {
-                const commandHandler = new elise.ElementCommandHandler();
+                const commandHandler = new ElementCommandHandler();
                 commandHandler.attachController(controller);
                 commandHandler.addHandler('tick',
                     function (_controller: ViewController, element, command, trigger, parameters) {
@@ -2097,7 +2100,7 @@ const tests: ViewSample[] = [
         description: 'Tests horizontal skew transform applied to sprite element.',
         configure: (viewer) => {
             const model = defaultModel();
-            model.setFill(elise.Color.DarkGreen.toString());
+            model.setFill(Color.DarkGreen.toString());
             model.setBasePath('./assets/test');
             const sx = 4;
             const sy = 4;
@@ -2114,7 +2117,7 @@ const tests: ViewSample[] = [
             s2.createSheetFrames('santa', imageWidth, imageHeight, spriteWidth, spriteHeight, frameCount, 0.05, null, 0);
             s1.createSheetFrames('santa', imageWidth, imageHeight, spriteWidth, spriteHeight, frameCount, 0.05, null, 0, 0.5);
             model.controllerAttached.add(function(_model, controller: ViewController) {
-                const commandHandler = new elise.ElementCommandHandler();
+                const commandHandler = new ElementCommandHandler();
                 commandHandler.attachController(controller);
                 commandHandler.addHandler('tick',
                     function (_controller: ViewController, element, command, trigger, parameters) {
@@ -2134,7 +2137,7 @@ const tests: ViewSample[] = [
         description: 'Tests vertical skew transform applied to sprite element.',
         configure: (viewer) => {
             const model = defaultModel();
-            model.setFill(elise.Color.DarkGreen.toString());
+            model.setFill(Color.DarkGreen.toString());
             model.setBasePath('./assets/test');
             const sx = 4;
             const sy = 4;
@@ -2151,7 +2154,7 @@ const tests: ViewSample[] = [
             s2.createSheetFrames('santa', imageWidth, imageHeight, spriteWidth, spriteHeight, frameCount, 0.05, null, 0);
             s1.createSheetFrames('santa', imageWidth, imageHeight, spriteWidth, spriteHeight, frameCount, 0.05, null, 0, 0.5);
             model.controllerAttached.add(function(_model, controller: ViewController) {
-                const commandHandler = new elise.ElementCommandHandler();
+                const commandHandler = new ElementCommandHandler();
                 commandHandler.attachController(controller);
                 commandHandler.addHandler('tick',
                     function (_controller: ViewController, element, command, trigger, parameters) {
@@ -2170,7 +2173,7 @@ const tests: ViewSample[] = [
         description: 'Tests matrix transform applied to sprite element.',
         configure: (viewer) => {
             const model = defaultModel();
-            model.setFill(elise.Color.DarkGreen.toString());
+            model.setFill(Color.DarkGreen.toString());
             model.setBasePath('./assets/test');
             const sx = 4;
             const sy = 4;
@@ -2187,7 +2190,7 @@ const tests: ViewSample[] = [
             s2.createSheetFrames('santa', imageWidth, imageHeight, spriteWidth, spriteHeight, frameCount, 0.05, null, 0);
             s1.createSheetFrames('santa', imageWidth, imageHeight, spriteWidth, spriteHeight, frameCount, 0.05, null, 0, 0.5);
             model.controllerAttached.add(function(_model, controller: ViewController) {
-                const commandHandler = new elise.ElementCommandHandler();
+                const commandHandler = new ElementCommandHandler();
                 commandHandler.attachController(controller);
                 commandHandler.addHandler('tick',
                     function (_controller: ViewController, element, command, trigger, parameters) {
@@ -2209,7 +2212,7 @@ const tests: ViewSample[] = [
             const m1 = elise.model(32, 32).setStroke('0.5;Blue,3');
             m1.basePath = model.basePath;
             elise.ellipse(8, 8, 8, 8).setFill('Gold').addTo(m1);
-            const br = elise.bitmapResource('bulb', './assets/test/images/bulb.png').addTo(m1);
+            const br = elise.bitmapResource('bulb', '/assets/test/images/bulb.png').addTo(m1);
             elise.image(br, 16, 16, 16, 16).addTo(m1);
             elise.modelResource('m1', m1).addTo(model);
             elise.innerModel('m1', 32, 32, 128, 128).addTo(model);
@@ -2226,7 +2229,7 @@ const tests: ViewSample[] = [
             const m1 = elise.model(32, 32).setStroke('0.5;Blue,3');
             m1.basePath = model.basePath;
             elise.ellipse(8, 8, 8, 8).setFill('Gold').addTo(m1);
-            const br = elise.bitmapResource('bulb', './assets/test/images/bulb.png').addTo(m1);
+            const br = elise.bitmapResource('bulb', '/assets/test/images/bulb.png').addTo(m1);
             elise.image(br, 16, 16, 16, 16).addTo(m1);
             elise.modelResource('m1', m1).addTo(model);
             elise.innerModel('m1', 120, 60, 160, 160).addTo(model);
@@ -2244,7 +2247,7 @@ const tests: ViewSample[] = [
             const m1 = elise.model(32, 32).setStroke('0.5;Blue,3');
             m1.basePath = model.basePath;
             elise.ellipse(8, 8, 8, 8).setFill('Gold').addTo(m1);
-            const br = elise.bitmapResource('bulb', './assets/test/images/bulb.png').addTo(m1);
+            const br = elise.bitmapResource('bulb', '/assets/test/images/bulb.png').addTo(m1);
             elise.image(br, 16, 16, 16, 16).addTo(m1);
             elise.modelResource('m1', m1).addTo(model);
             elise.innerModel('m1', 60, 60, 160, 160).addTo(model);
@@ -2262,7 +2265,7 @@ const tests: ViewSample[] = [
             const m1 = elise.model(32, 32).setStroke('0.5;Blue,3');
             m1.basePath = model.basePath;
             elise.ellipse(8, 8, 8, 8).setFill('Gold').addTo(m1);
-            const br = elise.bitmapResource('bulb', './assets/test/images/bulb.png').addTo(m1);
+            const br = elise.bitmapResource('bulb', '/assets/test/images/bulb.png').addTo(m1);
             elise.image(br, 16, 16, 16, 16).addTo(m1);
             elise.modelResource('m1', m1).addTo(model);
             elise.innerModel('m1', 60, 60, 160, 160).addTo(model);
@@ -2280,7 +2283,7 @@ const tests: ViewSample[] = [
             const m1 = elise.model(32, 32).setStroke('0.5;Blue,3');
             m1.basePath = model.basePath;
             elise.ellipse(8, 8, 8, 8).setFill('Gold').addTo(m1);
-            const br = elise.bitmapResource('bulb', './assets/test/images/bulb.png').addTo(m1);
+            const br = elise.bitmapResource('bulb', '/assets/test/images/bulb.png').addTo(m1);
             elise.image(br, 16, 16, 16, 16).addTo(m1);
             elise.modelResource('m1', m1).addTo(model);
             elise.innerModel('m1', 160, 80, 160, 160).addTo(model);

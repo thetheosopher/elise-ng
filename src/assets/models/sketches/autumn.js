@@ -2,9 +2,9 @@
 model.setFill('White');
 var modelUrl = 'https://s3-us-west-2.amazonaws.com/schematrix.elise/Elise/Models/Autumn.mdl';
 var sketcher = elise.sketcher(modelUrl).addTo(model);
-sketcher.timerDelay = 100;
+sketcher.timerDelay = 20;
 sketcher.strokeBatchSize = 32;
-sketcher.fillBatchSize = 16;
+sketcher.fillBatchSize = 128;
 sketcher.sketchColor = false;
 sketcher.strokeOpacity = 32;
 return model;

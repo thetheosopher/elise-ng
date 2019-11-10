@@ -1,11 +1,13 @@
 import { Component, OnInit, ElementRef, ViewChild, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Surface } from '../../elise/surface/surface';
+
+import { Surface } from 'elise-graphics/lib/surface/surface';
+import { PointEventParameters } from 'elise-graphics/lib/core/point-event-parameters';
+import { SurfaceViewController } from 'elise-graphics/lib/surface/surface-view-controller';
+import { ElementBase } from 'elise-graphics/lib/elements/element-base';
+import { TimerParameters } from 'elise-graphics/lib/core/timer-parameters';
+
 import { EliseSurfaceComponent } from '../../elise/surface/elise-surface.component';
-import { PointEventParameters } from '../../elise/core/point-event-parameters';
-import { SurfaceViewController } from '../../elise/surface/surface-view-controller';
-import { ElementBase } from '../../elise/elements/element-base';
-import { TimerParameters } from '../../elise/core/timer-parameters';
 import { SurfaceTestService } from '../../services/surface-test.service';
 import { ISurfaceViewer } from '../../interfaces/surface-viewer';
 

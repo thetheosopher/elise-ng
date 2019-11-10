@@ -1,4 +1,4 @@
-import { Model } from '../elise/core/model';
+import { Model } from 'elise-graphics/lib/core/model';
 
 export interface ISampleDesigner {
     title: string;

@@ -1,4 +1,4 @@
-import { Surface } from '../elise/surface/surface';
+import { Surface } from 'elise-graphics/lib/surface/surface';
 
 export interface ISurfaceViewer {
     title: string;

@@ -1,10 +1,10 @@
 import { Component, Input, Output, EventEmitter, AfterViewInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { Model } from '../core/model';
-import { DesignController } from './design-controller';
-import { PointEventParameters } from '../core/point-event-parameters';
-import { ElementBase } from '../elements/element-base';
-import { MouseEventArgs } from '../core/mouse-event-args';
-import { Region } from '../core/region';
+import { Model } from 'elise-graphics/lib/core/model';
+import { DesignController } from 'elise-graphics/lib/design/design-controller';
+import { PointEventParameters } from 'elise-graphics/lib/core/point-event-parameters';
+import { ElementBase } from 'elise-graphics/lib/elements/element-base';
+import { MouseEventArgs } from 'elise-graphics/lib/core/mouse-event-args';
+import { Region } from 'elise-graphics/lib/core/region';
 
 @Component({
     selector: 'app-elise-design',

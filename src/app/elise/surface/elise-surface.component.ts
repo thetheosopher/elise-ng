@@ -1,11 +1,11 @@
 import { Component, Input, Output, EventEmitter, AfterViewInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { Surface } from './surface';
-import { Model } from '../core/model';
-import { SurfaceViewController } from './surface-view-controller';
-import { PointEventParameters } from '../core/point-event-parameters';
-import { ElementBase } from '../elements/element-base';
-import { TimerParameters } from '../core/timer-parameters';
-import { MouseEventArgs } from '../core/mouse-event-args';
+import { Surface } from 'elise-graphics/lib/surface/surface';
+import { Model } from 'elise-graphics/lib/core/model';
+import { SurfaceViewController } from 'elise-graphics/lib/surface/surface-view-controller';
+import { PointEventParameters } from 'elise-graphics/lib/core/point-event-parameters';
+import { ElementBase } from 'elise-graphics/lib/elements/element-base';
+import { TimerParameters } from 'elise-graphics/lib/core/timer-parameters';
+import { MouseEventArgs } from 'elise-graphics/lib/core/mouse-event-args';
 
 @Component({
     selector: 'app-elise-surface',

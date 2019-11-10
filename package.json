@@ -23,7 +23,8 @@
     "core-js": "^2.6.10",
     "rxjs": "^6.5.3",
     "tslib": "^1.10.0",
-    "zone.js": "~0.8.29"
+    "zone.js": "~0.8.29",
+    "elise-graphics": "https://github.com/thetheosopher/elise-graphics.git#9801c371d36f6b96450bc8df81bc1d46c2c23713"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.13.9",

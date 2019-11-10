@@ -1,12 +1,14 @@
 import { Component, OnInit, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
-import { Model } from '../../elise/core/model';
-import { LineElement } from '../../elise/elements/line-element';
-import { RectangleElement } from '../../elise/elements/rectangle-element';
-import { EllipseElement } from '../../elise/elements/ellipse-element';
+
+import { Model } from 'elise-graphics/lib/core/model';
+import { LineElement } from 'elise-graphics/lib/elements/line-element';
+import { RectangleElement } from 'elise-graphics/lib/elements/rectangle-element';
+import { EllipseElement } from 'elise-graphics/lib/elements/ellipse-element';
+import { PointEventParameters } from 'elise-graphics/lib/core/point-event-parameters';
+import { ViewController } from 'elise-graphics/lib/view/view-controller';
+import { ElementBase } from 'elise-graphics/lib/elements/element-base';
+
 import { EliseViewComponent } from '../../elise/view/elise-view.component';
-import { PointEventParameters } from '../../elise/core/point-event-parameters';
-import { ViewController } from '../../elise/view/view-controller';
-import { ElementBase } from '../../elise/elements/element-base';
 
 @Component({
   selector: 'app-redgreenblue',

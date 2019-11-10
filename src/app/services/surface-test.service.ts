@@ -2,35 +2,37 @@ import { Injectable } from '@angular/core';
 import { SurfaceSample } from '../interfaces/surface-sample';
 import { Observable, of } from 'rxjs';
 import { ISurfaceViewer } from '../interfaces/surface-viewer';
-import { Surface } from '../elise/surface/surface';
-import { SurfaceButton } from '../elise/surface/surface-button';
-import { SurfaceViewController } from '../elise/surface/surface-view-controller';
-import { Text } from '../elise/surface/text';
-import { ImageLayer } from '../elise/surface/image-layer';
-import { HTML } from '../elise/surface/html';
-import { Video } from '../elise/surface/video';
-import { Animation } from '../elise/surface/animation';
-import { HiddenLayer } from '../elise/surface/hidden-layer';
-import { RadioStrip, RadioStripSelectionArgs, RadioStripOrientation } from '../elise/surface/radio-strip';
-import { Pane } from '../elise/surface/pane';
+import { Surface } from 'elise-graphics/lib/surface/surface';
+import { SurfaceButtonElement } from 'elise-graphics/lib/surface/surface-button-element';
+import { SurfaceViewController } from 'elise-graphics/lib/surface/surface-view-controller';
+import { SurfaceTextElement } from 'elise-graphics/lib/surface/surface-text-element';
+import { SurfaceImageLayer } from 'elise-graphics/lib/surface/surface-image-layer';
+import { SurfaceHtmlLayer } from 'elise-graphics/lib/surface/surface-html-layer';
+import { SurfaceVideoLayer } from 'elise-graphics/lib/surface/surface-video-layer';
+import { SurfaceAnimationLayer } from 'elise-graphics/lib/surface/surface-animation-layer';
+import { SurfaceHiddenLayer } from 'elise-graphics/lib/surface/surface-hidden-layer';
+import { SurfaceRadioStrip } from 'elise-graphics/lib/surface/surface-radio-strip';
+import { SurfaceRadioStripSelectionArgs } from 'elise-graphics/lib/surface/surface-radio-strip-selection-args';
+import { RadioStripOrientation } from 'elise-graphics/lib/surface/surface-radio-strip';
+import { SurfacePane } from 'elise-graphics/lib/surface/surface-pane';
 import { loremipsum } from './loremipsum';
 import { Button } from 'protractor';
 
 function multiElementSurface1() {
     const surface = new Surface(480, 360);
-    const v1 = Video.create('v1', 0, 0, 480, 360, 'assets/player/video/water-480.mp4').addTo(surface);
+    const v1 = SurfaceVideoLayer.create('v1', 0, 0, 480, 360, 'assets/player/video/water-480.mp4').addTo(surface);
     v1.autoPlay = true;
     v1.loop = true;
     v1.nativeControls = false;
-    ImageLayer.create('img1', 260, 10, 200, 200, 'assets/player/images/test/animated-spiral.gif', null).addTo(surface);
-    HTML.create('h2', 0, 0, 480, 360, 'assets/player/html/html2/default.htm').addTo(surface);
+    SurfaceImageLayer.create('img1', 260, 10, 200, 200, 'assets/player/images/test/animated-spiral.gif', null).addTo(surface);
+    SurfaceHtmlLayer.create('h2', 0, 0, 480, 360, 'assets/player/html/html2/default.htm').addTo(surface);
     return surface;
 }
 
 function simpleSurface1(backgroundColor: string, foregroundColor: string, clickHandler: () => void ) {
     const surface = new Surface(480, 360);
     surface.backgroundColor = backgroundColor;
-    const t = Text.create('t1', 0, 0, 480, 360, 'Click Me', function(text: Text) {
+    const t = SurfaceTextElement.create('t1', 0, 0, 480, 360, 'Click Me', function(text: SurfaceTextElement) {
         if(clickHandler) {
             clickHandler();
         }
@@ -62,17 +64,17 @@ const tests: SurfaceSample[] = [
             surface.selectedImageSource = ':assets/player/page2/selected.png';
             surface.highlightedImageSource = ':assets/player/page2/highlighted.png';
             surface.disabledImageSource = ':assets/player/page2/disabled.png';
-            const buttonClicked = function(button: SurfaceButton) {
+            const buttonClicked = function(button: SurfaceButtonElement) {
                 surfaceViewer.log(`Button ${button.id} pressed`);
                 if(button.id === 'b3') {
-                    const b = button.surface.elementWithId('b4') as SurfaceButton;
+                    const b = button.surface.elementWithId('b4') as SurfaceButtonElement;
                     b.setEnabled(!b.isEnabled);
                 }
             };
-            SurfaceButton.create('b1', 27, 20, 168, 62, buttonClicked).addTo(surface);
-            SurfaceButton.create('b2', 27, 93, 168, 62, buttonClicked).addTo(surface);
-            SurfaceButton.create('b3', 27, 164, 168, 62, buttonClicked).addTo(surface);
-            SurfaceButton.create('b4', 27, 235, 168, 62, buttonClicked).addTo(surface);
+            SurfaceButtonElement.create('b1', 27, 20, 168, 62, buttonClicked).addTo(surface);
+            SurfaceButtonElement.create('b2', 27, 93, 168, 62, buttonClicked).addTo(surface);
+            SurfaceButtonElement.create('b3', 27, 164, 168, 62, buttonClicked).addTo(surface);
+            SurfaceButtonElement.create('b4', 27, 235, 168, 62, buttonClicked).addTo(surface);
             surfaceViewer.surface = surface;
         }
     },
@@ -86,13 +88,13 @@ const tests: SurfaceSample[] = [
             surface.selectedImageSource = ':assets/player/page3/selected.png';
             surface.highlightedImageSource = ':assets/player/page3/highlighted.png';
             surface.disabledImageSource = ':assets/player/page3/disabled.png';
-            const buttonClicked = function(button: SurfaceButton) {
+            const buttonClicked = function(button: SurfaceButtonElement) {
                 surfaceViewer.log(`Button ${button.id} pressed`);
             };
-            SurfaceButton.createRadioButton('g1', 'b1', 22, 22, 220, 56, buttonClicked).addTo(surface);
-            SurfaceButton.createRadioButton('g1', 'b2', 22, 93, 220, 56, buttonClicked).addTo(surface);
-            SurfaceButton.createRadioButton('g1', 'b3', 22, 165, 220, 56, buttonClicked).addTo(surface);
-            SurfaceButton.createRadioButton('g1', 'b4', 17, 238, 220, 56, buttonClicked).addTo(surface);
+            SurfaceButtonElement.createRadioButton('g1', 'b1', 22, 22, 220, 56, buttonClicked).addTo(surface);
+            SurfaceButtonElement.createRadioButton('g1', 'b2', 22, 93, 220, 56, buttonClicked).addTo(surface);
+            SurfaceButtonElement.createRadioButton('g1', 'b3', 22, 165, 220, 56, buttonClicked).addTo(surface);
+            SurfaceButtonElement.createRadioButton('g1', 'b4', 17, 238, 220, 56, buttonClicked).addTo(surface);
             surfaceViewer.surface = surface;
         }
     },
@@ -106,13 +108,13 @@ const tests: SurfaceSample[] = [
             surface.selectedImageSource = ':assets/player/page4/selected.png';
             surface.highlightedImageSource = ':assets/player/page4/highlighted.png';
             surface.disabledImageSource = ':assets/player/page4/disabled.png';
-            const buttonClicked = function(button: SurfaceButton) {
+            const buttonClicked = function(button: SurfaceButtonElement) {
                 surfaceViewer.log(`Checkbox ${button.id} clicked. Now ${button.isSelected ? 'checked' : 'unchecked' }`);
             };
-            SurfaceButton.createCheckbox('b1', 22, 22, 220, 56, buttonClicked).addTo(surface);
-            SurfaceButton.createCheckbox('b2', 22, 93, 220, 56, buttonClicked).addTo(surface);
-            SurfaceButton.createCheckbox('b3', 22, 165, 220, 56, buttonClicked).addTo(surface);
-            SurfaceButton.createCheckbox('b4', 17, 238, 220, 56, buttonClicked).addTo(surface);
+            SurfaceButtonElement.createCheckbox('b1', 22, 22, 220, 56, buttonClicked).addTo(surface);
+            SurfaceButtonElement.createCheckbox('b2', 22, 93, 220, 56, buttonClicked).addTo(surface);
+            SurfaceButtonElement.createCheckbox('b3', 22, 165, 220, 56, buttonClicked).addTo(surface);
+            SurfaceButtonElement.createCheckbox('b4', 17, 238, 220, 56, buttonClicked).addTo(surface);
             surfaceViewer.surface = surface;
         }
     },
@@ -123,10 +125,10 @@ const tests: SurfaceSample[] = [
         configure: (surfaceViewer) => {
             const surface = new Surface(480, 320);
             surface.backgroundColor = '#f2f2f2';
-            const textClicked = function(text: Text) {
+            const textClicked = function(text: SurfaceTextElement) {
                 surfaceViewer.log('Text element clicked');
             };
-            const t1 = Text.create('t1', 20, 20, 440, 280, loremipsum, textClicked).addTo(surface);
+            const t1 = SurfaceTextElement.create('t1', 20, 20, 440, 280, loremipsum, textClicked).addTo(surface);
             t1.typeFace = 'Poiret One';
             t1.typeSize = 24;
             t1.color = 'Black';
@@ -140,11 +142,13 @@ const tests: SurfaceSample[] = [
         configure: (surfaceViewer) => {
             const surface = new Surface(480, 320);
             surface.backgroundColor = '#f2f2f2';
-            const imageClicked = function(image: ImageLayer) {
+            const imageClicked = function(image: SurfaceImageLayer) {
                 surfaceViewer.log(`Image ${image.id} clicked`);
             };
-            ImageLayer.create('img1', 20, 60, 200, 200, 'assets/player/images/test/animated-spiral.gif', imageClicked).addTo(surface);
-            ImageLayer.create('img2', 260, 60, 200, 200, 'assets/player/images/test/snowflake.gif', imageClicked).addTo(surface);
+            SurfaceImageLayer.create('img1', 20, 60, 200, 200,
+                'assets/player/images/test/animated-spiral.gif', imageClicked).addTo(surface);
+            SurfaceImageLayer.create('img2', 260, 60, 200, 200,
+                'assets/player/images/test/snowflake.gif', imageClicked).addTo(surface);
             surfaceViewer.surface = surface;
         }
     },
@@ -155,7 +159,7 @@ const tests: SurfaceSample[] = [
         configure: (surfaceViewer) => {
             const surface = new Surface(480, 360);
             surface.backgroundColor = '#f2f2f2';
-            HTML.create('h1', 0, 0, 480, 360, 'assets/player/html/html2/default.htm').addTo(surface);
+            SurfaceHtmlLayer.create('h1', 0, 0, 480, 360, 'assets/player/html/html2/default.htm').addTo(surface);
             surfaceViewer.surface = surface;
         }
     },
@@ -166,7 +170,7 @@ const tests: SurfaceSample[] = [
         configure: (surfaceViewer) => {
             const surface = new Surface(480, 320);
             surface.backgroundColor = '#f2f2f2';
-            const v1 = Video.create('v1', 0, 0, 480, 320, 'assets/player/video/water.mp4').addTo(surface);
+            const v1 = SurfaceVideoLayer.create('v1', 0, 0, 480, 320, 'assets/player/video/water.mp4').addTo(surface);
             v1.autoPlay = true;
             v1.loop = true;
             v1.nativeControls = false;
@@ -193,19 +197,20 @@ const tests: SurfaceSample[] = [
                 'radar'
             ];
 
-            const animationClicked = function(anim: Animation) {
+            const animationClicked = function(anim: SurfaceAnimationLayer) {
                 surfaceViewer.log(`Animation ${anim.id} pressed.`);
                 anim.pause();
             };
 
-            const animationFrameAdvance = function(anim: Animation) {
+            const animationFrameAdvance = function(anim: SurfaceAnimationLayer) {
                 surfaceViewer.log(`Animation ${anim.id} advanced to frame ${anim.frameIndex}.`);
             };
 
-            const animation = Animation.create('ani1', 0, 0, 400, 300, true,
+            const animation = SurfaceAnimationLayer.create('ani1', 0, 0, 400, 300, true,
                 animationClicked, 0, animationFrameAdvance).addTo(surface);
+
             for (let i = 0; i < transitions.length; i++) {
-                animation.addFrame(null, ':/assets/test/transitions/400x300/' + transitions[i] + '.jpg',
+                animation.addFrame(null, ':assets/test/transitions/400x300/' + transitions[i] + '.jpg',
                     0, 0, 400, 300, 0.5, transitions[i], 1.0, false);
             }
 
@@ -219,10 +224,10 @@ const tests: SurfaceSample[] = [
         configure: (surfaceViewer) => {
             const surface = new Surface(400, 300);
             surface.backgroundColor = '#f2f2f2';
-            const hiddenClicked = function(hidden: HiddenLayer) {
+            const hiddenClicked = function(hidden: SurfaceHiddenLayer) {
                 surfaceViewer.log(`Hidden layer ${hidden.id} clicked.`);
             };
-            HiddenLayer.create('hidden1', 0, 0, 200, 300, hiddenClicked).addTo(surface);
+            SurfaceHiddenLayer.create('hidden1', 0, 0, 200, 300, hiddenClicked).addTo(surface);
             surfaceViewer.surface = surface;
         }
     },
@@ -237,11 +242,11 @@ const tests: SurfaceSample[] = [
             surface.selectedImageSource = ':assets/player/page11/selected.png';
             surface.highlightedImageSource = ':assets/player/page11/highlighted.png';
 
-            const radioStripSelected = function(args: RadioStripSelectionArgs) {
+            const radioStripSelected = function(args: SurfaceRadioStripSelectionArgs) {
                 surfaceViewer.log(`Item selected: ${args.item.id}`);
             };
 
-            const rs = RadioStrip.create('rs1', 34, 249, 411, 34, 34, 249, 101, 34, radioStripSelected).addTo(surface);
+            const rs = SurfaceRadioStrip.create('rs1', 34, 249, 411, 34, 34, 249, 101, 34, radioStripSelected).addTo(surface);
             rs.normalColor = 'White';
             rs.selectedColor = 'Yellow';
             rs.highlightedColor = 'Black';
@@ -250,18 +255,18 @@ const tests: SurfaceSample[] = [
             for(let i = 1; i <= 25; i++) {
                 rs.addItem('' + i, 'Item ' + i);
             }
-            const t1 = Text.create('t1', 189, 40, 193, 33, 'Start', function(text: Text) {
+            const t1 = SurfaceTextElement.create('t1', 189, 40, 193, 33, 'Start', function(text: SurfaceTextElement) {
                 rs.moveStart();
             }).addTo(surface);
             t1.color = 'White';
             t1.typeSize = 16;
-            const t2 = Text.create('t2', 189, 80, 193, 33, 'End', function(text: Text) {
+            const t2 = SurfaceTextElement.create('t2', 189, 80, 193, 33, 'End', function(text: SurfaceTextElement) {
                 rs.moveEnd();
             }).addTo(surface);
-            const t3 = Text.create('t3', 189, 120, 193, 33, 'Back', function(text: Text) {
+            const t3 = SurfaceTextElement.create('t3', 189, 120, 193, 33, 'Back', function(text: SurfaceTextElement) {
                 rs.moveBack();
             }).addTo(surface);
-            const t4 = Text.create('t4', 189, 160, 193, 33, 'Forward', function(text: Text) {
+            const t4 = SurfaceTextElement.create('t4', 189, 160, 193, 33, 'Forward', function(text: SurfaceTextElement) {
                 rs.moveForward();
             }).addTo(surface);
             t4.color = t3.color = t2.color = t1.color;
@@ -279,11 +284,11 @@ const tests: SurfaceSample[] = [
             surface.normalImageSource = ':assets/player/page12/normal.png';
             surface.selectedImageSource = ':assets/player/page12/selected.png';
             surface.highlightedImageSource = ':assets/player/page12/highlighted.png';
-            const radioStripSelected = function(args: RadioStripSelectionArgs) {
+            const radioStripSelected = function(args: SurfaceRadioStripSelectionArgs) {
                 surfaceViewer.log(`Item selected: ${args.item.id}`);
             };
 
-            const rs = RadioStrip.create('rs1', 33, 40, 132, 244, 33, 40, 132, 33, radioStripSelected).addTo(surface);
+            const rs = SurfaceRadioStrip.create('rs1', 33, 40, 132, 244, 33, 40, 132, 33, radioStripSelected).addTo(surface);
             rs.orientation = RadioStripOrientation.Vertical;
             rs.normalColor = 'White';
             rs.selectedColor = 'Yellow';
@@ -293,18 +298,18 @@ const tests: SurfaceSample[] = [
             for(let i = 1; i <= 25; i++) {
                 rs.addItem('' + i, 'Item ' + i);
             }
-            const t1 = Text.create('t1', 189, 40, 193, 33, 'Start', function(text: Text) {
+            const t1 = SurfaceTextElement.create('t1', 189, 40, 193, 33, 'Start', function(text: SurfaceTextElement) {
                 rs.moveStart();
             }).addTo(surface);
             t1.color = 'White';
             t1.typeSize = 16;
-            const t2 = Text.create('t2', 189, 80, 193, 33, 'End', function(text: Text) {
+            const t2 = SurfaceTextElement.create('t2', 189, 80, 193, 33, 'End', function(text: SurfaceTextElement) {
                 rs.moveEnd();
             }).addTo(surface);
-            const t3 = Text.create('t3', 189, 120, 193, 33, 'Back', function(text: Text) {
+            const t3 = SurfaceTextElement.create('t3', 189, 120, 193, 33, 'Back', function(text: SurfaceTextElement) {
                 rs.moveBack();
             }).addTo(surface);
-            const t4 = Text.create('t4', 189, 160, 193, 33, 'Forward', function(text: Text) {
+            const t4 = SurfaceTextElement.create('t4', 189, 160, 193, 33, 'Forward', function(text: SurfaceTextElement) {
                 rs.moveForward();
             }).addTo(surface);
             t4.color = t3.color = t2.color = t1.color;
@@ -323,7 +328,7 @@ const tests: SurfaceSample[] = [
             surface.normalImageSource = ':assets/player/images/frame1.png';
             const s2 = new Surface(640, 480);
             s2.normalImageSource = ':assets/player/page1/normal.jpg';
-            const p1 = Pane.create('p1', 80, 62, 480, 360, s2).addTo(surface);
+            const p1 = SurfacePane.create('p1', 80, 62, 480, 360, s2).addTo(surface);
             surfaceViewer.surface = surface;
         }
     },
@@ -439,7 +444,7 @@ const tests: SurfaceSample[] = [
         configure: (surfaceViewer) => {
 
             let lastColor = 'Red';
-            let pane: Pane;
+            let pane: SurfacePane;
 
             const surface = new Surface(640, 480);
             surface.normalImageSource = ':assets/player/images/frame1.png';
@@ -453,7 +458,7 @@ const tests: SurfaceSample[] = [
                     lastColor = 'Red';
                 }
                 paneSurface2.backgroundColor = lastColor;
-                const t2 = Text.create('t1', 0, 0, 480, 360, 'Click Me', function(text: Text) {
+                const t2 = SurfaceTextElement.create('t1', 0, 0, 480, 360, 'Click Me', function(text: SurfaceTextElement) {
                     swapSurface();
                 }).addTo(paneSurface2);
                 t2.textAlignment = 'Center,Middle';
@@ -465,12 +470,12 @@ const tests: SurfaceSample[] = [
 
             const paneSurface = new Surface(480, 360);
             paneSurface.backgroundColor = lastColor;
-            const t = Text.create('t1', 0, 0, 480, 360, 'Click Me', function(text: Text) {
+            const t = SurfaceTextElement.create('t1', 0, 0, 480, 360, 'Click Me', function(text: SurfaceTextElement) {
                 swapSurface();
             }).addTo(paneSurface);
             t.textAlignment = 'Center,Middle';
             t.typeSize = 48;
-            pane = Pane.create('p1', 80, 62, 480, 360, paneSurface).addTo(surface);
+            pane = SurfacePane.create('p1', 80, 62, 480, 360, paneSurface).addTo(surface);
 
             surfaceViewer.surface = surface;
         }
@@ -481,7 +486,7 @@ const tests: SurfaceSample[] = [
         description: 'Tests surface transitions.',
         configure: (surfaceViewer: ISurfaceViewer) => {
             const surface = new Surface(640, 480);
-            let pane: Pane;
+            let pane: SurfacePane;
             let tick = false;
 
             function swapSurface() {
@@ -509,11 +514,11 @@ const tests: SurfaceSample[] = [
             surface.backgroundColor = 'White';
             surface.normalImageSource = ':assets/player/images/frame2-normal.png';
             surface.selectedImageSource = ':assets/player/images/frame2-down.png';
-            SurfaceButton.create('b1', 250, 423, 158, 46, buttonClicked).addTo(surface);
+            SurfaceButtonElement.create('b1', 250, 423, 158, 46, buttonClicked).addTo(surface);
             const paneSurface = simpleSurface1('Green', 'Black', function() {
                 swapSurface();
             });
-            pane = Pane.create('p1', 81, 41, 480, 360, paneSurface).addTo(surface);
+            pane = SurfacePane.create('p1', 81, 41, 480, 360, paneSurface).addTo(surface);
 
             surfaceViewer.surface = surface;
             surfaceViewer.transitionDisplay = true;
