@@ -17,7 +17,7 @@ export class SketchUrlComponent implements OnInit {
     private _timerDelay = 100;
     private _strokeBatchSize = 16;
     private _fillBatchSize = 4;
-    private _strokeOpacity = 48;
+    private _strokeOpacity = 16;
     private _sketchColor = true;
     private _sketchFill = 'White';
     private _repeat = true;
