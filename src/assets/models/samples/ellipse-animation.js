@@ -30,12 +30,12 @@ model.controllerAttached.add(function(model, controller) {
     commandHandler.attachController(controller);
     commandHandler.addHandler('tick', function(controller, element, command, trigger, parameters) {
         var delta = parameters.tickDelta;
-        var centerX = element._center._x;
-        var centerY = element._center._y;
+        var centerX = element.getCenter().x;
+        var centerY = element.getCenter().y;
         var radiusX = element.radiusX;
         var radiusY = element.radiusY;
-        var width = controller.model._size._width;
-        var height = controller.model._size._height;
+        var width = controller.model.getSize().width;
+        var height = controller.model.getSize().height;
         var over;
 
         centerX += element.dx * delta;

@@ -24,7 +24,7 @@
     "rxjs": "^6.5.3",
     "tslib": "^1.10.0",
     "zone.js": "~0.8.29",
-    "elise-graphics": "https://github.com/thetheosopher/elise-graphics.git#9801c371d36f6b96450bc8df81bc1d46c2c23713"
+    "elise-graphics": "https://github.com/thetheosopher/elise-graphics.git#ff1cfaccaf25ad9c3a04e751bd0787e0e4b07743"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.13.9",
@@ -39,7 +39,7 @@
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "^4.4.1",
     "karma-chrome-launcher": "~2.2.0",
-    "karma-coverage-istanbul-reporter": "^2.0.6",
+    "karma-coverage-istanbul-reporter": "^2.1.0",
     "karma-jasmine": "~1.1.2",
     "karma-jasmine-html-reporter": "^0.2.2",
     "protractor": "^5.4.2",
