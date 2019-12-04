@@ -17,7 +17,7 @@ import { EliseViewComponent } from '../../elise/view/elise-view.component';
 })
 export class RedGreenBlueComponent implements OnInit, AfterViewInit {
 
-    @ViewChild('elise', { read: ElementRef }) eliseViewElementRef: ElementRef;
+    @ViewChild('elise', { read: ElementRef, static: true }) eliseViewElementRef: ElementRef;
 
     model: Model;
 

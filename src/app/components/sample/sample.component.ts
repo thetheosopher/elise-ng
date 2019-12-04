@@ -21,7 +21,7 @@ export class SampleComponent implements OnInit {
     errorMessage: string;
     modelType = 'samples';
 
-    @ViewChild('elise', { read: ElementRef })
+    @ViewChild('elise', { read: ElementRef, static: true })
     elise: ElementRef;
 
     constructor(private modelService: ModelService, private route: ActivatedRoute, private location: Location) {

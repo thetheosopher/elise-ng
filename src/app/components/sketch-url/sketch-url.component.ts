@@ -27,7 +27,7 @@ export class SketchUrlComponent implements OnInit {
     errorMessage: string;
     @Output() sketchDone = new EventEmitter<boolean>();
 
-    @ViewChild('elise', { read: ElementRef })
+    @ViewChild('elise', { read: ElementRef, static: true })
     elise: ElementRef;
 
     @Input()

@@ -11,7 +11,7 @@ import { Region } from 'elise-graphics/lib/core/region';
     template: '<div class="elise-design" #eref></div>'
 })
 export class EliseDesignComponent implements AfterViewInit, OnDestroy {
-    @ViewChild('eref', { read: ElementRef })
+    @ViewChild('eref', { read: ElementRef, static: true })
     eref: ElementRef;
 
     @Output() modelUpdated = new EventEmitter<Model>();

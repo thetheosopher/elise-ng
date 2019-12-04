@@ -20,7 +20,7 @@ export class PrimitiveComponent implements OnInit {
     errorMessage: string;
     modelType = 'primitives';
 
-    @ViewChild('elise', { read: ElementRef })
+    @ViewChild('elise', { read: ElementRef, static: true })
     elise: ElementRef;
 
     constructor(private modelService: ModelService, private route: ActivatedRoute, private location: Location) {

@@ -11,7 +11,7 @@ import { MouseEventArgs } from 'elise-graphics/lib/core/mouse-event-args';
     template: '<div class="elise-view" #eref></div>'
 })
 export class EliseViewComponent implements AfterViewInit, OnDestroy {
-    @ViewChild('eref', { read: ElementRef })
+    @ViewChild('eref', { read: ElementRef, static: true })
     eref: ElementRef;
 
     @Output() modelUpdated = new EventEmitter<Model>();

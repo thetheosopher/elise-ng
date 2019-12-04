@@ -19,7 +19,7 @@ export class SketchComponent implements OnInit {
     errorMessage: string;
     modelType = 'sketches';
 
-    @ViewChild('elise', { read: ElementRef })
+    @ViewChild('elise', { read: ElementRef, static: true })
     elise: ElementRef;
 
     constructor(private modelService: ModelService, private route: ActivatedRoute, private location: Location) {

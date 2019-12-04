@@ -445,7 +445,7 @@ const tests: ViewSample[] = [
         description: 'Tests image element rendering with full and partial opacity.',
         configure: (viewer) => {
             const model = defaultModel();
-            elise.bitmapResource('bulb', '/assets/models/primitives/images/bulb.png').addTo(model);
+            elise.bitmapResource('bulb', ':./assets/models/primitives/images/bulb.png').addTo(model);
             elise.image('bulb', 10, 10, 128, 128).setInteractive(true).addTo(model);
             elise.image('bulb', 138, 138, 64, 64).setOpacity(0.6).setInteractive(true).addTo(model);
             elise.image('bulb', 234, 234, 32, 32).setOpacity(0.3).setInteractive(true).addTo(model);
@@ -796,7 +796,7 @@ const tests: ViewSample[] = [
         configure: (viewer) => {
             const model = defaultModel();
             viewer.background = 'grid';
-            elise.bitmapResource('t1', '/assets/test/images/texture1.png').addTo(model);
+            elise.bitmapResource('t1', ':./assets/test/images/texture1.png').addTo(model);
             elise.rectangle(10, 20, 150, 150).setFill('image(0.5;t1)').setStroke('Black').addTo(model);
             elise.ellipse(240, 95, 75, 75).setFill('image(0.75;t1)').setStroke('Black').addTo(model);
             const radius = 72;
@@ -819,7 +819,7 @@ const tests: ViewSample[] = [
         configure: (viewer) => {
             const model = defaultModel();
             viewer.background = 'grid';
-            elise.bitmapResource('t1', '/assets/test/images/texture1.png').addTo(model);
+            elise.bitmapResource('t1', ':./assets/test/images/texture1.png').addTo(model);
             const p = elise.path();
             p.commands = yinyang;
             p.setFill('image(0.5;t1)').setStroke('Black').scale(1, 1).translate(78, 10).addTo(model);
@@ -840,7 +840,7 @@ const tests: ViewSample[] = [
         description: 'Tests scaled image fill of rectangle, ellipse and polygon shapes.',
         configure: (viewer) => {
             const model = defaultModel();
-            elise.bitmapResource('t1', '/assets/test/images/texture2.jpg').addTo(model);
+            elise.bitmapResource('t1', ':./assets/test/images/texture2.jpg').addTo(model);
             const fill = 'image(t1)';
             elise.rectangle(10, 20, 150, 150).setFill(fill).setFillScale(0.75).addTo(model);
             elise.ellipse(240, 95, 75, 75).setFill(fill).setFillScale(0.5).addTo(model);
@@ -961,7 +961,7 @@ const tests: ViewSample[] = [
             const stroke = '0.5;DarkGreen';
             m1.setFill('0.5;Green');
             m1.basePath = model.basePath;
-            const br = elise.bitmapResource('bulb', '/assets/test/images/bulb.png').addTo(m1);
+            const br = elise.bitmapResource('bulb', ':./assets/test/images/bulb.png').addTo(m1);
             elise.image(br, 0, 0, 32, 32).addTo(m1);
             elise.ellipse(16, 16, 16, 16).setFill('0.3;White').addTo(m1);
             elise.modelResource('m1', m1).addTo(model);
@@ -992,7 +992,7 @@ const tests: ViewSample[] = [
             const m1 = elise.model(32, 32);
             m1.setFill('0.5;Green');
             m1.basePath = model.basePath;
-            const br = elise.bitmapResource('bulb', '/assets/test/images/bulb.png').addTo(m1);
+            const br = elise.bitmapResource('bulb', ':./assets/test/images/bulb.png').addTo(m1);
             elise.image(br, 0, 0, 32, 32).addTo(m1);
             elise.ellipse(16, 16, 16, 16).setFill('0.3;White').addTo(m1);
             elise.modelResource('m1', m1).addTo(model);
@@ -1891,7 +1891,7 @@ const tests: ViewSample[] = [
             const y = 40;
             const width = 120;
             const height = 120;
-            const br = elise.bitmapResource('bulb', '/assets/test/images/bulb.png').addTo(model);
+            const br = elise.bitmapResource('bulb', ':./assets/test/images/bulb.png').addTo(model);
             elise.image(br, x, y, width, height).addTo(model);
             elise.image(br, x, y, width, height).setOpacity(0.5).setTransform('translate(120,120)').addTo(model);
             viewer.model = model;
@@ -1907,7 +1907,7 @@ const tests: ViewSample[] = [
             const y = 70;
             const width = 120;
             const height = 120;
-            const br = elise.bitmapResource('bulb', '/assets/test/images/bulb.png').addTo(model);
+            const br = elise.bitmapResource('bulb', ':./assets/test/images/bulb.png').addTo(model);
             elise.image(br, x, y, width, height).addTo(model);
             elise.image(br, x, y, width, height).setOpacity(0.5).setTransform('scale(2)').addTo(model);
             elise.image(br, x, y, width, height).setOpacity(0.5).setTransform('scale(2(60,60))').addTo(model);
@@ -1924,7 +1924,7 @@ const tests: ViewSample[] = [
             const y = 60;
             const width = 180;
             const height = 180;
-            const br = elise.bitmapResource('bulb', '/assets/test/images/bulb.png').addTo(model);
+            const br = elise.bitmapResource('bulb', ':./assets/test/images/bulb.png').addTo(model);
             elise.image(br, x, y, width, height).addTo(model);
             elise.image(br, x, y, width, height).setOpacity(0.5).setTransform('rotate(45)').addTo(model);
             elise.image(br, x, y, width, height).setOpacity(0.5).setTransform('rotate(45(90,90))').addTo(model);
@@ -1941,7 +1941,7 @@ const tests: ViewSample[] = [
             const y = 40;
             const width = 180;
             const height = 180;
-            const br = elise.bitmapResource('bulb', '/assets/test/images/bulb.png').addTo(model);
+            const br = elise.bitmapResource('bulb', ':./assets/test/images/bulb.png').addTo(model);
             elise.image(br, x, y, width, height).addTo(model);
             elise.image(br, x, y, width, height).setOpacity(0.5).setTransform('skew(30,0)').addTo(model);
             elise.image(br, x, y, width, height).setOpacity(0.5).setTransform('skew(30,0(90,90))').addTo(model);
@@ -1958,7 +1958,7 @@ const tests: ViewSample[] = [
             const y = 40;
             const width = 180;
             const height = 180;
-            const br = elise.bitmapResource('bulb', '/assets/test/images/bulb.png').addTo(model);
+            const br = elise.bitmapResource('bulb', ':./assets/test/images/bulb.png').addTo(model);
             elise.image(br, x, y, width, height).addTo(model);
             elise.image(br, x, y, width, height).setOpacity(0.5).setTransform('skew(0,30)').addTo(model);
             elise.image(br, x, y, width, height).setOpacity(0.5).setTransform('skew(0,30(90,90))').addTo(model);
@@ -1975,7 +1975,7 @@ const tests: ViewSample[] = [
             const y = 80;
             const width = 120;
             const height = 120;
-            const br = elise.bitmapResource('bulb', '/assets/test/images/bulb.png').addTo(model);
+            const br = elise.bitmapResource('bulb', ':./assets/test/images/bulb.png').addTo(model);
             elise.image(br, x, y, width, height).addTo(model);
             elise.image(br, x, y, width, height).setOpacity(0.5).setTransform('matrix(-1,0,0,1,0,0)').addTo(model);
             elise.image(br, x, y, width, height).setOpacity(0.5).setTransform('matrix(-1,0,0,1,0,0(60,60))').addTo(model);
@@ -2212,7 +2212,7 @@ const tests: ViewSample[] = [
             const m1 = elise.model(32, 32).setStroke('0.5;Blue,3');
             m1.basePath = model.basePath;
             elise.ellipse(8, 8, 8, 8).setFill('Gold').addTo(m1);
-            const br = elise.bitmapResource('bulb', '/assets/test/images/bulb.png').addTo(m1);
+            const br = elise.bitmapResource('bulb', ':./assets/test/images/bulb.png').addTo(m1);
             elise.image(br, 16, 16, 16, 16).addTo(m1);
             elise.modelResource('m1', m1).addTo(model);
             elise.innerModel('m1', 32, 32, 128, 128).addTo(model);
@@ -2229,7 +2229,7 @@ const tests: ViewSample[] = [
             const m1 = elise.model(32, 32).setStroke('0.5;Blue,3');
             m1.basePath = model.basePath;
             elise.ellipse(8, 8, 8, 8).setFill('Gold').addTo(m1);
-            const br = elise.bitmapResource('bulb', '/assets/test/images/bulb.png').addTo(m1);
+            const br = elise.bitmapResource('bulb', ':./assets/test/images/bulb.png').addTo(m1);
             elise.image(br, 16, 16, 16, 16).addTo(m1);
             elise.modelResource('m1', m1).addTo(model);
             elise.innerModel('m1', 120, 60, 160, 160).addTo(model);
@@ -2247,7 +2247,7 @@ const tests: ViewSample[] = [
             const m1 = elise.model(32, 32).setStroke('0.5;Blue,3');
             m1.basePath = model.basePath;
             elise.ellipse(8, 8, 8, 8).setFill('Gold').addTo(m1);
-            const br = elise.bitmapResource('bulb', '/assets/test/images/bulb.png').addTo(m1);
+            const br = elise.bitmapResource('bulb', ':./assets/test/images/bulb.png').addTo(m1);
             elise.image(br, 16, 16, 16, 16).addTo(m1);
             elise.modelResource('m1', m1).addTo(model);
             elise.innerModel('m1', 60, 60, 160, 160).addTo(model);
@@ -2265,7 +2265,7 @@ const tests: ViewSample[] = [
             const m1 = elise.model(32, 32).setStroke('0.5;Blue,3');
             m1.basePath = model.basePath;
             elise.ellipse(8, 8, 8, 8).setFill('Gold').addTo(m1);
-            const br = elise.bitmapResource('bulb', '/assets/test/images/bulb.png').addTo(m1);
+            const br = elise.bitmapResource('bulb', ':./assets/test/images/bulb.png').addTo(m1);
             elise.image(br, 16, 16, 16, 16).addTo(m1);
             elise.modelResource('m1', m1).addTo(model);
             elise.innerModel('m1', 60, 60, 160, 160).addTo(model);
@@ -2283,7 +2283,7 @@ const tests: ViewSample[] = [
             const m1 = elise.model(32, 32).setStroke('0.5;Blue,3');
             m1.basePath = model.basePath;
             elise.ellipse(8, 8, 8, 8).setFill('Gold').addTo(m1);
-            const br = elise.bitmapResource('bulb', '/assets/test/images/bulb.png').addTo(m1);
+            const br = elise.bitmapResource('bulb', ':./assets/test/images/bulb.png').addTo(m1);
             elise.image(br, 16, 16, 16, 16).addTo(m1);
             elise.modelResource('m1', m1).addTo(model);
             elise.innerModel('m1', 160, 80, 160, 160).addTo(model);

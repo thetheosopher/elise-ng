@@ -19,7 +19,7 @@ import { ViewEncapsulation } from '@angular/core';
     styleUrls: [ './elise-design-harness.component.scss' ]
 })
 export class EliseDesignHarnessComponent implements OnInit, ISampleDesigner {
-    @ViewChild('elise', { read: ElementRef })
+    @ViewChild('elise', { read: ElementRef, static: true })
     eliseViewElementRef: ElementRef;
 
     _model: Model;

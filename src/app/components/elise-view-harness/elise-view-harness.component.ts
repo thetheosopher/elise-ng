@@ -17,7 +17,7 @@ import { ISampleViewer } from '../../interfaces/sample-viewer';
     styleUrls: [ './elise-view-harness.component.scss' ]
 })
 export class EliseViewHarnessComponent implements OnInit, ISampleViewer {
-    @ViewChild('elise', { read: ElementRef })
+    @ViewChild('elise', { read: ElementRef, static: true })
     eliseViewElementRef: ElementRef;
 
     _model: Model;

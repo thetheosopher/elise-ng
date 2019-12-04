@@ -18,7 +18,7 @@ import { ISurfaceViewer } from '../../interfaces/surface-viewer';
 })
 export class EliseSurfaceHarnessComponent implements OnInit, ISurfaceViewer {
 
-    @ViewChild('elise', { read: ElementRef })
+    @ViewChild('elise', { read: ElementRef, static: true })
     eliseViewElementRef: ElementRef;
 
     _surface: Surface;
