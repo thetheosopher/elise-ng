@@ -168,7 +168,6 @@ export class EliseViewComponent implements AfterViewInit, OnDestroy {
         }
     }
 
-
     ngAfterViewInit(): void {
         this._hostDiv = this.eref.nativeElement as HTMLDivElement;
         this.onChange();
