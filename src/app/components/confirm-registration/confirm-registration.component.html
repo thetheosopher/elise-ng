@@ -1,0 +1,29 @@
+<div class="col-sm-4">
+    <h3>Confirm Registration</h3>
+    <form (ngSubmit)="onSubmit()" #confirmationForm="ngForm">
+        <div class="form-group">
+            <label for="username-confirm">User Name or Email</label>
+            <input type="text" id="username-confirm" name="username-confirm" #usernameConfirm="ngModel" class="form-control" required
+                [(ngModel)]="userRegistrationDTO.Name" />
+            <div [hidden]="usernameConfirm.valid || usernameConfirm.pristine" class="alert alert-danger">
+                User Name or Email is Required
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="code">Confirmation Code</label>
+            <input type="text" id="code" name="code" #code="ngModel" class="form-control" required
+                [(ngModel)]="userRegistrationDTO.Code" />
+            <div [hidden]="code.valid || code.pristine" class="alert alert-danger">
+                Confirmation Code is Required
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary" [disabled]="!confirmationForm.form.valid">
+            Confirm Registration
+            <span *ngIf="processing" class="spinner-border spinner-border-sm"></span>
+        </button>
+        <button class='btn btn-link' routerLink='/login'>Login</button>
+        <button class='btn btn-link' routerLink='/register'>Register</button>
+    </form>
+    <div *ngIf="successMessage" class="alert alert-success" style="margin-top: 8px; white-space: pre-line;">{{successMessage}}</div>
+    <div *ngIf="errorMessage" class="alert alert-danger" style="margin-top: 8px;">{{errorMessage}}</div>
+</div>

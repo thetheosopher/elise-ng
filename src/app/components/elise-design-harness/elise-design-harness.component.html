@@ -1,32 +1,46 @@
-<h1>{{title}}</h1>
-<div class="description">{{description}}</div>
-<label for="scale">Scale:</label>
-<select id="scale" [(ngModel)]="scale">
-    <option [ngValue]="0.25">25%</option>
-    <option [ngValue]="0.5">50%</option>
-    <option [ngValue]="0.75">75%</option>
-    <option [ngValue]="1">100%</option>
-    <option [ngValue]="1.5">150%</option>
-    <option [ngValue]="2">200%</option>
-    <option [ngValue]="3">300%</option>
-    <option [ngValue]="4">400%</option>
-    <option [ngValue]="5">500%</option>
-</select>
-<select id="background" [(ngModel)]="background">
-    <option value="grid">Grid</option>
-    <option value="white">White</option>
-    <option value="black">Black</option>
-    <option value="gray">Gray</option>
-</select>
-<label>Select:</label>
-<input type="checkbox" [checked]="selectionEnabled" (change)="selectionEnabled = !selectionEnabled">
-<span *ngIf="mouseOverView">
-    <label class='position-label' for="xpos">X:</label>
-    <span id="xpos">{{viewMouseX}}</span>
-    <label class='position-label' for="ypos">Y:</label>
-    <span id="ypos">{{viewMouseY}}</span>
-</span>
-<div style="color: red;">{{errorMessage}}</div>
+<h3><a routerLink='/tests/design'>Design Tests</a>&nbsp;/&nbsp;{{title}}</h3>
+<div *ngIf='errorMessage' class='alert alert-danger'>
+    <strong>Error</strong> {{errorMessage}}
+</div>
+<div>{{description}}</div>
+<table>
+    <tr style="vertical-align: baseline;">
+        <td>
+            <label for="scale" style="margin-right: 4px;"><strong>Scale</strong></label>
+            <select id="scale" [(ngModel)]="scale">
+                <option [ngValue]="0.25">25%</option>
+                <option [ngValue]="0.5">50%</option>
+                <option [ngValue]="0.75">75%</option>
+                <option [ngValue]="1">100%</option>
+                <option [ngValue]="1.5">150%</option>
+                <option [ngValue]="2">200%</option>
+                <option [ngValue]="3">300%</option>
+                <option [ngValue]="4">400%</option>
+                <option [ngValue]="5">500%</option>
+            </select>
+        </td>
+        <td>
+            <select id="background" [(ngModel)]="background" style="margin-left: 4px;">
+                <option value="grid">Grid</option>
+                <option value="white">White</option>
+                <option value="black">Black</option>
+                <option value="gray">Gray</option>
+            </select>
+        </td>
+        <td>
+            <input type="checkbox" [checked]="selectionEnabled" (change)="selectionEnabled = !selectionEnabled" style="margin-left: 8px;">
+            <label style="margin-left: 4px; margin-right: 16px;" ><strong>Select Mode</strong></label>
+        </td>
+        <td *ngIf="mouseOverView" style="min-width: 60px;">
+            <label for="xpos"><strong>X:</strong></label>&nbsp;
+            <span id="xpos">{{viewMouseX}}</span>
+        </td>
+        <td *ngIf="mouseOverView" style="min-width: 60px;">
+            <label for="ypos"><strong>Y:</strong></label>&nbsp;
+            <span id="ypos">{{viewMouseY}}</span>
+        </td>
+    </tr>
+</table>
 <div [ngClass]='backgroundClass()'>
     <app-elise-design #elise [model]="model" [scale]="scale"
     [selectionEnabled]="selectionEnabled"
@@ -51,6 +65,5 @@
 </div>
 <div style='margin-top: 8px;' *ngIf='displayModel'>
     <label for='model-json'>Model</label>
-    <div class='code' id='model-json'>{{formattedJson}}</div>
+    <pre class='code' id='model-json'>{{formattedJson}}</pre>
 </div>
-<div>{{codeString}}</div>

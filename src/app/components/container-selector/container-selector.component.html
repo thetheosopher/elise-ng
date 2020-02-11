@@ -1,0 +1,41 @@
+<div style="vertical-align: baseline;">
+    <select class='custom-select custom-select-sm col-2' [disabled]='!isEnabled'>
+        <option *ngFor='let container of containers' value='{{container.ContainerID}}'>
+            {{container.Name}}
+        </option>
+    </select>
+    <button class="btn btn-basic btn-sm" data-toggle="modal" data-target="#newContainerModal">*</button>
+</div>
+
+<!-- New Container -->
+<div class="modal" id="newContainerModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">New Container</h4>
+                <button type="button" #closemodalbutton class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="containername">Container Name</label>
+                    <input type="text" id="containername" name="containername" #containername="ngModel"
+                        class="form-control" required [(ngModel)]="containerName" />
+                    <div [hidden]="containername.valid || containername.pristine" class="alert alert-danger">
+                        Container Name Is Required
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" (click)="createContainer()" >OK</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>

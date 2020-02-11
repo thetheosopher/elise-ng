@@ -1,0 +1,42 @@
+<div class="col-sm-4">
+    <div *ngIf="isLoggedIn===false">
+        <h3>Log In</h3>
+        <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+            <div class="form-group">
+                <label for="username">User Name or Email</label>
+                <input type="text" id="username" autocomplete="username" name="username" #name="ngModel"
+                    class="form-control" required [(ngModel)]="loginDTO.Name" />
+                <div [hidden]="name.valid || name.pristine" class="alert alert-danger">
+                    User Name is Required
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" autocomplete="current-password" id="password" name="password" #password="ngModel"
+                    class="form-control" required [(ngModel)]="loginDTO.Password" />
+                <div [hidden]="password.valid || password.pristine" class="alert alert-danger">
+                    Password is Required
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" [disabled]="!loginForm.form.valid || processing">
+                Log In
+                <span *ngIf="processing" class="spinner-border spinner-border-sm"></span>
+            </button>
+            <button class='btn btn-link' routerLink='/register'>Register</button>
+            <button class='btn btn-link' routerLink='/send-password-reset-code'>Reset Password</button>
+        </form>
+    </div>
+    <div *ngIf="isLoggedIn===true">
+        <h2>Account Info</h2>
+        <dl>
+            <dt>User Name</dt>
+            <dd class="text-info">{{loginDTO.Name}}</dd>
+            <dt>Friendly Name (Alias)</dt>
+            <dd class="text-info">{{loginDTO.Alias}}</dd>
+            <dt>Email</dt>
+            <dd class="text-info">{{loginDTO.Email}}</dd>
+        </dl>
+        <button class="btn btn-danger" (click)="onLogout()">Logout</button>
+    </div>
+    <div *ngIf="errorMessage" class="alert alert-danger" style="margin-top: 8px;">{{errorMessage}}</div>
+</div>

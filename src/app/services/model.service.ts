@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ModelInfo } from './model-info';
+import { map } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root'
@@ -16,6 +17,12 @@ export class ModelService {
     getModelDescription(type: string, id: string) {
         const url = `assets/models/${type}/${id}.html`;
         return this.http.get(url, { responseType: 'text' });
+    }
+
+    getModelInfo(type: string, id: string) {
+        return this.listModels(type).pipe(
+            map(models => models.filter(model => model.id === id)[0])
+          );
     }
 
     listModels(type: string) {

@@ -1,91 +1,91 @@
 [
     {
         "name": "Model",
-        "data": "model",
+        "id": "model",
         "description": "Drawing surface and resource container.",
         "displayModelJson": true
     },
     {
         "name": "Line",
-        "data": "line",
+        "id": "line",
         "description": "Line segment defined by two points.",
         "displayModelJson": true
     },
     {
         "name": "Rectangle",
-        "data": "rectangle",
+        "id": "rectangle",
         "description": "Rectangular area defined by a location and size.",
         "displayModelJson": true
     },
     {
         "name": "Ellipse",
-        "data": "ellipse",
+        "id": "ellipse",
         "description": "Elliptical area defined by a center and size.",
         "displayModelJson": true
     },
     {
         "name": "Polyline",
-        "data": "polyline",
+        "id": "polyline",
         "description": "A connected series of line segments.",
         "displayModelJson": true
     },
     {
         "name": "Polygon",
-        "data": "polygon",
+        "id": "polygon",
         "description": "Polygonal area defined by a series of line segments.",
         "displayModelJson": true
     },
     {
         "name": "Path",
-        "data": "path",
+        "id": "path",
         "description": "Complex area defined by a series of drawing commands.",
         "displayModelJson": true
     },
     {
         "name": "Image",
-        "data": "image",
+        "id": "image",
         "description": "Bitmap image.",
         "displayModelJson": true
     },
     {
         "name": "Text",
-        "data": "text",
+        "id": "text",
         "description": "Styled text element.",
         "displayModelJson": true
     },
     {
         "name": "Sprite",
-        "data": "sprite",
+        "id": "sprite",
         "description": "Series of bitmap image segments.",
         "displayModelJson": true
     },
     {
         "name": "Embedded Model",
-        "data": "embedded-model",
+        "id": "embedded-model",
         "description": "Model contained in another model as an embedded resource.",
         "displayModelJson": true
     },
     {
         "name": "Referenced Model",
-        "data": "model-element",
+        "id": "model-element",
         "description": "Model contained in another model as an externally referenced resource.",
         "displayModelJson": true
     },
     {
         "name": "Colors",
-        "data": "colors",
+        "id": "colors",
         "description": "Colors used for stroking and filling elements.",
         "displayModelJson": true
     },
     {
         "name": "Named Colors",
-        "data": "named-colors",
+        "id": "named-colors",
         "description": "Well known colors defined by name.",
         "displayModelJson": false
     },
     {
         "name": "Transforms",
-        "data": "transforms",
+        "id": "transforms",
         "description": "Linear affine transformation for altering the visual appearance of elements.",
         "displayModelJson": true
     }

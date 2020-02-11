@@ -1,36 +1,49 @@
-<h1>{{title}}</h1>
-<div class="description">{{description}}</div>
-<label for="scale">Scale:</label>
-<select id="scale" [(ngModel)]="scale">
-    <option [ngValue]="0.25">25%</option>
-    <option [ngValue]="0.5">50%</option>
-    <option [ngValue]="0.75">75%</option>
-    <option [ngValue]="1">100%</option>
-    <option [ngValue]="1.5">150%</option>
-    <option [ngValue]="2">200%</option>
-    <option [ngValue]="3">300%</option>
-    <option [ngValue]="4">400%</option>
-    <option [ngValue]="5">500%</option>
-</select>
-<select id="background" [(ngModel)]="background">
-    <option value="grid">Grid</option>
-    <option value="white">White</option>
-    <option value="black">Black</option>
-    <option value="gray">Gray</option>
-</select>
-<label for="timer">Timer:</label>
-<input type="checkbox" [checked]="timerEnabled" (change)="timerEnabled = !timerEnabled">
-<span *ngIf="timerEnabled">
-    <label for="viewtime">View Time:</label>
-    <span id="viewtime">{{viewTime}}</span>
-</span>
-<span *ngIf="mouseOverView">
-    <label class='position-label' for="xpos">X:</label>
-    <span id="xpos">{{viewMouseX}}</span>
-    <label class='position-label' for="ypos">Y:</label>
-    <span id="ypos">{{viewMouseY}}</span>
-</span>
-<div style="color: red;">{{errorMessage}}</div>
+<h3><a routerLink='/tests/view'>View Tests</a>&nbsp;/&nbsp;{{title}}</h3>
+<div *ngIf='errorMessage' class='alert alert-danger'>
+    <strong>Error</strong> {{errorMessage}}
+</div>
+<div>{{description}}</div>
+<table>
+    <tr style="vertical-align: baseline;">
+        <td>
+            <label for="scale" style="margin-right: 4px;"><strong>Scale</strong></label>
+            <select id="scale" [(ngModel)]="scale">
+                <option [ngValue]="0.25">25%</option>
+                <option [ngValue]="0.5">50%</option>
+                <option [ngValue]="0.75">75%</option>
+                <option [ngValue]="1">100%</option>
+                <option [ngValue]="1.5">150%</option>
+                <option [ngValue]="2">200%</option>
+                <option [ngValue]="3">300%</option>
+                <option [ngValue]="4">400%</option>
+                <option [ngValue]="5">500%</option>
+            </select>
+        </td>
+        <td>
+            <select id="background" [(ngModel)]="background" style="margin-left: 4px;">
+                <option value="grid">Grid</option>
+                <option value="white">White</option>
+                <option value="black">Black</option>
+                <option value="gray">Gray</option>
+            </select>
+        </td>
+        <td>
+            <input type="checkbox" [checked]="timerEnabled" (change)="timerEnabled = !timerEnabled" style="margin-left: 4px;">
+            <label for="timer" style="margin-left: 4px;"><strong>Timer&nbsp;</strong></label>
+        </td>
+        <td *ngIf="timerEnabled" style="min-width: 80px;">
+            <span id="viewtime">{{viewTime}}</span>
+        </td>
+        <td *ngIf="mouseOverView" style="min-width: 60px;">
+            <label for="xpos"><strong>X:</strong></label>&nbsp;
+            <span id="xpos">{{viewMouseX}}</span>
+        </td>
+        <td *ngIf="mouseOverView" style="min-width: 60px;">
+            <label for="ypos"><strong>Y:</strong></label>&nbsp;
+            <span id="ypos">{{viewMouseY}}</span>
+        </td>
+    </tr>
+</table>
 <div [ngClass]='backgroundClass()'>
     <app-elise-view #elise [model]="model" [scale]="scale"
     (mouseMovedView)="mouseMovedView($event)"
@@ -48,11 +61,11 @@
     [timerEnabled]="timerEnabled"></app-elise-view>
 </div>
 <div>
-    <label for='last-message'>Last Event</label>
+    <label for='last-message'><strong>Last Event</strong></label>
     <div id='last-message'>{{lastMessage}}</div>
 </div>
 <div style='margin-top: 8px;' *ngIf='displayModel'>
-    <label for='model-json'>Model</label>
-    <div class='code' id='model-json'>{{formattedJson}}</div>
+    <label for='model-json'><strong>Model</strong></label>
+    <pre class='code' id='model-json'>{{formattedJson}}</pre>
 </div>
 <div>{{codeString}}</div>

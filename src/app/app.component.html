@@ -1,9 +1,5 @@
-<nav>
-    <a routerLink='/primitives'>Primitives</a>
-    <a style="margin-left: 10px;" routerLink='/samples'>Samples</a>
-    <a style="margin-left: 10px;" routerLink='/sketches'>Sketches</a>
-    <a style="margin-left: 10px;" routerLink='/tests/view'>View Tests</a>
-    <a style="margin-left: 10px;" routerLink='/tests/design'>Design Tests</a>
-    <a style="margin-left: 10px;" routerLink='/tests/surface'>Surface Tests</a>
-</nav>
-<router-outlet></router-outlet>
+<div class="container-fluid" style="margin-bottom: 36px;">
+    <app-header></app-header>
+    <router-outlet></router-outlet>
+</div>
+<app-footer></app-footer>

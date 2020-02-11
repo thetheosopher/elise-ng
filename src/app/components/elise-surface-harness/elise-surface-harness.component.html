@@ -1,74 +1,90 @@
-<h1>{{title}}</h1>
-<div class="description">{{description}}</div>
-<label for="scale">Scale:</label>
-<select id="scale" [(ngModel)]="scale">
-    <option [ngValue]="0.25">25%</option>
-    <option [ngValue]="0.5">50%</option>
-    <option [ngValue]="0.75">75%</option>
-    <option [ngValue]="1">100%</option>
-    <option [ngValue]="1.5">150%</option>
-    <option [ngValue]="2">200%</option>
-    <option [ngValue]="3">300%</option>
-    <option [ngValue]="4">400%</option>
-    <option [ngValue]="5">500%</option>
-</select>
-<label for="opacity">Opacity:</label>
-<select id="opacity" [(ngModel)]="opacity">
-    <option [ngValue]="0.25">25%</option>
-    <option [ngValue]="0.5">50%</option>
-    <option [ngValue]="0.75">75%</option>
-    <option [ngValue]="1">100%</option>
-</select>
-<select id="background" [(ngModel)]="background">
-    <option value="grid">Grid</option>
-    <option value="white">White</option>
-    <option value="black">Black</option>
-    <option value="gray">Gray</option>
-</select>
-<select id="transition" *ngIf="transitionDisplay" [(ngModel)]="transition">
-    <option value="fade">Fade</option>
-    <option value="pushleft">Push Left</option>
-    <option value="pushright">Push Right</option>
-    <option value="pushup">Push Up</option>
-    <option value="pushdown">Push Down</option>
-    <option value="wipeleft">Wipe Left</option>
-    <option value="wiperight">Wipe Right</option>
-    <option value="wipeup">Wipe Up</option>
-    <option value="wipedown">Wipe Down</option>
-    <option value="wipeleftup">Wipe Left Up</option>
-    <option value="wipeleftdown">Wipe Left Down</option>
-    <option value="wiperightup">Wipe Right Up</option>
-    <option value="wiperightdown">Wipe Right Down</option>
-    <option value="wipein">Wipe In</option>
-    <option value="wipeout">Wipe Out</option>
-    <option value="wipeinx">Wipe In X</option>
-    <option value="wipeiny">Wipe In Y</option>
-    <option value="wipeoutx">Wipe Out X</option>
-    <option value="wipeouty">Wipe Out Y</option>
-    <option value="revealleft">Reveal Left</option>
-    <option value="revealright">Reveal Right</option>
-    <option value="revealup">Reveal Up</option>
-    <option value="revealdown">Reveal Down</option>
-    <option value="revealleftup">Reveal Left Up</option>
-    <option value="revealleftdown">Reveal Left Down</option>
-    <option value="revealrightup">Reveal Right Up</option>
-    <option value="revealrightdown">Reveal Right Down</option>
-    <option value="slideleft">Slide Left</option>
-    <option value="slideright">Slide Right</option>
-    <option value="slideup">Slide Up</option>
-    <option value="slidedown">Slide Down</option>
-    <option value="slideleftup">Slide Left Up</option>
-    <option value="slideleftdown">Slide Left Down</option>
-    <option value="sliderightup">Slide Right Up</option>
-    <option value="sliderightdown">Slide Right Down</option>
-</select>
-<span *ngIf="mouseOverView">
-    <label class='position-label' for="xpos">X:</label>
-    <span id="xpos">{{viewMouseX}}</span>
-    <label class='position-label' for="ypos">Y:</label>
-    <span id="ypos">{{viewMouseY}}</span>
-</span>
-<div style="color: red;">{{errorMessage}}</div>
+<h3><a routerLink='/tests/surface'>Surface Tests</a>&nbsp;/&nbsp;{{title}}</h3>
+<div *ngIf='errorMessage' class='alert alert-danger'>
+    <strong>Error</strong> {{errorMessage}}
+</div>
+<div>{{description}}</div>
+<table>
+    <tr style="vertical-align: baseline;">
+        <td>
+            <label for="scale" style="margin-right: 4px;"><strong>Scale</strong></label>
+            <select id="scale" [(ngModel)]="scale">
+                <option [ngValue]="0.25">25%</option>
+                <option [ngValue]="0.5">50%</option>
+                <option [ngValue]="0.75">75%</option>
+                <option [ngValue]="1">100%</option>
+                <option [ngValue]="1.5">150%</option>
+                <option [ngValue]="2">200%</option>
+                <option [ngValue]="3">300%</option>
+                <option [ngValue]="4">400%</option>
+                <option [ngValue]="5">500%</option>
+            </select>
+        </td>
+        <td>
+            <label for="opacity" style="margin-left: 8px; margin-right: 4px;"><strong>Opacity</strong></label>
+            <select id="opacity" [(ngModel)]="opacity">
+                <option [ngValue]="0.25">25%</option>
+                <option [ngValue]="0.5">50%</option>
+                <option [ngValue]="0.75">75%</option>
+                <option [ngValue]="1">100%</option>
+            </select>
+        </td>
+        <td>
+            <select id="background" [(ngModel)]="background" style="margin-left: 4px;">
+                <option value="grid">Grid</option>
+                <option value="white">White</option>
+                <option value="black">Black</option>
+                <option value="gray">Gray</option>
+            </select>
+        </td>
+        <td>
+            <select id="transition" *ngIf="transitionDisplay" [(ngModel)]="transition" style="margin-left: 4px;">
+                <option value="fade">Fade</option>
+                <option value="pushleft">Push Left</option>
+                <option value="pushright">Push Right</option>
+                <option value="pushup">Push Up</option>
+                <option value="pushdown">Push Down</option>
+                <option value="wipeleft">Wipe Left</option>
+                <option value="wiperight">Wipe Right</option>
+                <option value="wipeup">Wipe Up</option>
+                <option value="wipedown">Wipe Down</option>
+                <option value="wipeleftup">Wipe Left Up</option>
+                <option value="wipeleftdown">Wipe Left Down</option>
+                <option value="wiperightup">Wipe Right Up</option>
+                <option value="wiperightdown">Wipe Right Down</option>
+                <option value="wipein">Wipe In</option>
+                <option value="wipeout">Wipe Out</option>
+                <option value="wipeinx">Wipe In X</option>
+                <option value="wipeiny">Wipe In Y</option>
+                <option value="wipeoutx">Wipe Out X</option>
+                <option value="wipeouty">Wipe Out Y</option>
+                <option value="revealleft">Reveal Left</option>
+                <option value="revealright">Reveal Right</option>
+                <option value="revealup">Reveal Up</option>
+                <option value="revealdown">Reveal Down</option>
+                <option value="revealleftup">Reveal Left Up</option>
+                <option value="revealleftdown">Reveal Left Down</option>
+                <option value="revealrightup">Reveal Right Up</option>
+                <option value="revealrightdown">Reveal Right Down</option>
+                <option value="slideleft">Slide Left</option>
+                <option value="slideright">Slide Right</option>
+                <option value="slideup">Slide Up</option>
+                <option value="slidedown">Slide Down</option>
+                <option value="slideleftup">Slide Left Up</option>
+                <option value="slideleftdown">Slide Left Down</option>
+                <option value="sliderightup">Slide Right Up</option>
+                <option value="sliderightdown">Slide Right Down</option>
+            </select>
+        </td>
+        <td *ngIf="mouseOverView" style="min-width: 60px;">
+            <label for="xpos"><strong>X:</strong></label>&nbsp;
+            <span id="xpos">{{viewMouseX}}</span>
+        </td>
+        <td *ngIf="mouseOverView" style="min-width: 60px;">
+            <label for="ypos"><strong>Y:</strong></label>&nbsp;
+            <span id="ypos">{{viewMouseY}}</span>
+        </td>
+    </tr>
+</table>
 <div [ngClass]='backgroundClass()'>
     <app-elise-surface #elise [surface]="surface" [scale]="scale" [opacity]="opacity"
     (mouseMovedView)="mouseMovedView($event)"

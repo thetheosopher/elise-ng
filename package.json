@@ -7,7 +7,8 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "es5": "ng serve --configuration es5"
   },
   "private": true,
   "dependencies": {
@@ -19,11 +20,13 @@
     "@angular/platform-browser": "^8.2.14",
     "@angular/platform-browser-dynamic": "^8.2.14",
     "@angular/router": "^8.2.14",
+    "bootstrap": "^4.4.1",
     "core-js": "^2.6.10",
+    "elise-graphics": "https://github.com/thetheosopher/elise-graphics.git#bf6674bd02794559e0fe26b94252b484fb7e717f",
+    "jquery": "^3.4.1",
     "rxjs": "^6.5.3",
     "tslib": "^1.10.0",
-    "zone.js": "~0.9.1",
-    "elise-graphics": "https://github.com/thetheosopher/elise-graphics.git#ff1cfaccaf25ad9c3a04e751bd0787e0e4b07743"
+    "zone.js": "~0.9.1"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.803.23",

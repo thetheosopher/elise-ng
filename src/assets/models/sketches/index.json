@@ -1,475 +1,475 @@
 [
     {
         "name": "Abstract (3.8mb)",
-        "data": "abstract",
+        "id": "abstract",
         "description": "Abstract scene comprised of 12,962 elements with 317,776 points.",
         "displayModelJson": false
     },
     {
         "name": "Autumn 1 (7mb)",
-        "data": "autumn",
+        "id": "autumn",
         "description": "Autumn scene comprised of 27,532 elements with 650,259 points.",
         "displayModelJson": false
     },
     {
         "name": "Autumn 2 (7.7mb)",
-        "data": "autumn2",
+        "id": "autumn2",
         "description": "Autumn scene comprised of 25,780 elements with 751,378 points.",
         "displayModelJson": false
     },
     {
         "name": "Cathedral (3.9mb)",
-        "data": "cathedral",
+        "id": "cathedral",
         "description": "Cathedral scene comprised of 13,838 elements with 372,089 points.",
         "displayModelJson": false
     },
     {
         "name": "Christmas 1 (2.8mb)",
-        "data": "christmas01",
+        "id": "christmas01",
         "description": "Christmas scene comprised of 5,046 elements with 301,817 points.",
         "displayModelJson": false
     },
     {
         "name": "Christmas 2 (4.9mb)",
-        "data": "christmas02",
+        "id": "christmas02",
         "description": "Christmas scene comprised of 9,060 elements with 520,062 points.",
         "displayModelJson": false
     },
     {
         "name": "Christmas 3 (3.5mb)",
-        "data": "christmas03",
+        "id": "christmas03",
         "description": "Christmas scene comprised of 9,250 elements with 360,382 points.",
         "displayModelJson": false
     },
     {
         "name": "Christmas 4 (4.5mb)",
-        "data": "christmas04",
+        "id": "christmas04",
         "description": "Christmas scene comprised of 8,484 elements with 481,010 points.",
         "displayModelJson": false
     },
     {
         "name": "Christmas 5 (4.8mb)",
-        "data": "christmas05",
+        "id": "christmas05",
         "description": "Christmas scene comprised of 10,399 elements with 494,773 points.",
         "displayModelJson": false
     },
     {
         "name": "Christmas 6 (2.2mb)",
-        "data": "christmas06",
+        "id": "christmas06",
         "description": "Christmas scene comprised of 4,895 elements with 233,599 points.",
         "displayModelJson": false
     },
     {
         "name": "Christmas 7 (1.4mb)",
-        "data": "christmas07",
+        "id": "christmas07",
         "description": "Christmas scene comprised of 3,167 elements with 146,800 points.",
         "displayModelJson": false
     },
     {
         "name": "Christmas 8 (2.3mb)",
-        "data": "christmas08",
+        "id": "christmas08",
         "description": "Christmas scene comprised of 5,054 elements with 243,907 points.",
         "displayModelJson": false
     },
     {
         "name": "Desert (1.1mb)",
-        "data": "desert",
+        "id": "desert",
         "description": "Desert scene comprised of 1,565 elements with 125,383 points.",
         "displayModelJson": false
     },
     {
         "name": "Eiffel Tower (1.6mb)",
-        "data": "eiffeltower",
+        "id": "eiffeltower",
         "description": "Eiffel tower scene comprised of 3,342 elements with 167,430 points.",
         "displayModelJson": false
     },
     {
         "name": "Flower (1.2mb)",
-        "data": "flower",
+        "id": "flower",
         "description": "Flower scene comprised of 2,736 elements with 134,646 points.",
         "displayModelJson": false
     },
     {
         "name": "Forest (927kb)",
-        "data": "forest",
+        "id": "forest",
         "description": "Forest scene comprised of 2,505 elements with 90,047 points.",
         "displayModelJson": false
     },
     {
         "name": "Leaves (3.5mb)",
-        "data": "leaves",
+        "id": "leaves",
         "description": "Leaves scene comprised of 12,585 elements with 341,608 points.",
         "displayModelJson": false
     },
     {
         "name": "Mountains 1 (1.4mb)",
-        "data": "mountains1",
+        "id": "mountains1",
         "description": "Mountain scene comprised of 2,145 elements with 160,040 points.",
         "displayModelJson": false
     },
     {
         "name": "Mountains 2 (1.3mb)",
-        "data": "mountains2",
+        "id": "mountains2",
         "description": "Mountain scene comprised of 2,096 elements with 146,041 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 1 (5.7mb)",
-        "data": "nature01",
+        "id": "nature01",
         "description": "Nature scene comprised of 19,747 elements with 551,428 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 2 (4.7mb)",
-        "data": "nature02",
+        "id": "nature02",
         "description": "Nature scene comprised of 10,205 elements with 490,895 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 3 (1.5mb)",
-        "data": "nature03",
+        "id": "nature03",
         "description": "Nature scene comprised of 1,641 elements with 168,850 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 4 (3.3mb)",
-        "data": "nature04",
+        "id": "nature04",
         "description": "Nature scene comprised of 6,402 elements with 347,994 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 5 (5.2mb)",
-        "data": "nature05",
+        "id": "nature05",
         "description": "Nature scene comprised of 14,031 elements with 533,776 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 6 (14.3mb)",
-        "data": "nature06",
+        "id": "nature06",
         "description": "Nature scene comprised of 53,334 elements with 1,330,438 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 7 (2.8mb)",
-        "data": "nature07",
+        "id": "nature07",
         "description": "Nature scene comprised of 5,527 elements with 296,170 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 8 (3.2mb)",
-        "data": "nature08",
+        "id": "nature08",
         "description": "Nature scene comprised of 7,827 elements with 329,344 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 9 (9.3mb)",
-        "data": "nature09",
+        "id": "nature09",
         "description": "Nature scene comprised of 32,251 elements with 894,141 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 10 (5.6mb)",
-        "data": "nature10",
+        "id": "nature10",
         "description": "Nature scene comprised of 10,140 elements with 609,692 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 11 (7.7mb)",
-        "data": "nature11",
+        "id": "nature11",
         "description": "Nature scene comprised of 18,098 elements with 807,463 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 12 (5mb)",
-        "data": "nature12",
+        "id": "nature12",
         "description": "Nature scene comprised of 7,976 elements with 550,645 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 13 (6.9mb)",
-        "data": "nature13",
+        "id": "nature13",
         "description": "Nature scene comprised of 13,621 elements with 730,417 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 14 (13.4mb)",
-        "data": "nature14",
+        "id": "nature14",
         "description": "Nature scene comprised of 34,708 elements with 1,366,267 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 15 (3.4mb)",
-        "data": "nature15",
+        "id": "nature15",
         "description": "Nature scene comprised of 8,582 elements with 358,567 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 16 (3.2mb)",
-        "data": "nature16",
+        "id": "nature16",
         "description": "Nature scene comprised of 3,997 elements with 367,052 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 17 (5mb)",
-        "data": "nature17",
+        "id": "nature17",
         "description": "Nature scene comprised of 7,907 elements with 542,047 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 18 (10.7mb)",
-        "data": "nature18",
+        "id": "nature18",
         "description": "Nature scene comprised of 30,372 elements with 1,071,910 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 19 (3.3mb)",
-        "data": "nature19",
+        "id": "nature19",
         "description": "Nature scene comprised of 7,647 elements with 344,545 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 20 (4.5mb)",
-        "data": "nature20",
+        "id": "nature20",
         "description": "Nature scene comprised of 7,912 elements with 483,364 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 21 (8.6mb)",
-        "data": "nature21",
+        "id": "nature21",
         "description": "Nature scene comprised of 20,758 elements with 880,553 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 22 (10.4mb)",
-        "data": "nature22",
+        "id": "nature22",
         "description": "Nature scene comprised of 25,036 elements with 1,070,695 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 23 (8mb)",
-        "data": "nature23",
+        "id": "nature23",
         "description": "Nature scene comprised of 17,034 elements with 834,615 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 24 (9.9mb)",
-        "data": "nature24",
+        "id": "nature24",
         "description": "Nature scene comprised of 23,846 elements with 1,013,504 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 25 (4.1mb)",
-        "data": "nature25",
+        "id": "nature25",
         "description": "Nature scene comprised of 6,434 elements with 447,115 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 26 (10.2mb)",
-        "data": "nature26",
+        "id": "nature26",
         "description": "Nature scene comprised of 26,699 elements with 1,045,156 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 27 (2.5mb)",
-        "data": "nature27",
+        "id": "nature27",
         "description": "Nature scene comprised of 4,078 elements with 276,256 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 28 (7.9mb)",
-        "data": "nature28",
+        "id": "nature28",
         "description": "Nature scene comprised of 17,755 elements with 813,155 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 29 (5.9mb)",
-        "data": "nature29",
+        "id": "nature29",
         "description": "Nature scene comprised of 12,458 elements with 621,810 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 30 (8.7mb)",
-        "data": "nature30",
+        "id": "nature30",
         "description": "Nature scene comprised of 19,710 elements with 921,072 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 31 (3.7mb)",
-        "data": "nature31",
+        "id": "nature31",
         "description": "Nature scene comprised of 6,044 elements with 406,616 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 32 (9.8mb)",
-        "data": "nature32",
+        "id": "nature32",
         "description": "Nature scene comprised of 17,882 elements with 1,053,222 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 33 (6.8mb)",
-        "data": "nature33",
+        "id": "nature33",
         "description": "Nature scene comprised of 10,832 elements with 748,116 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 34 (5.1mb)",
-        "data": "nature34",
+        "id": "nature34",
         "description": "Nature scene comprised of 5,938 elements with 570,941 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 35 (12.1mb)",
-        "data": "nature35",
+        "id": "nature35",
         "description": "Nature scene comprised of 21,819 elements with 1,302,850 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 36 (7.4mb)",
-        "data": "nature36",
+        "id": "nature36",
         "description": "Nature scene comprised of 11,850 elements with 805,463 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 37 (1.8mb)",
-        "data": "nature37",
+        "id": "nature37",
         "description": "Nature scene comprised of 3,359 elements with 202,691 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 38 (2.1mb)",
-        "data": "nature38",
+        "id": "nature38",
         "description": "Nature scene comprised of 4,500 elements with 223,751 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 39 (2.1mb)",
-        "data": "nature39",
+        "id": "nature39",
         "description": "Nature scene comprised of 6,251 elements with 212,327 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 40 (4mb)",
-        "data": "nature40",
+        "id": "nature40",
         "description": "Nature scene comprised of 11,205 elements with 409,776 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 41 (1.4mb)",
-        "data": "nature41",
+        "id": "nature41",
         "description": "Nature scene comprised of 3,503 elements with 150,951 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 42 (4.6mb)",
-        "data": "nature42",
+        "id": "nature42",
         "description": "Nature scene comprised of 8,800 elements with 495,173 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 43 (15.4mb)",
-        "data": "nature43",
+        "id": "nature43",
         "description": "Nature scene comprised of 45,301 elements with 1,519,527 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 44 (3.6mb)",
-        "data": "nature44",
+        "id": "nature44",
         "description": "Nature scene comprised of 9,412 elements with 372,759 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 45 (4.1mb)",
-        "data": "nature45",
+        "id": "nature45",
         "description": "Nature scene comprised of 7,822 elements with 441,153 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 46 (4.2mb)",
-        "data": "nature46",
+        "id": "nature46",
         "description": "Nature scene comprised of 11,136 elements with 423,029 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 47 (2.5mb)",
-        "data": "nature47",
+        "id": "nature47",
         "description": "Nature scene comprised of 4,688 elements with 270,266 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 48 (3.3mb)",
-        "data": "nature48",
+        "id": "nature48",
         "description": "Nature scene comprised of 8,575 elements with 340,686 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 49 (6.2mb)",
-        "data": "nature49",
+        "id": "nature49",
         "description": "Nature scene comprised of 10,988 elements with 667,888 points.",
         "displayModelJson": false
     },
     {
         "name": "Nature 50 (1.8mb)",
-        "data": "nature50",
+        "id": "nature50",
         "description": "Nature scene comprised of 5,554 elements with 177,622 points.",
         "displayModelJson": false
     },
     {
         "name": "Pattern 1 (2.3mb)",
-        "data": "pattern01",
+        "id": "pattern01",
         "description": "Pattern comprised of 4,441 elements with 251,914 points.",
         "displayModelJson": false
     },
     {
         "name": "Pattern 2 (2mb)",
-        "data": "pattern02",
+        "id": "pattern02",
         "description": "Pattern comprised of 2,245 elements with 225,925 points.",
         "displayModelJson": false
     },
     {
         "name": "Pattern 3 (4.4mb)",
-        "data": "pattern03",
+        "id": "pattern03",
         "description": "Pattern comprised of 9,908 elements with 463,843 points.",
         "displayModelJson": false
     },
     {
         "name": "Pattern 4 (1mb)",
-        "data": "pattern04",
+        "id": "pattern04",
         "description": "Pattern comprised of 1,692 elements with 107,985 points.",
         "displayModelJson": false
     },
     {
         "name": "Picnic (802kb)",
-        "data": "picnic",
+        "id": "picnic",
         "description": "Picnic scene comprised of 2,297 elements with 76,683 points.",
         "displayModelJson": false
     },
     {
         "name": "Santa (1.2)",
-        "data": "santa01",
+        "id": "santa01",
         "description": "Santa scene comprised of 2,663 elements with 124,467 points.",
         "displayModelJson": false
     },
     {
         "name": "Sunset 1 (766kb)",
-        "data": "sunset1",
+        "id": "sunset1",
         "description": "Sunset scene comprised of 1,349 elements with 79,663 points.",
         "displayModelJson": false
     },
     {
         "name": "Sunset 2 (4.8mb)",
-        "data": "sunset2",
+        "id": "sunset2",
         "description": "Sunset scene comprised of 17,466 elements with 458,163 points.",
         "displayModelJson": false
     },
     {
         "name": "Sunset 3 (4.5mb)",
-        "data": "sunset3",
+        "id": "sunset3",
         "description": "Sunset scene comprised of 12,503 elements with 460,974 points.",
         "displayModelJson": false
     },
     {
         "name": "Sunset 4 (3.9mb)",
-        "data": "sunset4",
+        "id": "sunset4",
         "description": "Sunset scene comprised of 12,450 elements with 381,843 points.",
         "displayModelJson": false
     }

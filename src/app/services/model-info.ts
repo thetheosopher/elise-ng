@@ -1,7 +1,7 @@
 export class ModelInfo {
     constructor(
         public name: string,
-        public data: string,
+        public id: string,
         public description: string,
         public displayModelJson: boolean
     ) {}

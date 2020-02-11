@@ -1,73 +1,73 @@
 [
     {
         "name": "Model Grid",
-        "data": "model-grid",
+        "id": "model-grid",
         "description": "Demonstrates a grid of model elements.",
         "displayModelJson": false
     },
     {
         "name": "Ellipse Animation",
-        "data": "ellipse-animation",
+        "id": "ellipse-animation",
         "description": "Demonstrates animation of an array of ellipses.",
         "displayModelJson": false
     },
     {
         "name": "Line Animation",
-        "data": "line-animation",
+        "id": "line-animation",
         "description": "Demonstrates animation of an array of lines.",
         "displayModelJson": false
     },
     {
         "name": "Particle Animation",
-        "data": "particle-animation",
+        "id": "particle-animation",
         "description": "Particle animation with collision detection.",
         "displayModelJson": false
     },
     {
         "name": "Snow Simulation",
-        "data": "snow-animation",
+        "id": "snow-animation",
         "description": "Snow simulation.",
         "displayModelJson": false
     },
     {
         "name": "Digital Rain Simulation",
-        "data": "digital-rain",
+        "id": "digital-rain",
         "description": "'The Matrix' Digital Rain Simulation.",
         "displayModelJson": false
     },
     {
         "name": "Gradient Animation",
-        "data": "gradient-animation",
+        "id": "gradient-animation",
         "description": "Radial gradient fill stop color animation",
         "displayModelJson": false
     },
     {
         "name": "Sprite Image Transition",
-        "data": "sprite-transitions",
+        "id": "sprite-transitions",
         "description": "Demonstrates sprite transition library.",
         "displayModelJson": false
     },
     {
         "name": "Rotation Animation",
-        "data": "rotation-animation",
+        "id": "rotation-animation",
         "description": "Demonstrates animation timer callback function.",
         "displayModelJson": false
     },
     {
         "name": "Sprite Sheet Animation",
-        "data": "sprite-animation",
+        "id": "sprite-animation",
         "description": "Demonstrates sprite sheet animation.",
         "displayModelJson": false
     },
     {
         "name": "Multi Sprite Animation",
-        "data": "multi-sprite-animation",
+        "id": "multi-sprite-animation",
         "description": "Sprite sheet torture test.",
         "displayModelJson": false
     },
     {
         "name": "Five Pointed Star",
-        "data": "star",
+        "id": "star",
         "description": "Generates a five pointed start polygon.",
         "displayModelJson": true
     }

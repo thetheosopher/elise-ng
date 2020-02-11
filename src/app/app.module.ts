@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
 import { EliseModule } from './elise/elise.module';
+import { SchematrixModule } from './schematrix/schematrix.module';
 
 import { AppComponent } from './app.component';
 import { RedGreenBlueComponent } from './components/redgreenblue/redgreenblue.component';
@@ -21,6 +22,15 @@ import { EliseDesignHarnessComponent } from './components/elise-design-harness/e
 import { DesignTestsComponent } from './components/design-tests/design-tests.component';
 import { SurfaceTestsComponent } from './components/surface-tests/surface-tests.component';
 import { EliseSurfaceHarnessComponent } from './components/elise-surface-harness/elise-surface-harness.component';
+import { SchematrixApiTestsComponent } from './components/schematrix-api-tests/schematrix-api-tests.component';
+import { LoginComponent } from './components/login/login.component';
+import { RegisterComponent } from './components/register/register.component';
+import { HeaderComponent } from './components/header/header.component';
+import { ConfirmRegistrationComponent } from './components/confirm-registration/confirm-registration.component';
+import { ResendRegistrationCodeComponent } from './components/resend-registration-code/resend-registration-code.component';
+import { SendPasswordResetCodeComponent } from './components/send-password-reset-code/send-password-reset-code.component';
+import { FooterComponent } from './components/footer/footer.component';
+import { ContainerSelectorComponent } from './components/container-selector/container-selector.component';
 
 @NgModule({
     declarations: [
@@ -39,9 +49,25 @@ import { EliseSurfaceHarnessComponent } from './components/elise-surface-harness
         EliseDesignHarnessComponent,
         DesignTestsComponent,
         SurfaceTestsComponent,
-        EliseSurfaceHarnessComponent
+        EliseSurfaceHarnessComponent,
+        SchematrixApiTestsComponent,
+        LoginComponent,
+        RegisterComponent,
+        HeaderComponent,
+        ConfirmRegistrationComponent,
+        ResendRegistrationCodeComponent,
+        SendPasswordResetCodeComponent,
+        FooterComponent,
+        ContainerSelectorComponent
     ],
-    imports: [ BrowserModule, AppRoutingModule, HttpClientModule, FormsModule, EliseModule ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        HttpClientModule,
+        FormsModule,
+        EliseModule,
+        SchematrixModule
+    ],
     bootstrap: [ AppComponent ]
 })
 export class AppModule {}

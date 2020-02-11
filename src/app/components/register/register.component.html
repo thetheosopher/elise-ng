@@ -1,0 +1,96 @@
+<div class="col-sm-4">
+    <div *ngIf="!registrationSubmitted">
+        <h3>Register</h3>
+        <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+            <div class="form-group">
+                <label for="username">User Name</label>
+                <input type="text" id="username" name="username" #username="ngModel" class="form-control" required
+                    [(ngModel)]="userRegistrationDTO.Name" (keyup.enter)="checkNameInUse(username.value)"
+                    (blur)="checkNameInUse(username.value)" (input)="clearNameInUse()"
+                    [class.is-in-use]="nameInUse" />
+                <div *ngIf="nameInUse" class="alert alert-danger">
+                    {{nameInUseMessage}}
+                </div>
+                <div [hidden]="username.valid || username.pristine" class="alert alert-danger">
+                    User Name is Required
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="text" id="email" name="email" #email="ngModel" class="form-control" required
+                    [(ngModel)]="userRegistrationDTO.Email" (keyup.enter)="checkEmailInUse(email.value)"
+                    (blur)="checkEmailInUse(email.value)" (input)="clearEmailInUse()"
+                    [class.is-in-use]="emailInUse" />
+                <div [hidden]="!emailInUse" class="alert alert-danger">
+                    {{emailInUseMessage}}
+                </div>
+                <div [hidden]="email.valid || email.pristine" class="alert alert-danger">
+                    Email is Required
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="email">Alias</label>
+                <input type="text" id="alias" name="alias" #alias="ngModel" class="form-control" required
+                    [(ngModel)]="userRegistrationDTO.Alias" />
+                <div [hidden]="alias.valid || alias.pristine" class="alert alert-danger">
+                    Alias is Required
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" #password="ngModel" class="form-control" required
+                    [(ngModel)]="userRegistrationDTO.Password" />
+                <div [hidden]="password.valid || password.pristine" class="alert alert-danger">
+                    Password is Required
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="password-confirm">Password Confirm</label>
+                <input type="password" id="password-confirm" name="password-confirm" #passwordconfirm="ngModel"
+                    class="form-control" required [(ngModel)]="passwordConfirm" />
+                <div [hidden]="passwordconfirm.valid || passwordconfirm.pristine" class="alert alert-danger">
+                    Password Confirm is Required
+                </div>
+                <div [hidden]="(passwordConfirm === userRegistrationDTO.Password) || passwordconfirm.pristine"
+                    class="alert alert-danger">
+                    Password Confirm Does Not Match Password
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" [disabled]="!loginForm.form.valid || emailInUse || nameInUse">
+                Register
+                <span *ngIf="processing" class="spinner-border spinner-border-sm"></span>
+            </button>
+            <button class='btn btn-link' routerLink='/login'>Login</button>
+            <button class='btn btn-link' routerLink='/resend-registration-code'>Resend Code</button>
+            <button class='btn btn-link' routerLink='/confirm-registration'>Confirm Registration</button>
+        </form>
+    </div>
+    <div *ngIf="registrationSubmitted && !confirmationComplete">
+        <h3>Confirm Registration</h3>
+        <form (ngSubmit)="onSubmitConfirmation()" #confirmationForm="ngForm">
+            <div class="form-group">
+                <label for="username-confirm">User Name or Email</label>
+                <input type="text" id="username-confirm" name="username-confirm" #usernameConfirm="ngModel" class="form-control" required
+                    [(ngModel)]="userRegistrationDTO.Name" />
+                <div [hidden]="usernameConfirm.valid || usernameConfirm.pristine" class="alert alert-danger">
+                    User Name or Email is Required
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="code">Confirmation Code</label>
+                <input type="text" id="code" name="code" #code="ngModel" class="form-control" required
+                    [(ngModel)]="userRegistrationDTO.Code" />
+                <div [hidden]="code.valid || code.pristine" class="alert alert-danger">
+                    Confirmation Code is Required
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" [disabled]="!confirmationForm.form.valid">
+                Confirm Registration
+                <span *ngIf="processing" class="spinner-border spinner-border-sm"></span>
+            </button>
+            <button class='btn btn-link' routerLink='/login'>Login</button>
+        </form>
+    </div>
+    <div *ngIf="successMessage" class="alert alert-success" style="margin-top: 8px; white-space: pre-line;">{{successMessage}}</div>
+    <div *ngIf="errorMessage" class="alert alert-danger" style="margin-top: 8px;">{{errorMessage}}</div>
+</div>

@@ -38,7 +38,6 @@ export class EliseDesignHarnessComponent implements OnInit, ISampleDesigner {
     displayModel = true;
     formattedJson: string;
     errorMessage: string;
-    codeString: string;
     selectionEnabled: boolean;
 
     constructor(private _designTestService: DesignTestService, private _route: ActivatedRoute) {
@@ -103,6 +102,7 @@ export class EliseDesignHarnessComponent implements OnInit, ISampleDesigner {
     backgroundClass() {
         return {
             'view-host': true,
+            'border': true,
             grid: this.background === 'grid',
             black: this.background === 'black',
             white: this.background === 'white',

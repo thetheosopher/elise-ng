@@ -14,6 +14,7 @@ import { default as elise } from 'elise-graphics/lib/index';
 })
 export class SampleComponent implements OnInit {
     model: Model;
+    modelName: string;
     modelDescription: string;
     modelCode: string;
     scale: number;
@@ -39,6 +40,17 @@ export class SampleComponent implements OnInit {
                 console.log(er);
                 this.errorMessage = 'Unable to load model description';
                 this.modelDescription = '???';
+            }
+        });
+        this.modelService.getModelInfo(this.modelType, id).subscribe({
+            next: (modelInfo) => {
+                this.modelName = modelInfo.name;
+                this.errorMessage = undefined;
+            },
+            error: (er) => {
+                console.log(er);
+                this.errorMessage = 'Unable to load model name';
+                this.modelName = '???';
             }
         });
         this.modelService.getModel(this.modelType, id).subscribe({

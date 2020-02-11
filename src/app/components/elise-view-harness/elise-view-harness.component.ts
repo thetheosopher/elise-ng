@@ -98,6 +98,7 @@ export class EliseViewHarnessComponent implements OnInit, ISampleViewer {
     backgroundClass() {
         return {
             'view-host': true,
+            'border': true,
             grid: this.background === 'grid',
             black: this.background === 'black',
             white: this.background === 'white',

@@ -2,6 +2,15 @@
 @import url(https://fonts.googleapis.com/css?family=Anonymous+Pro|Coda|Coda+Caption:800|Poiret+One);
 @import url(./assets/fonts/stylesheet.css);
 
-.elise-view {
-    border: 1px solid black;
+.ng-valid[required],
+.ng-valid.required {
+    border-left: 5px solid #42a948; /* green */
+}
+
+.ng-invalid:not(form) {
+    border-left: 5px solid #a94442; /* red */
+}
+
+.is-in-use {
+    border-left: 5px solid #a94442 !important; /* red */
 }

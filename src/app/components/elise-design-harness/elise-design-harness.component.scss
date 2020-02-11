@@ -1,55 +1,7 @@
-h1 {
-    font-family: 'Poiret One';
-    margin-bottom: 0px;
-    margin-top: 0px;
-    font-size: 1.5em;
-}
-
-.description {
-    font-family: 'Anonymous Pro';
-    margin-bottom: 8px;
-}
-
-.code {
-    font-family: 'Anonymous Pro', monospace;
-    white-space: pre-wrap;
-}
-
-input[type='checkbox'] {
-    margin-right: 8px;
-    display: inline-block;
-    vertical-align: middle;
-}
-
-label {
-    font-family: 'Anonymous Pro';
-    margin-right: 4px;
-    margin-top: 8px;
-    font-weight: bold;
-}
-
-.position-label {
-    margin-left: 8px;
-}
-
-select {
-    margin-right: 8px;
-}
-
-div, span {
-    font-family: 'Anonymous Pro';
-}
-
-#viewtime {
-    width: 75px;
-    display: inline-table;
-}
-
 .view-host {
     margin-top: 8px;
     margin-bottom: 8px;
     display: inline-block;
-    border: 1px solid black;
 }
 
 .grid {

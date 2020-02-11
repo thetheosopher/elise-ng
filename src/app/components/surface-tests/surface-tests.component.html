@@ -1,5 +1,7 @@
-<h2>Surface Tests</h2>
-<h3 *ngIf='errorMessage' style='color: red;'>{{errorMessage}}</h3>
+<h3>Surface Tests</h3>
+<div *ngIf='errorMessage' class='alert alert-danger'>
+    <strong>Error</strong> {{errorMessage}}
+</div>
 <ul>
     <li *ngFor='let test of tests'>
         <span><a routerLink='/tests/surface/{{test.id}}'>{{test.title}}</a></span>

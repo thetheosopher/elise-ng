@@ -110,6 +110,7 @@ export class EliseSurfaceHarnessComponent implements OnInit, ISurfaceViewer {
     backgroundClass() {
         return {
             'view-host': true,
+            'border': true,
             grid: this.background === 'grid',
             black: this.background === 'black',
             white: this.background === 'white',

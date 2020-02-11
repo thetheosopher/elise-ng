@@ -7,5 +7,4 @@ export interface ISampleDesigner {
     scale: number;
     displayModel: boolean;
     background: string;
-    codeString: string;
 }

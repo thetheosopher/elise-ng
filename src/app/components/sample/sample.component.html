@@ -1,4 +1,9 @@
+<h3><a routerLink='/samples'>Samples</a>&nbsp;/&nbsp;{{modelName}}</h3>
+<div *ngIf='errorMessage' class='alert alert-danger'>
+    <strong>Error</strong> {{errorMessage}}
+</div>
 <div [innerHtml]="modelDescription"></div>
-<app-elise-view #elise [model]="model" [scale]="scale"></app-elise-view>
-<h3 *ngIf='errorMessage' style='color: red;'>{{errorMessage}}</h3>
+<div class="border" style="display: inline-block;">
+    <app-elise-view #elise [model]="model" [scale]="scale"></app-elise-view>
+</div>
 <pre>{{modelCode}}</pre>
