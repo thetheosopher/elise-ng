@@ -1,12 +1,15 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
+import { ChangePasswordComponent } from './components/change-password/change-password.component';
 import { ConfirmRegistrationComponent } from './components/confirm-registration/confirm-registration.component';
+import { ContainerExplorerComponent } from './components/container-explorer/container-explorer.component';
 import { DesignTestsComponent } from './components/design-tests/design-tests.component';
 import { EliseDesignHarnessComponent } from './components/elise-design-harness/elise-design-harness.component';
 import { EliseViewHarnessComponent } from './components/elise-view-harness/elise-view-harness.component';
 import { EliseSurfaceHarnessComponent } from './components/elise-surface-harness/elise-surface-harness.component';
 import { LoginComponent } from './components/login/login.component';
+import { ModelDesignerComponent } from './components/model-designer/model-designer.component';
 import { PrimitivesComponent } from './components/primitives/primitives.component';
 import { PrimitiveComponent } from './components/primitive/primitive.component';
 import { RandomSketchesComponent } from './components/random-sketches/random-sketches.component';
@@ -41,9 +44,12 @@ const routes: Routes = [
     { path: 'api-tests', component: SchematrixApiTestsComponent },
     { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent },
+    { path: 'change-password', component: ChangePasswordComponent },
     { path: 'confirm-registration', component: ConfirmRegistrationComponent },
     { path: 'resend-registration-code', component: ResendRegistrationCodeComponent },
-    { path: 'send-password-reset-code', component: SendPasswordResetCodeComponent }
+    { path: 'send-password-reset-code', component: SendPasswordResetCodeComponent },
+    { path: 'tests/container-explorer', component: ContainerExplorerComponent },
+    { path: 'tests/model-designer', component: ModelDesignerComponent }
 ];
 
 @NgModule({

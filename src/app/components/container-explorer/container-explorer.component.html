@@ -1,0 +1,55 @@
+<div style='height: calc(100vh - 129px);'>
+
+    <div style="padding-left: 5px; padding-top: 5px; border-top: 5px solid rgb(231, 231, 231); border-left: 5px solid rgb(231, 231, 231); border-right: 5px solid rgb(231, 231, 231)">
+
+        <!-- Container selector -->
+        <app-container-selector (containerSelected)='onContainerSelected($event)' style='display: inline-block;'>
+        </app-container-selector>
+
+        <!-- New Folder Button -->
+        <button class='btn btn-light py-0 px-1' [disabled]='selectedFolderPath == null' data-toggle="modal"
+            data-target="#newFolderModal">
+            <span style='position: relative; top: 4px;' data-toggle="tooltip" title="New Folder"
+                class='fas fa-folder-plus fa-2x'></span>
+        </button>
+
+        <!-- Delete Folder Button -->
+        <button class='btn btn-light py-0 px-0' [disabled]='selectedFolderPath == null || selectedFolderPath === "/"'
+            data-toggle="modal" data-target="#deleteFolderModal">
+            <span style='position: relative; top: 4px;' data-toggle="tooltip" title="Delete Folder"
+                class='fas fa-folder-minus fa-2x'></span>
+        </button>
+
+        <!-- Selected folder path label -->
+        <span class='mx-1' style='position: relative; top: 6px;'><strong>{{selectedFolderPath}}</strong></span>
+
+        <!-- Upload file input -->
+        <form *ngIf='selectedFolderPath != null' class='small' style='display:inline-block;'>
+            <input type="file" #fileUploadInput (change)='uploadFiles(fileUploadInput.files)' multiple
+                style="margin-left: 8px; position: relative; top: 4px;" />
+        </form>
+
+    </div>
+
+    <!-- Main horizontal splitter -->
+    <as-split unit='percent' direction='horizontal' gutterSize='5' style='border: 5px solid rgb(231, 231, 231);'>
+        <as-split-area size='30' minSize='10' maxSize='40'>
+            <!-- Container Tree -->
+            <app-container-tree (folderPathSelected)="onFolderPathSelected($event)" #container_tree>
+            </app-container-tree>
+        </as-split-area>
+        <as-split-area size='70' appDnd (fileDropped)="onFileDropped($event)">
+            <!-- Container Alerts -->
+            <app-alert id='container-explorer'></app-alert>
+
+            <!-- Active upload list -->
+            <app-upload-list [uploads]="uploads" (cancelUpload)="cancelUpload($event)" ></app-upload-list>
+
+            <!-- Folder file list -->
+            <app-file-list
+                [selectedFolderPath]="selectedFolderPath"
+                [folderFiles]="folderFiles" (selectFile)="selectFile($event)"
+                (deleteFile)="deleteFile($event)" (downloadFile)="downloadFile($event)"></app-file-list>
+        </as-split-area>
+    </as-split>
+</div>

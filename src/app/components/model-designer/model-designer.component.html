@@ -1,0 +1,290 @@
+<div style='height: calc(100vh - 129px);'>
+
+    <div class='toolbar'>
+
+        <!-- Container selector -->
+        <app-container-selector (containerSelected)='onContainerSelected($event)' style='display: inline-block;'>
+        </app-container-selector>
+
+        <!-- New Folder Button -->
+        <button class='btn btn-light py-0 px-1' [disabled]='selectedFolderPath == null' data-toggle="modal"
+            data-target="#newFolderModal">
+            <span style='position: relative; top: 4px;' data-toggle="tooltip" title="New Folder"
+                class='fas fa-folder-plus fa-2x'></span>
+        </button>
+
+        <!-- Delete Folder Button -->
+        <button class='btn btn-light py-0 px-0' [disabled]='selectedFolderPath == null || selectedFolderPath === "/"'
+            data-toggle="modal" data-target="#deleteFolderModal">
+            <span style='position: relative; top: 4px;' data-toggle="tooltip" title="Delete Folder"
+                class='fas fa-folder-minus fa-2x'></span>
+        </button>
+
+        <!-- New Model Button -->
+        <button class='btn btn-light py-0 px-1' [disabled]='selectedFolderPath == null' data-toggle="modal"
+            data-target="#newModelModal">
+            <span style='position: relative; top: 4px;' data-toggle="tooltip" title="New Model"
+                class='fas fa-file fa-2x'></span>
+        </button>
+
+        <!-- Save Model Button -->
+        <button class='btn btn-light py-0 px-1' [disabled]='modelPath == null || model == null' (click)="saveModel()">
+            <span style='position: relative; top: 4px;' data-toggle="tooltip" title="Save Model"
+                class='fas fa-file-upload fa-2x'></span>
+        </button>
+
+        <div class='mx-1' style='position: relative; top: 6px; display: inline-block;'>
+
+            <div *ngIf="modelPath; else noModelPath">
+                <!-- Model path label -->
+                <span><strong>{{modelContainerName}}{{modelPath}}</strong></span>
+            </div>
+            <ng-template #noModelPath>
+                <!-- Selected folder path label -->
+                <span><strong>{{selectedContainerName}}{{selectedFolderPath}}</strong></span>
+            </ng-template>
+        </div>
+
+        <!-- Upload file input -->
+        <form *ngIf='selectedFolderPath != null' class='small' style='display:inline-block;'>
+            <input type="file" #fileUploadInput (change)='uploadFiles(fileUploadInput.files)' multiple
+                style="margin-left: 8px; position: relative; top: 4px;" />
+        </form>
+
+        <span *ngIf="isBusy" class="spinner-border spinner-border-sm text-success" style="margin-left: 4px; position: relative; top: 2px;"></span>
+
+    </div>
+
+    <!-- Main horizontal split -->
+    <as-split unit='percent' direction='horizontal' gutterSize='5' style='border: 5px solid rgb(231, 231, 231);'>
+        <as-split-area size='30' minSize='10' maxSize='40'>
+            <as-split unit='percent' direction='vertical' gutterSize='5'>
+                <as-split-area size='33' minsize='10' maxsize='90'>
+                    <app-container-tree (folderPathSelected)="onFolderPathSelected($event)" #container_tree>
+                    </app-container-tree>
+                </as-split-area>
+                <as-split-area size='67' appDnd (fileDropped)="onFileDropped($event)">
+                    <app-alert id='container-explorer'></app-alert>
+                    <app-upload-list [uploads]="uploads" (cancelUpload)="cancelUpload($event)"></app-upload-list>
+                    <app-file-list [selectedFolderPath]="selectedFolderPath" [folderFiles]="folderFiles"
+                        (selectFile)="selectFile($event)" [showDownload]=false [showDate]=false [allowDelete]=false>
+                    </app-file-list>
+                </as-split-area>
+            </as-split>
+        </as-split-area>
+        <as-split-area size='70'>
+            <!-- Model editor alerts -->
+            <app-alert id='model-editor'></app-alert>
+
+            <!-- Model Editor -->
+            <div *ngIf="model != null">
+                <table>
+                    <tr style="vertical-align: baseline;">
+                        <td>
+                            <label for="scale" style="margin-right: 4px;"><strong>Scale</strong></label>
+                            <select id="scale" [(ngModel)]="scale">
+                                <option [ngValue]="0.25">25%</option>
+                                <option [ngValue]="0.5">50%</option>
+                                <option [ngValue]="0.75">75%</option>
+                                <option [ngValue]="1">100%</option>
+                                <option [ngValue]="1.5">150%</option>
+                                <option [ngValue]="2">200%</option>
+                                <option [ngValue]="3">300%</option>
+                                <option [ngValue]="4">400%</option>
+                                <option [ngValue]="5">500%</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select id="background" [(ngModel)]="background" style="margin-left: 4px;">
+                                <option value="grid">Grid</option>
+                                <option value="white">White</option>
+                                <option value="black">Black</option>
+                                <option value="gray">Gray</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="checkbox" [checked]="selectionEnabled"
+                                (change)="selectionEnabled = !selectionEnabled" style="margin-left: 8px;">
+                            <label style="margin-left: 4px; margin-right: 16px;"><strong>Select Mode</strong></label>
+                        </td>
+                        <td *ngIf="mouseOverView" style="min-width: 60px;">
+                            <label for="xpos"><strong>X:</strong></label>&nbsp;
+                            <span id="xpos">{{viewMouseX}}</span>
+                        </td>
+                        <td *ngIf="mouseOverView" style="min-width: 60px;">
+                            <label for="ypos"><strong>Y:</strong></label>&nbsp;
+                            <span id="ypos">{{viewMouseY}}</span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div>
+                <div [ngClass]='backgroundClass()'>
+                    <div [class.fileover]='isDragging'>
+                        <app-elise-design #elise [model]="model" [scale]="scale" [selectionEnabled]="selectionEnabled"
+                        (mouseMovedView)="mouseMovedView($event)" (mouseEnteredView)="mouseEnteredView($event)"
+                        (mouseLeftView)="mouseLeftView($event)" (mouseDownView)="mouseDownView($event)"
+                        (mouseUpView)="mouseUpView($event)" (mouseEnteredElement)="mouseEnteredElement($event)"
+                        (mouseLeftElement)="mouseLeftElement($event)" (mouseDownElement)="mouseDownElement($event)"
+                        (mouseUpElement)="mouseUpElement($event)" (elementClicked)="elementClicked($event)"
+                        (controllerSet)="controllerSet($event)" (selectionChanged)="selectionChanged($event)"
+                        (elementCreated)="elementCreated($event)" (viewDragEnter)="viewDragEnter($event)"
+                        (viewDragLeave)="viewDragLeave($event)" ></app-elise-design>
+                    </div>
+                </div>
+                <!--
+                <div>
+                    <label for='last-message'>Last Event</label>
+                    <div id='last-message'>{{lastMessage}}</div>
+                </div>
+                <div style='margin-top: 8px;' *ngIf='displayModel'>
+                    <label for='model-json'>Model</label>
+                    <pre class='code' id='model-json'>{{formattedJson}}</pre>
+                </div>
+                -->
+            </div>
+        </as-split-area>
+    </as-split>
+</div>
+
+<!-- New Model -->
+<div class="modal" id="newModelModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">New Model</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <form #newmodelform>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="modelname">Model Name</label>
+                        <input type="text" id="modelname" name="modelname" #modelname="ngModel" class="form-control"
+                            required [(ngModel)]="newModelName" />
+                        <div [hidden]="modelname.valid || modelname.pristine" class="alert alert-danger">
+                            Model Name Is Required
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col">
+                            <label for="modelwidth">Width</label>
+                            <input type="number" min="1" max="32768" id="modelwidth" name="modelwidth" #modelwidth="ngModel"
+                                class="form-control" required [(ngModel)]="newModelWidth" />
+                            <div [hidden]="modelwidth.valid || modelwidth.pristine" class="alert alert-danger">
+                                Model Width Is Required
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label for="modelheight">Height</label>
+                            <input type="number" min="1" max="32768" id="modelheight" name="modelheight"
+                                #modelheight="ngModel" class="form-control" required [(ngModel)]="newModelHeight" />
+                            <div [hidden]="modelheight.valid || modelheight.pristine" class="alert alert-danger">
+                                Model Height Is Required
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row" style="margin-top: 8px;">
+                        <div class="col">
+                            <label>Background Color</label>
+                            <app-color-selector [selectedColor]="newModelBackgroundColor" (colorSelected)="onNewModelBackgroundColorSelected($event)"></app-color-selector>
+                        </div>
+                        <div class="col">
+                            <div class="grid" style="margin-top: 33px; width: 128px; height: 30px; border: 1px solid black;">
+                                <div [style.backgroundColor]="newModelBackgroundColorDisplay.toStyleString()" style="width: 100%; height: 100%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="newModelBackgroundColor.a !== 0" class="form-row" style="margin-top: 8px;">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="formControlRange">Background Opacity</label>
+                                <input type="range" class="form-control-range" min="0" max="255" [(ngModel)]="newModelBackgroundOpacity"
+                                    name="newModelBackgroundOpacity" id="newModelBackgroundOpacity" (change)="onNewModelBackgroundOpacityChanged($event)" >
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group" style="margin-top: 30px;">
+                                <span><strong>{{newModelBackgroundOpacity}}</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" (click)="createModel(newmodelform)">Create Model
+                    <span *ngIf="creatingModel" class="spinner-border spinner-border-sm"></span>
+                </button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Model Action Modal -->
+<div class="modal" id="modelActionModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Model Action</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <button class='btn btn-primary py-2 px-2 mx-2' (click)="modelActionLoad()">
+                    <span>Edit Model</span>
+                </button>
+                <button *ngIf="model != null && modelContainerID == selectedContainerID" class='btn btn-primary py-2 px-2 mx-2'>
+                    <span>Embed Model</span>
+                </button>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Image Preview Modal -->
+<div class="modal" id="imagePreviewModal">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Image Action</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div>
+                    <img [src]="imagePreviewSource" (load)="imagePreviewLoaded()" class="img-responsive m-2" />
+                </div>
+
+                <button class='btn btn-primary py-2 px-2 mx-2' (click)="imageActionView()">
+                    <span>View Image</span>
+                </button>
+                <button *ngIf="model != null && modelContainerID == selectedContainerID"
+                class='btn btn-primary py-2 px-2 mx-2' (click)="imageActionCreateElement()">
+                    <span>Create Image Element</span>
+                </button>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>

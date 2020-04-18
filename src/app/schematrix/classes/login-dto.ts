@@ -4,7 +4,9 @@ export class LoginDTO {
 
     Name: string;
 
-    Password: string
+    Password: string;
+
+    NewPassword: string;
 
     Alias: string;
 

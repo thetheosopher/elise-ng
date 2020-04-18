@@ -1,9 +1,11 @@
-<h3><a routerLink='/sketches'>Sketches</a>&nbsp;/&nbsp;{{modelName}}</h3>
-<div *ngIf='errorMessage' class='alert alert-danger'>
-    <strong>Error</strong> {{errorMessage}}
+<div style='padding: 10px;'>
+    <h3><a routerLink='/sketches'>Sketches</a>&nbsp;/&nbsp;{{modelName}}</h3>
+    <div *ngIf='errorMessage' class='alert alert-danger'>
+        <strong>Error</strong> {{errorMessage}}
+    </div>
+    <div [innerHtml]="modelDescription"></div>
+    <div class="border" style="display: inline-block;">
+        <app-elise-view #elise [model]="model" [scale]="scale"></app-elise-view>
+    </div>
+    <pre>{{modelCode}}</pre>
 </div>
-<div [innerHtml]="modelDescription"></div>
-<div class="border" style="display: inline-block;">
-    <app-elise-view #elise [model]="model" [scale]="scale"></app-elise-view>
-</div>
-<pre>{{modelCode}}</pre>

@@ -5,6 +5,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
 import { EliseModule } from './elise/elise.module';
 import { SchematrixModule } from './schematrix/schematrix.module';
+import { TreeModule } from 'angular-tree-component';
+import { AngularSplitModule } from 'angular-split';
 
 import { AppComponent } from './app.component';
 import { RedGreenBlueComponent } from './components/redgreenblue/redgreenblue.component';
@@ -31,6 +33,16 @@ import { ResendRegistrationCodeComponent } from './components/resend-registratio
 import { SendPasswordResetCodeComponent } from './components/send-password-reset-code/send-password-reset-code.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { ContainerSelectorComponent } from './components/container-selector/container-selector.component';
+import { ContainerTreeComponent } from './components/container-tree/container-tree.component';
+import { ContainerExplorerComponent } from './components/container-explorer/container-explorer.component';
+import { ProgressComponent } from './components/progress/progress.component';
+import { DndDirective } from './directives/dnd.directive';
+import { AlertComponent } from './components/alert/alert.component';
+import { ChangePasswordComponent } from './components/change-password/change-password.component';
+import { ModelDesignerComponent } from './components/model-designer/model-designer.component';
+import { FileListComponent } from './components/file-list/file-list.component';
+import { UploadListComponent } from './components/upload-list/upload-list.component';
+import { ColorSelectorComponent } from './components/color-selector/color-selector.component';
 
 @NgModule({
     declarations: [
@@ -58,7 +70,17 @@ import { ContainerSelectorComponent } from './components/container-selector/cont
         ResendRegistrationCodeComponent,
         SendPasswordResetCodeComponent,
         FooterComponent,
-        ContainerSelectorComponent
+        ContainerSelectorComponent,
+        ContainerTreeComponent,
+        ContainerExplorerComponent,
+        ProgressComponent,
+        DndDirective,
+        AlertComponent,
+        ChangePasswordComponent,
+        ModelDesignerComponent,
+        FileListComponent,
+        UploadListComponent,
+        ColorSelectorComponent
     ],
     imports: [
         BrowserModule,
@@ -66,7 +88,9 @@ import { ContainerSelectorComponent } from './components/container-selector/cont
         HttpClientModule,
         FormsModule,
         EliseModule,
-        SchematrixModule
+        SchematrixModule,
+        TreeModule.forRoot(),
+        AngularSplitModule.forRoot()
     ],
     bootstrap: [ AppComponent ]
 })

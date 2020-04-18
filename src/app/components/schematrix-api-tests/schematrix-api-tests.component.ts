@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ApiService } from '../../schematrix/services/api.service';
 
 @Component({
@@ -10,7 +10,7 @@ export class SchematrixApiTestsComponent implements OnInit {
 
     constructor(private apiService: ApiService) { }
 
-    private apiHealthStatus: string;
+    apiHealthStatus: string;
 
     statusClass = 'text-primary';
 

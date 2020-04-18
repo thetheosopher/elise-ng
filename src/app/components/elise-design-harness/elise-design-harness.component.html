@@ -1,69 +1,64 @@
-<h3><a routerLink='/tests/design'>Design Tests</a>&nbsp;/&nbsp;{{title}}</h3>
-<div *ngIf='errorMessage' class='alert alert-danger'>
-    <strong>Error</strong> {{errorMessage}}
-</div>
-<div>{{description}}</div>
-<table>
-    <tr style="vertical-align: baseline;">
-        <td>
-            <label for="scale" style="margin-right: 4px;"><strong>Scale</strong></label>
-            <select id="scale" [(ngModel)]="scale">
-                <option [ngValue]="0.25">25%</option>
-                <option [ngValue]="0.5">50%</option>
-                <option [ngValue]="0.75">75%</option>
-                <option [ngValue]="1">100%</option>
-                <option [ngValue]="1.5">150%</option>
-                <option [ngValue]="2">200%</option>
-                <option [ngValue]="3">300%</option>
-                <option [ngValue]="4">400%</option>
-                <option [ngValue]="5">500%</option>
-            </select>
-        </td>
-        <td>
-            <select id="background" [(ngModel)]="background" style="margin-left: 4px;">
-                <option value="grid">Grid</option>
-                <option value="white">White</option>
-                <option value="black">Black</option>
-                <option value="gray">Gray</option>
-            </select>
-        </td>
-        <td>
-            <input type="checkbox" [checked]="selectionEnabled" (change)="selectionEnabled = !selectionEnabled" style="margin-left: 8px;">
-            <label style="margin-left: 4px; margin-right: 16px;" ><strong>Select Mode</strong></label>
-        </td>
-        <td *ngIf="mouseOverView" style="min-width: 60px;">
-            <label for="xpos"><strong>X:</strong></label>&nbsp;
-            <span id="xpos">{{viewMouseX}}</span>
-        </td>
-        <td *ngIf="mouseOverView" style="min-width: 60px;">
-            <label for="ypos"><strong>Y:</strong></label>&nbsp;
-            <span id="ypos">{{viewMouseY}}</span>
-        </td>
-    </tr>
-</table>
-<div [ngClass]='backgroundClass()'>
-    <app-elise-design #elise [model]="model" [scale]="scale"
-    [selectionEnabled]="selectionEnabled"
-    (mouseMovedView)="mouseMovedView($event)"
-    (mouseEnteredView)="mouseEnteredView($event)"
-    (mouseLeftView)="mouseLeftView($event)"
-    (mouseDownView)="mouseDownView($event)"
-    (mouseUpView)="mouseUpView($event)"
-    (mouseEnteredElement)="mouseEnteredElement($event)"
-    (mouseLeftElement)="mouseLeftElement($event)"
-    (mouseDownElement)="mouseDownElement($event)"
-    (mouseUpElement)="mouseUpElement($event)"
-    (elementClicked)="elementClicked($event)"
-    (controllerSet)="controllerSet($event)"
-    (selectionChanged)="selectionChanged($event)"
-    (elementCreated)="elementCreated($event)"
-    ></app-elise-design>
-</div>
-<div>
-    <label for='last-message'>Last Event</label>
-    <div id='last-message'>{{lastMessage}}</div>
-</div>
-<div style='margin-top: 8px;' *ngIf='displayModel'>
-    <label for='model-json'>Model</label>
-    <pre class='code' id='model-json'>{{formattedJson}}</pre>
+<div style='padding: 10px;'>
+    <h3><a routerLink='/tests/design'>Design Tests</a>&nbsp;/&nbsp;{{title}}</h3>
+    <div *ngIf='errorMessage' class='alert alert-danger'>
+        <strong>Error</strong> {{errorMessage}}
+    </div>
+    <div>{{description}}</div>
+    <table>
+        <tr style="vertical-align: baseline;">
+            <td>
+                <label for="scale" style="margin-right: 4px;"><strong>Scale</strong></label>
+                <select id="scale" [(ngModel)]="scale">
+                    <option [ngValue]="0.25">25%</option>
+                    <option [ngValue]="0.5">50%</option>
+                    <option [ngValue]="0.75">75%</option>
+                    <option [ngValue]="1">100%</option>
+                    <option [ngValue]="1.5">150%</option>
+                    <option [ngValue]="2">200%</option>
+                    <option [ngValue]="3">300%</option>
+                    <option [ngValue]="4">400%</option>
+                    <option [ngValue]="5">500%</option>
+                </select>
+            </td>
+            <td>
+                <select id="background" [(ngModel)]="background" style="margin-left: 4px;">
+                    <option value="grid">Grid</option>
+                    <option value="white">White</option>
+                    <option value="black">Black</option>
+                    <option value="gray">Gray</option>
+                </select>
+            </td>
+            <td>
+                <input type="checkbox" [checked]="selectionEnabled" (change)="selectionEnabled = !selectionEnabled"
+                    style="margin-left: 8px;">
+                <label style="margin-left: 4px; margin-right: 16px;"><strong>Select Mode</strong></label>
+            </td>
+            <td *ngIf="mouseOverView" style="min-width: 60px;">
+                <label for="xpos"><strong>X:</strong></label>&nbsp;
+                <span id="xpos">{{viewMouseX}}</span>
+            </td>
+            <td *ngIf="mouseOverView" style="min-width: 60px;">
+                <label for="ypos"><strong>Y:</strong></label>&nbsp;
+                <span id="ypos">{{viewMouseY}}</span>
+            </td>
+        </tr>
+    </table>
+    <div [ngClass]='backgroundClass()'>
+        <app-elise-design #elise [model]="model" [scale]="scale" [selectionEnabled]="selectionEnabled"
+            (mouseMovedView)="mouseMovedView($event)" (mouseEnteredView)="mouseEnteredView($event)"
+            (mouseLeftView)="mouseLeftView($event)" (mouseDownView)="mouseDownView($event)"
+            (mouseUpView)="mouseUpView($event)" (mouseEnteredElement)="mouseEnteredElement($event)"
+            (mouseLeftElement)="mouseLeftElement($event)" (mouseDownElement)="mouseDownElement($event)"
+            (mouseUpElement)="mouseUpElement($event)" (elementClicked)="elementClicked($event)"
+            (controllerSet)="controllerSet($event)" (selectionChanged)="selectionChanged($event)"
+            (elementCreated)="elementCreated($event)"></app-elise-design>
+    </div>
+    <div>
+        <label for='last-message'>Last Event</label>
+        <div id='last-message'>{{lastMessage}}</div>
+    </div>
+    <div style='margin-top: 8px;' *ngIf='displayModel'>
+        <label for='model-json'>Model</label>
+        <pre class='code' id='model-json'>{{formattedJson}}</pre>
+    </div>
 </div>

@@ -1,4 +1,5 @@
 export const environment = {
   production: true,
-  schematrixBaseUrl: 'https://localhost:44325'
+  schematrixBaseUrl: 'https://www.schematrix.com/security'
+  // schematrixBaseUrl: 'https://localhost:44325'
 };

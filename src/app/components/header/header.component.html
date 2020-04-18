@@ -1,4 +1,4 @@
-<nav class='navbar navbar-expand-sm navbar-dark bg-dark' style='margin-bottom: 8px;'>
+<nav class='navbar navbar-expand-sm navbar-dark bg-dark'>
     <a class='navbar-brand' href='#'>Elise Library Demos</a>
     <button class='navbar-toggler' type='button' data-toggle='collapse' data-target='#navbarSupportedContent'
         aria-controls='navbarSupportedContent' aria-expanded='false' aria-label='Toggle navigation'>
@@ -14,8 +14,8 @@
                 </a>
                 <div class="dropdown-menu">
                     <a class="dropdown-item" routerLink='/primitives'>Primitives</a>
-                    <a class="dropdown-item" href="/samples">Samples</a>
-                    <a class="dropdown-item" href="/sketches">Sketches</a>
+                    <a class="dropdown-item" routerLink="/samples">Samples</a>
+                    <a class="dropdown-item" routerLink="/sketches">Sketches</a>
                 </div>
             </li>
 <!--
@@ -36,9 +36,11 @@
                 </a>
                 <div class="dropdown-menu">
                     <a class="dropdown-item" routerLink='/tests/view'>View Tests</a>
-                    <a class="dropdown-item" href='/tests/design'>Design Tests</a>
-                    <a class="dropdown-item" href='/tests/surface'>Surface Tests</a>
-                    <a class="dropdown-item" href='/api-tests'>API Tests</a>
+                    <a class="dropdown-item" routerLink='/tests/design'>Design Tests</a>
+                    <a class="dropdown-item" routerLink='/tests/surface'>Surface Tests</a>
+                    <a class="dropdown-item" routerLink='/tests/container-explorer'>Container Explorer</a>
+                    <a class="dropdown-item" routerLink='/tests/model-designer'>Model Designer</a>
+                    <a class="dropdown-item" routerLink='/api-tests'>API Tests</a>
                 </div>
             </li>
 <!--

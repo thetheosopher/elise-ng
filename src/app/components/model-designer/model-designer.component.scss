@@ -1,0 +1,45 @@
+.fileover {
+    border: 3px dashed green;
+}
+
+.toolbar {
+    padding-left: 5px;
+    padding-top: 5px;
+    border-top: 5px solid rgb(231, 231, 231);
+    border-left: 5px solid rgb(231, 231, 231);
+    border-right: 5px solid rgb(231, 231, 231);
+}
+
+.view-host {
+    display: inline-block;
+}
+
+.grid {
+    background-image: url(../../../assets/images/grid.png);
+}
+
+.black {
+    background-color: black;
+}
+
+.white {
+    background-color: white;
+}
+
+.gray {
+    background-color: gray;
+}
+
+.modal {
+    text-align: center;
+}
+
+.modal-dialog {
+    display: inline-block;
+    width: auto;
+}
+
+.img-responsive {
+    max-height: calc(100vh - 320px);
+    max-width: calc(100vw - 120px);
+}

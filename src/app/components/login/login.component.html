@@ -37,6 +37,7 @@
             <dd class="text-info">{{loginDTO.Email}}</dd>
         </dl>
         <button class="btn btn-danger" (click)="onLogout()">Logout</button>
+        <button class='btn btn-link' routerLink='/change-password'>Change Password</button>
     </div>
     <div *ngIf="errorMessage" class="alert alert-danger" style="margin-top: 8px;">{{errorMessage}}</div>
 </div>

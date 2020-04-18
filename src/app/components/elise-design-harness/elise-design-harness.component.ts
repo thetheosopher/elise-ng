@@ -11,8 +11,6 @@ import { EliseDesignComponent } from '../../elise/design/elise-design.component'
 import { DesignTestService } from '../../services/design-test.service';
 import { ISampleDesigner } from '../../interfaces/sample-designer';
 
-import { ViewEncapsulation } from '@angular/core';
-
 @Component({
     selector: 'app-elise-design-harness',
     templateUrl: './elise-design-harness.component.html',

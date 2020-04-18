@@ -1,0 +1,42 @@
+.files-list {
+    margin-top: 0;
+
+    .single-file {
+        display: flex;
+        padding: 0.5rem;
+        justify-content: space-between;
+        align-items: center;
+        border: solid 1px lightgray;
+        margin-bottom: 0;
+
+        .flexend {
+            display: flex;
+            margin-left: 0.5rem;
+            cursor: pointer;
+            align-self: flex-end;
+        }
+
+        display: flex;
+        flex-grow: 1;
+
+        .name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #353f4a;
+            margin: 0;
+        }
+
+        .size {
+            font-size: 12px;
+            font-weight: 500;
+            color: #a4a4a4;
+            margin: 0;
+            margin-bottom: 0.25rem;
+            display: inline-block;
+        }
+
+        .info {
+            width: 100%;
+        }
+    }
+}

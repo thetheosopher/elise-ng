@@ -1,10 +1,13 @@
 import { Injectable, EventEmitter, Output } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ContainerDTO } from '../classes/container-dto';
+import { ContainerFolderDTO } from '../classes/container-folder-dto';
 import { LoginDTO } from '../classes/login-dto';
 import { RegistrationInfoDTO } from '../classes/registration-info-dto';
 import { UserRegistrationDTO } from '../classes/user-registration-dto';
 import { Observable } from 'rxjs';
+import { ManifestDTO } from '../classes/manifest-dto';
+import { SignedUrlRequestDTO } from '../classes/signed-url-request-dto';
 
 @Injectable({
     providedIn: 'root'
@@ -56,6 +59,25 @@ export class ApiService {
         this.errorEvent.emit(message);
     }
 
+    private handleError(response: HttpErrorResponse) {
+        if (response.error && !response.error.type) {
+            this.onError(response.error);
+        }
+        else if (response.error instanceof ErrorEvent) {
+            // A client-side or network error occurred. Handle it accordingly.
+            this.onError('Network Error: ' + response.error.message);
+        }
+        else if(response.error instanceof ProgressEvent) {
+            this.onError('Unable To Process Request.');
+        }
+        else {
+            // The backend returned an unsuccessful response code.
+            // The response body may contain clues as to what went wrong,
+            this.onError(
+                `Error Code ${response.status}, ${response.error}`);
+        }
+    };
+
     authenticate(username: string, password: string) {
         if (!username.trim()) {
             this.onError('User name is required.');
@@ -86,13 +108,7 @@ export class ApiService {
                 this.onLogin();
             },
             error: (response) => {
-                if (response.error) {
-                    this.onError(response.error.Message);
-                }
-                else {
-                    this.onError(response.statusText);
-                }
-                // this.onLogout();
+                this.handleError(response);
             }
         })
     }
@@ -124,14 +140,15 @@ export class ApiService {
         }
 
         const url = this.baseUrl + '/api/authenticated';
-        this.http.get(url, {
+        this.http.get<LoginDTO>(url, {
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + this.login.Token,
-                'Access-Control-Expose-Headers': '*'
-            }
+                'Authorization': 'Bearer ' + this.login.Token
+            },
+            observe: 'response'
         }).subscribe({
-            next: (loginDTO: LoginDTO) => {
+            next: (response) => {
+                const loginDTO = response.body;
                 this.login.LoginID = loginDTO.LoginID;
                 this.login.Name = loginDTO.Name;
                 this.login.Alias = loginDTO.Alias;
@@ -143,10 +160,17 @@ export class ApiService {
                 this.login.CreateTime = loginDTO.CreateTime;
                 this.login.TokenExpiration = loginDTO.TokenExpiration;
                 localStorage.setItem('login', JSON.stringify(this.login));
+                this.isLoggedIn = true;
                 this.loginEvent.emit(this.login);
             },
-            error: (er) => {
-                this.errorEvent.emit('Token expired. Please login.')
+            error: (response) => {
+                const header = response.headers.get('WWW-Authenticate');
+                if (header && header.indexOf('expired') != 1) {
+                    this.errorEvent.emit('Token has expired. Please re-login. ')
+                    this.logoutEvent.emit();
+                    return;
+                }
+                this.errorEvent.emit('Token is invalid. Please login.');
                 this.logoutEvent.emit();
             }
         });
@@ -167,8 +191,8 @@ export class ApiService {
                 next: (registrationInfoDTO: RegistrationInfoDTO) => {
                     observer.next(registrationInfoDTO);
                 },
-                error: (er) => {
-                    observer.error(er);
+                error: (err) => {
+                    observer.error(err);
                 }
             });
         });
@@ -190,8 +214,8 @@ export class ApiService {
                 next: (registrationInfoDTO: RegistrationInfoDTO) => {
                     observer.next(registrationInfoDTO);
                 },
-                error: (er) => {
-                    observer.error(er);
+                error: (err) => {
+                    observer.error(err);
                 }
             });
         });
@@ -211,11 +235,11 @@ export class ApiService {
                     observer.next(userRegistrationDTO);
                 },
                 error: (response) => {
-                    if (response.error) {
-                        observer.error(response.error.Message);
+                    if (response.error && !response.error.type) {
+                        observer.error(response.error);
                     }
                     else {
-                        observer.error(response.statusText);
+                        observer.error(response.statusCode);
                     }
                 }
             })
@@ -239,7 +263,7 @@ export class ApiService {
                     observer.next(loginDTO);
                 },
                 error: (response) => {
-                    if (response.error) {
+                    if (response.error && !response.error.type) {
                         observer.error(response.error.Message);
                     }
                     else {
@@ -264,7 +288,7 @@ export class ApiService {
                     observer.next(userRegistrationDTO);
                 },
                 error: (response) => {
-                    if (response.error) {
+                    if (response.error && !response.error.type) {
                         observer.error(response.error.Message);
                     }
                     else {
@@ -289,7 +313,7 @@ export class ApiService {
                     observer.next(userRegistrationDTO);
                 },
                 error: (response) => {
-                    if (response.error) {
+                    if (response.error && !response.error.type) {
                         observer.error(response.error.Message);
                     }
                     else {
@@ -314,7 +338,40 @@ export class ApiService {
                     observer.next(result);
                 },
                 error: (response) => {
-                    if (response.error) {
+                    if (response.error && !response.error.type) {
+                        observer.error(response.error.Message);
+                    }
+                    else {
+                        observer.error(response.statusText);
+                    }
+                }
+            })
+        });
+        return observable;
+    }
+
+    changePassword(loginDTO: LoginDTO) {
+        const observable = new Observable<String>((observer) => {
+            var requestString = JSON.stringify(loginDTO);
+            const url = this.baseUrl + '/api/changepassword/';
+            if (!this.login || !this.login.Token) {
+                observer.error(new Error('Not logged in.'));
+                return;
+            }
+            this.http.post(url, requestString, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + this.login.Token
+                }
+            }).subscribe({
+                next: (result) => {
+                    observer.next('OK');
+                },
+                error: (response) => {
+                    if(response.status === 401) {
+                        observer.error('Password update failed');
+                    }
+                    else if (response.error && !response.error.type) {
                         observer.error(response.error.Message);
                     }
                     else {
@@ -336,8 +393,7 @@ export class ApiService {
             this.http.get(url, {
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + this.login.Token,
-                    'Access-Control-Expose-Headers': '*'
+                    'Authorization': 'Bearer ' + this.login.Token
                 }
             }).subscribe({
                 next: (containers: ContainerDTO[]) => {
@@ -362,8 +418,7 @@ export class ApiService {
             this.http.post(url, requestString, {
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + this.login.Token,
-                    'Access-Control-Expose-Headers': '*'
+                    'Authorization': 'Bearer ' + this.login.Token
                 }
             }).subscribe({
                 next: (containerDTO: ContainerDTO) => {
@@ -371,12 +426,146 @@ export class ApiService {
                 },
                 error: (response) => {
                     observer.error('Unable to create container. Please ensure name is unique and contains valid characters.');
-                    if (response.error) {
-                        observer.error(response.error.Message);
-                    }
-                    else {
-                        observer.error(response.statusText);
-                    }
+                }
+            })
+        });
+        return observable;
+    }
+
+    deleteContainer(containerID: string) {
+        const observable = new Observable((observer) => {
+            if (!this.login || !this.login.Token) {
+                observer.error(new Error('Not logged in.'));
+                return;
+            }
+            const url = this.baseUrl + '/api/container/' + encodeURIComponent(containerID);
+            this.http.delete(url, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + this.login.Token
+                }
+            }).subscribe({
+                next: () => {
+                    observer.next();
+                },
+                error: (response) => {
+                    observer.error('Unable to delete container.');
+                }
+            })
+        });
+        return observable;
+    }
+
+    getContainerManifest(containerID: string, full: boolean = false, rootPath: string = '/', includeFiles: boolean = false, includeGetUrls: boolean = false, includePutUrls: boolean = false) {
+        const observable = new Observable<ManifestDTO>((observer) => {
+            if (!this.login || !this.login.Token) {
+                observer.error(new Error('Not logged in.'));
+                return;
+            }
+            let url = this.baseUrl + '/api/container/manifest/' + containerID + '?';
+            if (includeFiles) {
+                url += 'includeFiles=true';
+            }
+            else {
+                url += 'includeFiles=false';
+            }
+            if (full) {
+                url += '&full=true';
+            }
+            if (rootPath) {
+                url += '&rootPath=' + encodeURIComponent(rootPath);
+            }
+            if (includeGetUrls) {
+                url += '&includeGetUrls=true';
+            }
+            if (includePutUrls) {
+                url += '&includePutUrls=true';
+            }
+            this.http.get(url, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + this.login.Token
+                }
+            }).subscribe({
+                next: (manifest: ManifestDTO) => {
+                    observer.next(manifest);
+                },
+                error: (er) => {
+                    observer.error(er);
+                }
+            });
+        });
+        return observable;
+    }
+
+    getSignedUrl(urlRequest: SignedUrlRequestDTO) {
+        const observable = new Observable<SignedUrlRequestDTO>((observer) => {
+            if (!this.login || !this.login.Token) {
+                observer.error(new Error('Not logged in.'));
+                return;
+            }
+            var requestString = JSON.stringify(urlRequest);
+            const url = this.baseUrl + '/api/container/getsignedurl';
+            this.http.post(url, requestString, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + this.login.Token
+                }
+            }).subscribe({
+                next: (signedUrlRequest: SignedUrlRequestDTO) => {
+                    observer.next(signedUrlRequest);
+                },
+                error: (response) => {
+                    observer.error('Unable to retrieve signed URL.');
+                }
+            })
+        });
+        return observable;
+    }
+
+    createFolder(containerFolderDTO: ContainerFolderDTO) {
+        const observable = new Observable<ContainerFolderDTO>((observer) => {
+            if (!this.login || !this.login.Token) {
+                observer.error(new Error('Not logged in.'));
+                return;
+            }
+            var requestString = JSON.stringify(containerFolderDTO);
+            const url = this.baseUrl + '/api/container/folder/';
+            this.http.post(url, requestString, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + this.login.Token
+                }
+            }).subscribe({
+                next: (containerFolderDTO: ContainerFolderDTO) => {
+                    observer.next(containerFolderDTO);
+                },
+                error: (response) => {
+                    observer.error('Unable to create folder. Please ensure name is unique and contains valid characters.');
+                }
+            })
+        });
+        return observable;
+    }
+
+    deleteFolder(containerID: string, path: string) {
+        const observable = new Observable<ContainerFolderDTO>((observer) => {
+            if (!this.login || !this.login.Token) {
+                observer.error(new Error('Not logged in.'));
+                return;
+            }
+            const url = this.baseUrl + '/api/container/folder/?ContainerID=' + encodeURIComponent(containerID) + '&path=' + encodeURIComponent(path);
+            this.http.delete(url, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + this.login.Token
+                }
+            }).subscribe({
+                next: () => {
+                    observer.next();
+                },
+                error: (response) => {
+                    observer.error('Unable to delete folder.');
                 }
             })
         });
