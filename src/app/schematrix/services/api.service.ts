@@ -1,4 +1,4 @@
-import { Injectable, EventEmitter, Output } from '@angular/core';
+import { Injectable, EventEmitter, Output, Directive } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ContainerDTO } from '../classes/container-dto';
 import { ContainerFolderDTO } from '../classes/container-folder-dto';
@@ -9,6 +9,7 @@ import { Observable } from 'rxjs';
 import { ManifestDTO } from '../classes/manifest-dto';
 import { SignedUrlRequestDTO } from '../classes/signed-url-request-dto';
 
+@Directive()
 @Injectable({
     providedIn: 'root'
 })

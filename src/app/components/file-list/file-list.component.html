@@ -59,12 +59,8 @@
 
             <!-- Modal footer -->
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" (click)="onConfirmDeleteFile()"
-                    [disabled]='deletingFile'>Yes, Delete File
-                    <span *ngIf="deletingFile" class="spinner-border spinner-border-sm"></span>
-                </button>
-                <button type="button" class="btn btn-primary" data-dismiss='modal'
-                    [disabled]="deletingFile">No</button>
+                <button type="button" class="btn btn-danger" (click)="onConfirmDeleteFile()">Yes, Delete File</button>
+                <button type="button" class="btn btn-primary" data-dismiss='modal'>No</button>
             </div>
         </div>
     </div>

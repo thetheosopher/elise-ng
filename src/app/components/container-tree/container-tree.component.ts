@@ -14,7 +14,7 @@ declare var $: any;
 })
 export class ContainerTreeComponent implements OnInit {
 
-    @ViewChild(TreeComponent, { static: false }) tree: TreeComponent;
+    @ViewChild(TreeComponent) tree: TreeComponent;
 
     @Output() public folderPathSelected: EventEmitter<string | null> = new EventEmitter();
 

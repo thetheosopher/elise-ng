@@ -423,6 +423,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                     next: (modelJson: string) => {
                         try {
                             const model = Model.parse(modelJson);
+                            this.selectionEnabled = true;
                             this.setModel(model, this.selectedContainerID, this.selectedContainerName, modelPath);
                         }
                         catch (error) {
@@ -525,7 +526,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         });
     }
 
-    saveModel(newmodelform) {
+    saveModel() {
         this.isBusy = true;
 
         // Create Elise model
