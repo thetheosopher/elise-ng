@@ -9,8 +9,6 @@ import { ContainerTreeComponent } from '../../components/container-tree/containe
 import { SignedUrlRequestDTO } from '../../schematrix/classes/signed-url-request-dto';
 import { AlertService } from '../../services/alert.service';
 
-declare var $: any;
-
 @Component({
     selector: 'app-container-explorer',
     templateUrl: './container-explorer.component.html',
@@ -38,7 +36,6 @@ export class ContainerExplorerComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit() {
-        $('[data-toggle="tooltip"]').tooltip();
     }
 
     ngAfterViewInit() {

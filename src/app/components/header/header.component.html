@@ -6,19 +6,17 @@
     </button>
     <div class='collapse navbar-collapse' id='navbarSupportedContent'>
         <ul class='navbar-nav mr-auto'>
-
             <!-- Samples dropdown -->
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="samplesdrop" data-toggle="dropdown">
-                    Examples
-                </a>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" routerLink='/primitives'>Primitives</a>
-                    <a class="dropdown-item" routerLink="/samples">Samples</a>
-                    <a class="dropdown-item" routerLink="/sketches">Sketches</a>
+            <div ngbDropdown>
+                <button class="btn btn-link nav-link" id="samplesdrop" ngbDropdownToggle>Samples</button>
+                <div ngbDropdownMenu aria-labelledby="samplesdrop">
+                    <a ngbDropdownItem routerLink='/primitives'>Primitives</a>
+                    <a ngbDropdownItem routerLink="/samples">Samples</a>
+                    <a ngbDropdownItem routerLink="/sketches">Sketches</a>
                 </div>
-            </li>
-<!--
+            </div>
+
+            <!--
             <li class='nav-item'>
                 <a class='nav-link' routerLink='/primitives'>Primitives</a>
             </li>
@@ -30,19 +28,18 @@
             </li>
 -->
             <!-- Tests dropdown -->
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="testsdrop" data-toggle="dropdown">
-                    Tests
-                </a>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" routerLink='/tests/view'>View Tests</a>
-                    <a class="dropdown-item" routerLink='/tests/design'>Design Tests</a>
-                    <a class="dropdown-item" routerLink='/tests/surface'>Surface Tests</a>
-                    <a class="dropdown-item" routerLink='/tests/container-explorer'>Container Explorer</a>
-                    <a class="dropdown-item" routerLink='/tests/model-designer'>Model Designer</a>
-                    <a class="dropdown-item" routerLink='/api-tests'>API Tests</a>
+            <div ngbDropdown>
+                <button class="btn btn-link nav-link" id="testsdrop" ngbDropdownToggle>Tests</button>
+                <div ngbDropdownMenu aria-labelledby="testsdrop">
+                    <a ngbDropdownItem routerLink='/tests/view'>View Tests</a>
+                    <a ngbDropdownItem routerLink='/tests/design'>Design Tests</a>
+                    <a ngbDropdownItem routerLink='/tests/surface'>Surface Tests</a>
+                    <a ngbDropdownItem routerLink='/tests/container-explorer'>Container Explorer</a>
+                    <a ngbDropdownItem routerLink='/tests/model-designer'>Model Designer</a>
+                    <a ngbDropdownItem routerLink='/api-tests'>API Tests</a>
                 </div>
-            </li>
+            </div>
+
 <!--
             <li class='nav-item'>
                 <a class='nav-link' routerLink='/tests/view'>View Tests</a>

@@ -22,8 +22,8 @@
                 Log In
                 <span *ngIf="processing" class="spinner-border spinner-border-sm"></span>
             </button>
-            <button class='btn btn-link' routerLink='/register'>Register</button>
-            <button class='btn btn-link' routerLink='/send-password-reset-code'>Reset Password</button>
+            <button type='button' class='btn btn-link' routerLink='/register'>Register</button>
+            <button type='button' class='btn btn-link' routerLink='/send-password-reset-code'>Reset Password</button>
         </form>
     </div>
     <div *ngIf="isLoggedIn===true">
@@ -36,8 +36,8 @@
             <dt>Email</dt>
             <dd class="text-info">{{loginDTO.Email}}</dd>
         </dl>
-        <button class="btn btn-danger" (click)="onLogout()">Logout</button>
-        <button class='btn btn-link' routerLink='/change-password'>Change Password</button>
+        <button type='button' class="btn btn-danger" (click)="onLogout()">Logout</button>
+        <button type='button' class='btn btn-link' routerLink='/change-password'>Change Password</button>
     </div>
     <div *ngIf="errorMessage" class="alert alert-danger" style="margin-top: 8px;">{{errorMessage}}</div>
 </div>

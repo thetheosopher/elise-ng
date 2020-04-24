@@ -1,7 +1,6 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter } from '@angular/core';
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { ManifestFileDTO } from '../../schematrix/classes/manifest-file-dto';
-
-declare var $: any;
 
 @Component({
     selector: 'app-file-list',
@@ -30,11 +29,25 @@ export class FileListComponent implements OnInit {
 
     @Output() public deleteFile: EventEmitter<string> = new EventEmitter();
 
+    @ViewChild('deleteFileModal', { static: true })
+    deleteFileModal: ElementRef;
+
     selectedFile: string;
 
-    constructor() { }
+    currentModal: NgbModalRef;
+
+    constructor(private modalService: NgbModal) { }
 
     ngOnInit() {
+    }
+
+    openModal(content) {
+        this.currentModal = this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title' });
+        this.currentModal.result.then((result) => {
+            // console.log(`Closed with: ${result}`);
+        }, (reason) => {
+            // console.log(`Dismissed ${reason}`);
+        });
     }
 
     formatBytes(bytes, decimals) {
@@ -60,7 +73,7 @@ export class FileListComponent implements OnInit {
     onRequestDeleteFile(file) {
         if(this.confirmFileDelete) {
             this.selectedFile = file;
-            $("#deleteFileModal").modal('show');
+            this.openModal(this.deleteFileModal);
         }
         else {
             this.deleteFile.emit(file);
@@ -69,6 +82,6 @@ export class FileListComponent implements OnInit {
 
     onConfirmDeleteFile() {
         this.deleteFile.emit(this.selectedFile);
-        $("#deleteFileModal").modal('hide');
+        this.currentModal.close();
     }
 }

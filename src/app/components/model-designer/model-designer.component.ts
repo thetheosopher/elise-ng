@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewChild, ViewChildren, QueryList, Input, Output, ElementRef, AfterViewInit } from '@angular/core';
+import { NgbModal, NgbModalRef, NgbNavChangeEvent } from '@ng-bootstrap/ng-bootstrap';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../../schematrix/services/api.service';
+import { ContainerUrlProxy } from '../../schematrix/classes/container-url-proxy';
 import { UploadService, UploadStateCode, Upload, UploadState } from '../../services/upload.service';
 import { ContainerDTO } from '../../schematrix/classes/container-dto';
 import { ManifestDTO } from '../../schematrix/classes/manifest-dto';
@@ -17,14 +19,15 @@ import { ElementBase } from 'elise-graphics/lib/elements/element-base';
 import { EliseDesignComponent } from '../../elise/design/elise-design.component';
 
 import { DesignTool } from 'elise-graphics/lib/design/tools/design-tool';
+import { EllipseTool } from 'elise-graphics/lib/design/tools/ellipse-tool';
 import { LineTool } from 'elise-graphics/lib/design/tools/line-tool';
+import { RectangleTool } from 'elise-graphics/lib/design/tools/rectangle-tool';
+import { PenTool } from 'elise-graphics/lib/design/tools/pen-tool';
 
 import { LinearGradientFill } from 'elise-graphics/lib/fill/linear-gradient-fill';
 import { RadialGradientFill } from 'elise-graphics/lib/fill/radial-gradient-fill';
-import { Color, NamedColor, ViewDragArgs, ImageElement, BitmapResource } from 'elise-graphics';
+import { Color, ViewDragArgs, ImageElement, BitmapResource, ModelResource, ModelElement } from 'elise-graphics';
 import { Utility } from 'elise-graphics'
-
-declare var $: any;
 
 @Component({
     selector: 'app-model-designer',
@@ -36,16 +39,30 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     @ViewChild(ContainerTreeComponent, { static: true })
     containerTree: ContainerTreeComponent;
 
+    @ViewChild('errorModal', { static: true })
+    errorModal: ElementRef;
+
+    @ViewChild('newModelModal', { static: true })
+    newModelModal: ElementRef;
+
+    @ViewChild('modelActionModal', { static: true })
+    modelActionModal: ElementRef;
+
+    @ViewChild('imagePreviewModal', { static: true })
+    imagePreviewModal: ElementRef;
+
     @ViewChildren('fileUploadInput', { read: ElementRef })
     fileUploadInputRefs: QueryList<ElementRef>;
     fileUploadInputElement: HTMLInputElement;
 
-    @ViewChild('elise', { read: ElementRef, static: true })
+    @ViewChild('elise', { read: ElementRef, static: false })
     eliseViewElementRef: ElementRef;
 
     selectedContainerID: string | null;
     selectedContainerName: string;
     @Output() public selectedFolderPath?: string;
+
+    currentModal: NgbModalRef;
 
     folderFiles?: ManifestFileDTO[];
     uploads: Upload[] = [];
@@ -54,23 +71,22 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
     readonly MODEL_MIME_TYPE = 'application/elise';
 
-    eliseView: EliseDesignComponent;
+    // eliseView: EliseDesignComponent;
     controller: DesignController;
     lastMessage = '-';
     scale = 1;
-    background = 'black';
+    background = 'grid';
     viewMouseX: number;
     viewMouseY: number;
     mouseOverView = false;
-    displayModel = true;
     formattedJson: string;
     isBusy: boolean = false;
     isDragging: boolean = false;
 
-    _selectionEnabled: boolean;
     _activeStroke: string;
     _activeFill: string | LinearGradientFill | RadialGradientFill;
-    _activeTool: LineTool;
+    _activeTool?: DesignTool;
+    _activeToolName: string = 'select';
 
     creatingModel: boolean;
     newModelName: string;
@@ -86,28 +102,28 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     modelPath: string;
 
     imagePreviewSource: string;
+    imagePreviewInfo: string;
+
+    modelPreviewModel: Model;
+    modelPreviewInfo: string;
+    modelPreviewScale: number = 1.0;
 
     constructor(
         private apiService: ApiService,
         private uploadService: UploadService,
         private http: HttpClient,
-        private alertService: AlertService) {
+        private alertService: AlertService,
+        private modalService: NgbModal) {
     }
 
     ngOnInit() {
 
         this._activeStroke = 'Black,2';
         this._activeFill = '0.5;White';
-
-        const lineTool = new LineTool();
-        lineTool.stroke = this._activeStroke;
-        this._activeTool = lineTool;
-
-        $('[data-toggle="tooltip"]').tooltip();
     }
 
     ngAfterViewInit() {
-        this.eliseView = this.eliseViewElementRef.nativeElement;
+        // this.eliseView = this.eliseViewElementRef.nativeElement;
         this.fileUploadInputRefs.changes.subscribe((refs: QueryList<ElementRef>) => {
             if (refs.length > 0) {
                 this.fileUploadInputElement = refs.first.nativeElement;
@@ -130,27 +146,60 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         };
     }
 
-    @Input()
-    set selectionEnabled(enabled: boolean) {
-        if (enabled != this._selectionEnabled) {
-            this._selectionEnabled = enabled;
-            if (enabled) {
-                if (this.controller) {
-                    this.controller.clearActiveTool();
-                }
+    setActiveTool(tool: DesignTool | null) {
+        if(tool) {
+            this._activeTool = tool;
+            if(this.controller) {
+                this.controller.setActiveTool(tool);
+                this.controller.selectionEnabled = false;
             }
-            else {
-                if (this._activeTool) {
-                    if (this.controller) {
-                        this.controller.setActiveTool(this._activeTool);
-                    }
-                }
+        }
+        else {
+            this._activeTool = null;
+            if(this.controller) {
+                this.controller.clearActiveTool();
+                this.controller.selectionEnabled = true;
             }
         }
     }
 
-    get selectionEnabled(): boolean {
-        return this._selectionEnabled;
+    set activeToolName(value: string) {
+        this._activeToolName = value;
+        switch(this.activeToolName.toLowerCase()) {
+            case 'select':
+                this.setActiveTool(null);
+                break;
+
+            case 'pen':
+                const penTool = new PenTool();
+                penTool.stroke = this._activeStroke;
+                this.setActiveTool(penTool);
+                break;
+
+            case 'line':
+                const lineTool = new LineTool();
+                lineTool.stroke = this._activeStroke;
+                this.setActiveTool(lineTool);
+                break;
+
+            case 'rectangle':
+                const rectangleTool = new RectangleTool();
+                rectangleTool.stroke = this._activeStroke;
+                rectangleTool.fill = this._activeFill;
+                this.setActiveTool(rectangleTool);
+                break;
+
+            case 'ellipse':
+                const ellipseTool = new EllipseTool();
+                ellipseTool.stroke = this._activeStroke;
+                ellipseTool.fill = this._activeFill;
+                this.setActiveTool(ellipseTool);
+                break;
+            }
+    }
+
+    get activeToolName(): string {
+        return this._activeToolName;
     }
 
     onContainerSelected(container: ContainerDTO | null) {
@@ -207,6 +256,39 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                 this.onError(err);
             }
         });
+    }
+
+    openModal(content) {
+        this.currentModal = this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title' });
+        this.currentModal.result.then((result) => {
+            console.log(`Closed with: ${result}`);
+        }, (reason) => {
+            console.log(`Dismissed ${reason}`);
+        });
+    }
+
+    onNavChange(changeEvent: NgbNavChangeEvent) {
+        if(changeEvent.nextId === 1) {
+            if(this.controller) {
+                if(this._activeTool) {
+                    this.controller.setActiveTool(this._activeTool);
+                    this.controller.selectionEnabled = false;
+                }
+                else {
+                    this.controller.clearActiveTool();
+                    this.controller.selectionEnabled = true;
+                }
+            }
+        }
+        else if (changeEvent.nextId === 2) {
+            if(!this.model) {
+                this.formattedJson = '';
+            }
+            else {
+                this.formattedJson = this.model.formattedJSON();
+            }
+            // changeEvent.preventDefault();
+        }
     }
 
     onError(error, alertId = 'container-explorer') {
@@ -289,7 +371,8 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         switch (extension) {
             case '.mdl':
                 {
-                    $("#modelActionModal").modal();
+                    // this.openModal(this.modelActionModal);
+                    this.loadModelPreview();
                 }
                 break;
 
@@ -301,10 +384,6 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                 }
                 break;
         }
-
-        if (fileName.toLowerCase().endsWith('.mdl')) {
-            $("#modelActionModal").modal('show');
-        }
     }
 
     loadImagePreview() {
@@ -315,7 +394,11 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         this.apiService.getSignedUrl(urlRequest).subscribe({
             next: (signedUrlRequest) => {
                 this.imagePreviewSource = signedUrlRequest.Url;
-                // $("#imagePreviewModal").modal();
+                this.currentModal = this.modalService.open(this.imagePreviewModal, {
+                    ariaLabelledBy: 'modal-basic-title',
+                    size: 'xl',
+                    scrollable: true
+                });
             },
             error: (error) => {
                 this.onError(error);
@@ -323,17 +406,17 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         });
     }
 
-    imagePreviewLoaded() {
-        $("#imagePreviewModal").modal();
+    imagePreviewLoaded(event) {
+        this.imagePreviewInfo = event.target.naturalWidth + 'x' + event.target.naturalHeight;
     }
 
     imageActionView() {
-        $("#imagePreviewModal").modal('hide');
+        this.currentModal.close();
         this.loadImage(this.selectedFilePath);
     }
 
     imageActionCreateElement() {
-        $("#imagePreviewModal").modal('hide');
+        this.currentModal.close();
         const imageResourcePath = this.selectedFilePath;
         const urlRequest = new SignedUrlRequestDTO();
         urlRequest.ContainerID = this.selectedContainerID;
@@ -377,14 +460,109 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         });
     }
 
+    loadModelPreview() {
+        const urlRequest = new SignedUrlRequestDTO();
+        urlRequest.ContainerID = this.selectedContainerID;
+        urlRequest.Path = this.selectedFilePath;
+        urlRequest.Verb = 'get';
+        var self = this;
+        self.isBusy = true;
+        this.apiService.getSignedUrl(urlRequest).subscribe({
+            next: (signedUrlRequest) => {
+                self.http.get(signedUrlRequest.Url, { responseType: 'text' }).subscribe({
+                    next: (modelJson: string) => {
+                        try {
+                            const model = Model.parse(modelJson);
+                            const proxy = new ContainerUrlProxy(this.apiService, this.selectedContainerID);
+                            model.resourceManager.urlProxy = proxy;
+                            model.prepareResources(null, function (result) {
+                                self.isBusy = false;
+                                if (result) {
+                                    self.modelPreviewModel = model;
+                                    const wr = Math.min((window.innerWidth - 360), 1000) / model.getSize().width;
+                                    const hr = (window.innerHeight - 360) / model.getSize().height;
+                                    self.modelPreviewScale = Math.min(wr, hr);
+                                    self.modelPreviewInfo = model.getSize().width + 'x' + model.getSize().height;
+                                    self.currentModal = self.modalService.open(self.modelActionModal, {
+                                        ariaLabelledBy: 'modal-basic-title',
+                                        size: 'xl',
+                                        scrollable: true
+                                    });
+                                }
+                                else {
+                                    self.onError('Error loading model resources.', 'model-editor');
+                                }
+                            });
+                        }
+                        catch (error) {
+                            self.isBusy = false;
+                            self.onError(error);
+                        }
+                    },
+                    error: (error) => {
+                        self.isBusy = false;
+                        self.onError(error);
+                    }
+                })
+            },
+            error: (error) => {
+                self.isBusy = false;
+                this.onError(error);
+            }
+        });
+    }
+
     modelActionLoad() {
-        $("#modelActionModal").modal('hide');
+        this.currentModal.close();
         this.loadModel(this.selectedFilePath);
     }
 
-    modelActionEmbed() {
-        $("#modelActionModal").modal('hide');
-        // this.loadModel(this.selectedFilePath);
+    modelActionCreateElement() {
+        this.currentModal.close();
+        const modelResourcePath = this.selectedFilePath;
+        const urlRequest = new SignedUrlRequestDTO();
+        urlRequest.ContainerID = this.selectedContainerID;
+        urlRequest.Path = modelResourcePath;
+        urlRequest.Verb = 'get';
+        var self = this;
+        this.apiService.getSignedUrl(urlRequest).subscribe({
+            next: (signedUrlRequest) => {
+                self.http.get(signedUrlRequest.Url, { responseType: 'text' }).subscribe({
+                    next: (modelJson: string) => {
+                        try {
+                            const model = Model.parse(modelJson);
+                            const proxy = new ContainerUrlProxy(self.apiService, self.selectedContainerID);
+                            model.resourceManager.urlProxy = proxy;
+                            model.prepareResources(null, function (result) {
+                                if (result) {
+                                    const modelResource = new ModelResource();
+                                    modelResource.uri = self.selectedFilePath;
+                                    modelResource.model = model;
+                                    modelResource.key = Utility.guid();
+                                    self.model.resourceManager.add(modelResource);
+                                    const modelElement = ModelElement.create(modelResource, 0, 0, model.getSize().width, model.getSize().height);
+                                    modelElement.setInteractive(true);
+                                    modelElement.aspectLocked = true;
+                                    self.controller.addElement(modelElement);
+                                }
+                                else {
+                                    self.onError('Error loading model resources.', 'model-editor');
+                                }
+                            });
+                        }
+                        catch (error) {
+                            self.onError(error);
+                        }
+                    },
+                    error: (error) => {
+                        self.onError(error);
+                    }
+                })
+            },
+            error: (error) => {
+                self.onError(error);
+            }
+        });
     }
 
     setModel(model: Model, modelContainerID: string, modelContainerName: string, modelPath: string) {
@@ -393,18 +571,19 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             this.modelContainerID = modelContainerID;
             this.modelContainerName = modelContainerName;
             this.modelPath = modelPath;
+            const proxy = new ContainerUrlProxy(this.apiService, modelContainerID);
+            model.resourceManager.urlProxy = proxy;
             model.prepareResources(null, function (result) {
                 if (result) {
                     for (const el of model.elements) {
                         el.setInteractive(true);
                     }
+                    self.scale = 1.0;
                     self.model = model;
-                    if (self.displayModel) {
-                        self.formattedJson = model.formattedJSON();
-                    }
+                    // self.formattedJson = model.formattedJSON();
                 }
                 else {
-                    this.onError('Error loading model resources.', 'model-editor');
+                    self.onError('Error loading model resources.', 'model-editor');
                 }
             });
         }
@@ -423,7 +602,8 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                     next: (modelJson: string) => {
                         try {
                             const model = Model.parse(modelJson);
-                            this.selectionEnabled = true;
+                            const proxy = new ContainerUrlProxy(this.apiService, this.selectedContainerID);
+                            model.resourceManager.urlProxy = proxy;
                             this.setModel(model, this.selectedContainerID, this.selectedContainerName, modelPath);
                         }
                         catch (error) {
@@ -491,7 +671,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                     next: (result) => {
                         this.creatingModel = false;
                         this.isBusy = false;
-                        $("#newModelModal").modal('hide');
+                        this.currentModal.close();
                         if (result.success) {
                             this.setModel(model, this.selectedContainerID, this.selectedContainerName, newModelPath);
                             this.newModelName = '';
@@ -520,7 +700,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             error: (error) => {
                 this.isBusy = false;
                 this.creatingModel = false;
-                $("#newModelModal").modal('hide');
+                this.currentModal.close();
                 this.onError(error, 'model-editor');
             }
         });
@@ -652,17 +832,13 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         if (!this.controller) {
             return;
         };
-        this.controller.selectionEnabled = this._selectionEnabled;
-        if (!this._selectionEnabled) {
-            if (this._activeTool) {
-                this.controller.setActiveTool(this._activeTool);
-            }
-            else {
-                this.controller.clearActiveTool();
-            }
+        if(this._activeTool) {
+            this.controller.setActiveTool(this._activeTool);
+            this.controller.selectionEnabled = false;
         }
         else {
             this.controller.clearActiveTool();
+            this.controller.selectionEnabled = true;
         }
     }
 

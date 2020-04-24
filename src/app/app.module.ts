@@ -7,6 +7,7 @@ import { EliseModule } from './elise/elise.module';
 import { SchematrixModule } from './schematrix/schematrix.module';
 import { TreeModule } from 'angular-tree-component';
 import { AngularSplitModule } from 'angular-split';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { AppComponent } from './app.component';
 import { RedGreenBlueComponent } from './components/redgreenblue/redgreenblue.component';
@@ -89,6 +90,7 @@ import { ColorSelectorComponent } from './components/color-selector/color-select
         FormsModule,
         EliseModule,
         SchematrixModule,
+        NgbModule,
         TreeModule.forRoot(),
         AngularSplitModule.forRoot()
     ],

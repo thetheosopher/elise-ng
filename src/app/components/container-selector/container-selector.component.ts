@@ -1,8 +1,7 @@
-import { Component, OnInit, ElementRef, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, ElementRef, Input, Output, EventEmitter, ViewChild } from '@angular/core';
+import { NgbModal, NgbModalRef, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { ApiService } from '../../schematrix/services/api.service';
 import { ContainerDTO } from '../../schematrix/classes/container-dto';
-
-declare var $: any;
 
 @Component({
     selector: 'app-container-selector',
@@ -11,7 +10,11 @@ declare var $: any;
 })
 export class ContainerSelectorComponent implements OnInit {
 
-    constructor(private apiService: ApiService) { }
+    constructor(private apiService: ApiService,
+        private modalService: NgbModal) { }
+
+    @ViewChild('errorModal', { static: true })
+    errorModal: ElementRef;
 
     containers: ContainerDTO[];
     containerName: string;
@@ -22,13 +25,13 @@ export class ContainerSelectorComponent implements OnInit {
     isLoggedIn: boolean = false;
 
     errorMessage: string;
+    currentModal: NgbModalRef;
 
     @Output() public containerSelected: EventEmitter<ContainerDTO | null> = new EventEmitter();
 
     @Input() public selectedContainer: ContainerDTO = { Name: 'Select Container' };
 
     ngOnInit() {
-        $('[data-toggle="tooltip"]').tooltip();
         this.isLoggedIn = this.apiService.isLoggedIn;
         this.refreshContainers();
     }
@@ -88,22 +91,22 @@ export class ContainerSelectorComponent implements OnInit {
         })
     }
 
-    createContainer(newcontainerform) {
+    createContainer(form) {
         this.creatingContainer = true;
         const newContainer = { Name: this.containerName };
         this.apiService.createContainer(newContainer).subscribe({
             next: (newContainer) => {
                 this.creatingContainer = false;
-                $("#newContainerModal").modal('hide');
+                this.currentModal.close('Success');
                 this.selectedContainer = newContainer;
                 this.refreshContainers();
-                newcontainerform.reset();
+                form.reset();
             },
             error: (error) => {
                 this.creatingContainer = false;
-                $("#newContainerModal").modal('hide');
+                this.currentModal.close('Error');
                 this.errorMessage = error;
-                $('#errorModal').modal();
+                this.modalService.open(this.errorModal);
             }
         });
     }
@@ -113,16 +116,25 @@ export class ContainerSelectorComponent implements OnInit {
         this.apiService.deleteContainer(this.selectedContainer.ContainerID).subscribe({
             next: () => {
                 this.deletingContainer = false;
-                $("#deleteContainerModal").modal('hide');
+                this.currentModal.close('Success');
                 this.selectedContainer = { Name: 'Select Container' };
                 this.refreshContainers();
             },
             error: (error) => {
                 this.deletingContainer = false;
-                $("#deleteContainerModal").modal('hide');
+                this.currentModal.close('Error');
                 this.errorMessage = error;
-                $('#errorModal').modal();
+                this.modalService.open(this.errorModal);
             }
+        });
+    }
+
+    openModal(content) {
+        this.currentModal = this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title' });
+        this.currentModal.result.then((result) => {
+            // console.log(`Closed with: ${result}`);
+        }, (reason) => {
+            // console.log(`Dismissed ${reason}`);
         });
     }
 }
