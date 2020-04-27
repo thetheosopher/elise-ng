@@ -1,0 +1,29 @@
+<!-- Image Preview Modal -->
+<!-- Modal Header -->
+<div class="modal-header">
+    <h4 class="modal-title">Image Action</h4>
+    <button type="button" class="close" (click)="activeModal.dismiss('X')">&times;</button>
+</div>
+
+<!-- Modal body -->
+<div class="modal-body">
+    <div style="text-align: center;">
+        <img [src]="modalInfo.source" (load)="imagePreviewLoaded($event)" class="img-responsive m-2" />
+        <h5>{{imagePreviewInfo}}</h5>
+    </div>
+
+    <button class='btn btn-primary py-2 px-2 mx-2' (click)="imageActionView()">
+        <span>View Image</span>
+    </button>
+    <button *ngIf="modalInfo.canEmbed" class='btn btn-primary py-2 px-2 mx-2' (click)="imageActionCreateElement()">
+        <span>Create Element</span>
+    </button>
+    <button *ngIf="modalInfo.canEmbed" class='btn btn-primary py-2 px-2 mx-2' (click)="imageActionAddResource()">
+        <span>Add Resource</span>
+    </button>
+</div>
+
+<!-- Modal footer -->
+<div class="modal-footer">
+    <button type="button" class="btn btn-danger" (click)="activeModal.dismiss('Cancel')" ngbAutofocus>Cancel</button>
+</div>

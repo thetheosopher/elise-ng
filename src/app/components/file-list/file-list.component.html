@@ -38,25 +38,3 @@
         </div>
     </div>
 </div>
-
-<!-- Delete File Modal -->
-<ng-template #deleteFileModal let-modal>
-    <!-- Modal Header -->
-    <div class="modal-header">
-        <h4 class="modal-title">Delete File</h4>
-        <button type="button" class="close" (click)="modal.dismiss('X')">&times;</button>
-    </div>
-
-    <!-- Modal body -->
-    <div class="modal-body">
-        <div class="alert alert-danger">
-            Are you sure you want to delete<br />&nbsp;<strong>{{selectedFile}}</strong>&nbsp;?<br />This change cannot be undone.
-        </div>
-    </div>
-
-    <!-- Modal footer -->
-    <div class="modal-footer">
-        <button type="button" class="btn btn-danger" (click)="onConfirmDeleteFile()">Yes, Delete File</button>
-        <button type="button" class="btn btn-primary" (click)="modal.dismiss('No')" ngbAutofocus>No</button>
-    </div>
-</ng-template>

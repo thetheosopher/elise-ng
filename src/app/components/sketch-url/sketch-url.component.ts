@@ -1,5 +1,6 @@
 import { Component, OnInit, ElementRef, ViewChild, Input, EventEmitter, Output } from '@angular/core';
 import { ModelService } from '../../services/model.service';
+import { ToastrService } from 'ngx-toastr';
 import { Model } from 'elise-graphics/lib/core/model';
 import { Sketcher } from 'elise-graphics/lib/sketcher/sketcher';
 
@@ -9,6 +10,14 @@ import { Sketcher } from 'elise-graphics/lib/sketcher/sketcher';
     styleUrls: [ './sketch-url.component.scss' ]
 })
 export class SketchUrlComponent implements OnInit {
+
+    constructor(
+        private modelService: ModelService,
+        private toasterService: ToastrService) {
+        this.scale = 1.0;
+        this.onSketchDone = this.onSketchDone.bind(this);
+    }
+
     private _url: string;
 
     model: Model;
@@ -24,7 +33,6 @@ export class SketchUrlComponent implements OnInit {
     private _repeatDelay = 10000;
     private _fillDelay = 10000;
 
-    errorMessage: string;
     @Output() sketchDone = new EventEmitter<boolean>();
 
     @ViewChild('elise', { read: ElementRef, static: true })
@@ -147,11 +155,6 @@ export class SketchUrlComponent implements OnInit {
         }
     }
 
-    constructor(private modelService: ModelService) {
-        this.scale = 1.0;
-        this.onSketchDone = this.onSketchDone.bind(this);
-    }
-
     onSketchDone() {
         this.sketchDone.emit(true);
     }
@@ -180,11 +183,10 @@ export class SketchUrlComponent implements OnInit {
                         this.onSketchDone();
                     });
                     this.model = drawModel;
-                    this.errorMessage = undefined;
                 },
-                error: (er) => {
-                    console.log(er);
-                    this.errorMessage = 'Unable to load model data.';
+                error: (err) => {
+                    console.log(err);
+                    this.toasterService.error('Unable to load model data.');
                 }
             });
         }

@@ -1,0 +1,71 @@
+<!-- Modal Header -->
+<div class="modal-header">
+    <h4 class="modal-title">New Model</h4>
+    <button type="button" class="close" (click)="activeModal.dismiss('X')">&times;</button>
+</div>
+
+<!-- Modal body -->
+<form #newmodelform>
+    <div class="modal-body">
+        <div class="form-group">
+            <label for="modelname">Model Name</label>
+            <input type="text" id="modelname" name="modelname" #modelname="ngModel" class="form-control" required
+                [(ngModel)]="modalInfo.name" />
+            <div [hidden]="modelname.valid || modelname.pristine" class="alert alert-danger">
+                Model Name Is Required
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col">
+                <label for="modelwidth">Width</label>
+                <input type="number" min="1" max="32768" id="modelwidth" name="modelwidth" #modelwidth="ngModel"
+                    class="form-control" required [(ngModel)]="modalInfo.width" />
+                <div [hidden]="modelwidth.valid || modelwidth.pristine" class="alert alert-danger">
+                    Model Width Is Required
+                </div>
+            </div>
+            <div class="col">
+                <label for="modelheight">Height</label>
+                <input type="number" min="1" max="32768" id="modelheight" name="modelheight" #modelheight="ngModel"
+                    class="form-control" required [(ngModel)]="modalInfo.height" />
+                <div [hidden]="modelheight.valid || modelheight.pristine" class="alert alert-danger">
+                    Model Height Is Required
+                </div>
+            </div>
+        </div>
+        <div class="form-row" style="margin-top: 8px;">
+            <div class="col">
+                <label>Background Color</label>
+                <app-color-selector [selectedColor]="modalInfo.backgroundColor"
+                    (colorSelected)="onBackgroundColorSelected($event)"></app-color-selector>
+            </div>
+            <div class="col">
+                <div class="grid" style="margin-top: 33px; width: 128px; height: 30px; border: 1px solid black;">
+                    <div [style.backgroundColor]="modalInfo.backgroundColorDisplay.toStyleString()"
+                        style="width: 100%; height: 100%"></div>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="modalInfo.backgroundColor.a !== 0" class="form-row" style="margin-top: 8px;">
+            <div class="col">
+                <div class="form-group">
+                    <label for="formControlRange">Background Opacity</label>
+                    <input type="range" class="form-control-range" min="0" max="255"
+                        [(ngModel)]="modalInfo.backgroundOpacity" name="backgroundOpacity"
+                        id="backgroundOpacity" (change)="onBackgroundOpacityChanged($event)">
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group" style="margin-top: 30px;">
+                    <span><strong>{{modalInfo.backgroundOpacity}}</strong></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- Modal footer -->
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="commit()">Create Model</button>
+    <button type="button" class="btn btn-danger" (click)="activeModal.dismiss('Cancel')">Cancel</button>
+</div>

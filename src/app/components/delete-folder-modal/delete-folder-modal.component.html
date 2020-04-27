@@ -1,0 +1,18 @@
+<!-- Modal Header -->
+<div class="modal-header">
+    <h4 class="modal-title">Delete Folder</h4>
+    <button type="button" class="close" (click)="activeModal.dismiss('X')">&times;</button>
+</div>
+
+<!-- Modal body -->
+<div class="modal-body">
+    <div class="alert alert-danger">
+        Are you sure you want to delete folder &nbsp;<strong>{{modalInfo.path}}</strong> and all its contents? This change cannot be undone.
+    </div>
+</div>
+
+<!-- Modal footer -->
+<div class="modal-footer">
+    <button type="button" class="btn btn-danger" (click)="commit()">Yes, Delete Folder</button>
+    <button type="button" class="btn btn-primary" (click)="activeModal.dismiss('Cancel')" ngbAutofocus>No</button>
+</div>

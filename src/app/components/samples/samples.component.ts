@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ModelInfo } from '../../services/model-info';
 import { ModelService } from '../../services/model.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
     selector: 'app-samples',
@@ -9,19 +10,19 @@ import { ModelService } from '../../services/model.service';
 })
 export class SamplesComponent implements OnInit {
     models: ModelInfo[];
-    errorMessage: string;
 
-    constructor(private modelService: ModelService) {}
+    constructor(
+        private modelService: ModelService,
+        private toasterService: ToastrService) {}
 
     getModels() {
         this.modelService.listModels('samples').subscribe({
             next: (modelArray) => {
                 this.models = modelArray;
-                this.errorMessage = undefined;
             },
-            error: (er) => {
-                console.log(er);
-                this.errorMessage = 'Unable to load model list.';
+            error: (err) => {
+                console.log(err);
+                this.toasterService.error('Unable to load model list.');
                 this.models = [];
             }
         });

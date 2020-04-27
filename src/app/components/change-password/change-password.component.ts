@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../schematrix/services/api.service';
 import { LoginDTO } from '../../schematrix/classes/login-dto';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-change-password',
@@ -9,13 +10,13 @@ import { LoginDTO } from '../../schematrix/classes/login-dto';
 })
 export class ChangePasswordComponent implements OnInit {
 
-    errorMessage: string = null;
-    successMessage: string = null;
     processing: boolean = false;
     loginDTO: LoginDTO = new LoginDTO();
     newPasswordConfirm: string = null;
 
-    constructor(private apiService: ApiService) {
+    constructor(
+        private apiService: ApiService,
+        private toasterService: ToastrService) {
     }
 
     ngOnInit() {
@@ -26,13 +27,11 @@ export class ChangePasswordComponent implements OnInit {
         this.apiService.changePassword(this.loginDTO).subscribe({
             next: (registerResult) => {
                 this.processing = false;
-                this.errorMessage = null;
-                this.successMessage = 'Password successfully changed.';
+                this.toasterService.success('Password successfully changed.');
             },
             error: (err) => {
                 this.processing = false;
-                this.errorMessage = err;
-                this.successMessage = null;
+                this.toasterService.error(err, 'Error Changing Password');
             }
         });
     }

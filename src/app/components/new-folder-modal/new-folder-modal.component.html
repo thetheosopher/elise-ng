@@ -1,0 +1,29 @@
+<!-- Modal Header -->
+<div class="modal-header">
+    <h4 class="modal-title">New Folder</h4>
+    <button type="button" class="close" (click)="activeModal.dismiss('X')">&times;</button>
+</div>
+
+<!-- Modal body -->
+<form>
+    <div class="modal-body">
+        <div class="form-group">
+            <label for="folderparent">Parent Folder</label>
+            <div id="folderparent"><strong>{{modalInfo.parent}}</strong></div>
+        </div>
+        <div class="form-group">
+            <label for="foldername">Folder Name</label>
+            <input type="text" id="foldername" name="foldername" #foldername="ngModel" class="form-control"
+                required [(ngModel)]="modalInfo.name" ngbAutofocus />
+            <div [hidden]="foldername.valid || foldername.pristine" class="alert alert-danger">
+                Folder Name Is Required
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- Modal footer -->
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="commit()">Create Folder</button>
+    <button type="button" class="btn btn-danger" (click)="activeModal.dismiss('Cancel')">Cancel</button>
+</div>

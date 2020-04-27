@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../schematrix/services/api.service';
+import { ToastrService } from 'ngx-toastr';
 import { LoginDTO } from '../../schematrix/classes/login-dto';
 
 @Component({
@@ -9,12 +10,13 @@ import { LoginDTO } from '../../schematrix/classes/login-dto';
 })
 export class LoginComponent implements OnInit {
 
-    errorMessage: string = null;
     processing: boolean = false;
     isLoggedIn: boolean = false;
     loginDTO: LoginDTO = new LoginDTO();
 
-    constructor(private apiService: ApiService) {
+    constructor(
+        private apiService: ApiService,
+        private toasterService: ToastrService) {
         this.isLoggedIn = apiService.isLoggedIn;
         this.loginDTO = apiService.login;
      }
@@ -24,7 +26,6 @@ export class LoginComponent implements OnInit {
             next: (login) => {
                 this.processing = false;
                 this.isLoggedIn = true;
-                this.errorMessage = null;
                 this.loginDTO = login;
             }
         });
@@ -38,7 +39,7 @@ export class LoginComponent implements OnInit {
         this.apiService.errorEvent.subscribe({
             next: (error) => {
                 this.processing = false;
-                this.errorMessage = error;
+                this.toasterService.error(error, 'Login Error');
             }
         });
         this.processing = true;

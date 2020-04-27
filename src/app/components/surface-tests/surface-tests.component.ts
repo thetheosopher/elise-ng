@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SurfaceSample } from '../../interfaces/surface-sample';
 import { SurfaceTestService } from '../../services/surface-test.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
     selector: 'app-surface-tests',
@@ -9,19 +10,19 @@ import { SurfaceTestService } from '../../services/surface-test.service';
 })
 export class SurfaceTestsComponent implements OnInit {
     tests: SurfaceSample[];
-    errorMessage: string;
 
-    constructor(private surfaceTestService: SurfaceTestService) {}
+    constructor(
+        private surfaceTestService: SurfaceTestService,
+        private toasterService: ToastrService) {}
 
     getTests() {
         this.surfaceTestService.tests().subscribe({
             next: (testArray) => {
                 this.tests = testArray;
-                this.errorMessage = undefined;
             },
-            error: (er) => {
-                console.log(er);
-                this.errorMessage = 'Unable to load surface test list.';
+            error: (err) => {
+                console.log(err);
+                this.toasterService.error('Unable to load surface test list.');
                 this.tests = [];
             }
         });

@@ -1,10 +1,13 @@
-import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter } from '@angular/core';
-import { NgbModal, NgbModalRef, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
+import { Component, OnInit, ViewChild, Input, Output, EventEmitter } from '@angular/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ApiService } from '../../schematrix/services/api.service';
 import { ManifestDTO } from '../../schematrix/classes/manifest-dto';
 import { ManifestFolderDTO } from '../../schematrix/classes/manifest-folder-dto';
 import { TreeNode as Node } from './tree-node';
 import { TreeComponent, ITreeOptions } from 'angular-tree-component'
+import { ToastrService } from 'ngx-toastr';
+import { NewFolderModalComponent, NewFolderModalInfo } from '../new-folder-modal/new-folder-modal.component';
+import { DeleteFolderModalComponent, DeleteFolderModalInfo } from '../delete-folder-modal/delete-folder-modal.component';
 
 @Component({
     selector: 'app-container-tree',
@@ -13,17 +16,13 @@ import { TreeComponent, ITreeOptions } from 'angular-tree-component'
 })
 export class ContainerTreeComponent implements OnInit {
 
+    constructor(
+        private apiService: ApiService,
+        private modalService: NgbModal,
+        private toasterService: ToastrService) { }
+
     @ViewChild(TreeComponent)
     tree: TreeComponent;
-
-    @ViewChild('errorModal', { static: true })
-    errorModal: ElementRef;
-
-    @ViewChild('newFolderModal', { static: true })
-    newFolderModal: ElementRef;
-
-    @ViewChild('deleteFolderModal', { static: true })
-    deleteFolderModal: ElementRef;
 
     @Output() public folderPathSelected: EventEmitter<string | null> = new EventEmitter();
 
@@ -31,25 +30,13 @@ export class ContainerTreeComponent implements OnInit {
 
     @Output() public selectedFolderPath?: string;
 
-    creatingFolder: boolean = false;
-    deletingFolder: boolean = false;
-    folderName: string;
-    errorMessage: string;
-    currentModal: NgbModalRef;
-
     nodes?: Node[];
 
     options: ITreeOptions = {
         rootId: '/'
     };
 
-    constructor(private apiService: ApiService,
-        private modalService: NgbModal) { }
-
     ngOnInit() {
-    }
-
-    ngAfterViewInit() {
     }
 
     populateFolderChildren(node: Node, folderParent: ManifestDTO | ManifestFolderDTO) {
@@ -122,50 +109,48 @@ export class ContainerTreeComponent implements OnInit {
         }
     }
 
-    openModal(content) {
-        this.currentModal = this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title' });
-        this.currentModal.result.then((result) => {
-            // console.log(`Closed with: ${result}`);
-        }, (reason) => {
-            // console.log(`Dismissed ${reason}`);
+    showNewFolderModal() {
+        const modalInfo = new NewFolderModalInfo();
+        modalInfo.parent = this.selectedFolderPath;
+        const modal = this.modalService.open(NewFolderModalComponent);
+        modal.componentInstance.modalInfo = modalInfo;
+        modal.result.then((result: NewFolderModalInfo) => {
+            this.createFolder(result);
+        }, (cancelReason) => {
         });
     }
 
-    showCreateFolderModal() {
-        this.openModal(this.newFolderModal);
-    }
-
-    createFolder(newfolderform) {
-        this.creatingFolder = true;
+    createFolder(folderModalInfo: NewFolderModalInfo) {
         const newFolderDTO =
         {
             ContainerID: this.containerID,
-            Path: this.selectedFolderPath + this.folderName
+            Path: folderModalInfo.parent + folderModalInfo.name
         };
         this.apiService.createFolder(newFolderDTO).subscribe({
             next: (newFolder) => {
-                this.creatingFolder = false;
-                this.currentModal.close('Success');
                 this.refresh(newFolderDTO.Path + '/');
-                this.folderName = null;
-                newfolderform.reset();
+                this.toasterService.success(folderModalInfo.name, 'Folder Created');
             },
             error: (error) => {
-                this.creatingFolder = false;
-                this.currentModal.close('Error');
-                this.errorMessage = error;
-                this.modalService.open(this.errorModal);
+                this.toasterService.error(error, 'Error Creating Folder');
             }
         });
     }
 
     showDeleteFolderModal() {
-        this.openModal(this.deleteFolderModal);
+        const modalInfo = new DeleteFolderModalInfo();
+        modalInfo.path = this.selectedFolderPath;
+        const modal = this.modalService.open(DeleteFolderModalComponent);
+        modal.componentInstance.modalInfo = modalInfo;
+        modal.result.then((result: DeleteFolderModalInfo) => {
+            this.deleteFolder(result);
+        }, (cancelReason) => {
+        });
     }
 
-    deleteFolder() {
+    deleteFolder(folderModalInfo: DeleteFolderModalInfo) {
         let parentPath;
-        if(!this.selectedFolderPath || this.selectedFolderPath == '/') {
+        if(!folderModalInfo.path || folderModalInfo.path == '/') {
             return;
         }
         else {
@@ -173,20 +158,14 @@ export class ContainerTreeComponent implements OnInit {
             parts.splice(parts.length - 2, 1);
             parentPath = parts.join('/')
         }
-        this.deletingFolder = true;
-        this.apiService.deleteFolder(this.containerID, this.selectedFolderPath).subscribe({
+        this.apiService.deleteFolder(this.containerID, folderModalInfo.path).subscribe({
             next: () => {
-                this.deletingFolder = false;
-                this.currentModal.close('Success');
                 this.refresh(parentPath);
+                this.toasterService.success(folderModalInfo.path, 'Folder Deleted');
             },
             error: (error) => {
-                this.deletingFolder = false;
-                this.currentModal.close('Error');
-                this.errorMessage = error;
-                this.modalService.open(this.errorModal);
+                this.toasterService.error(error, 'Error Deleting Folder');
             }
         });
     }
-
 }

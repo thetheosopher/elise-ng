@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../schematrix/services/api.service';
+import { ToastrService } from 'ngx-toastr';
 import { UserRegistrationDTO } from '../../schematrix/classes/user-registration-dto';
 
 @Component({
@@ -9,8 +10,6 @@ import { UserRegistrationDTO } from '../../schematrix/classes/user-registration-
 })
 export class RegisterComponent implements OnInit {
 
-    errorMessage: string = null;
-    successMessage: string = null;
     processing: boolean = false;
     registrationSubmitted: boolean = false;
     userRegistrationDTO: UserRegistrationDTO = new UserRegistrationDTO();
@@ -21,7 +20,9 @@ export class RegisterComponent implements OnInit {
     emailInUseMessage: string = null;
     confirmationComplete: boolean = false;
 
-    constructor(private apiService: ApiService) {
+    constructor(
+        private apiService: ApiService,
+        private toasterService: ToastrService) {
     }
 
     ngOnInit() {
@@ -32,15 +33,13 @@ export class RegisterComponent implements OnInit {
         this.apiService.register(this.userRegistrationDTO).subscribe({
             next: (registerResult) => {
                 this.processing = false;
-                this.errorMessage = null;
                 this.registrationSubmitted = true;
-                this.successMessage = 'Registration submitted successfully.\nPlease check email for registration code.';
+                this.toasterService.success('Please check email for registration code.', 'Registration Submitted');
             },
             error: (err) => {
                 this.registrationSubmitted = false;
                 this.processing = false;
-                this.errorMessage = err;
-                this.successMessage = null;
+                this.toasterService.error(err, 'Registration Submission Failed');
             }
         });
     }
@@ -50,14 +49,12 @@ export class RegisterComponent implements OnInit {
         this.apiService.confirmRegistration(this.userRegistrationDTO).subscribe({
             next: (confirmationResult) => {
                 this.processing = false;
-                this.errorMessage = null;
-                this.successMessage = 'Registration confirmed.\nYou may now log in.';
+                this.toasterService.success('You may now log in.', 'Registration Confirmed');
                 this.confirmationComplete = true;
             },
             error: (err) => {
                 this.processing = false;
-                this.errorMessage = err;
-                this.successMessage = null;
+                this.toasterService.error(err, 'Confirmation Failed');
             }
         });
     }
@@ -65,7 +62,6 @@ export class RegisterComponent implements OnInit {
     clearNameInUse() {
         this.nameInUse = false;
         this.nameInUseMessage = null;
-        this.errorMessage = null;
     }
 
     checkNameInUse(name: string) {
@@ -100,7 +96,6 @@ export class RegisterComponent implements OnInit {
     clearEmailInUse() {
         this.emailInUse = false;
         this.emailInUseMessage = null;
-        this.errorMessage = null;
     }
 
     checkEmailInUse(email: string) {

@@ -1,5 +1,6 @@
 import { Component, OnInit, ElementRef, ViewChild, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 import { Model } from 'elise-graphics/lib/core/model';
 import { Region } from 'elise-graphics/lib/core/Region';
@@ -14,7 +15,7 @@ import { ISampleDesigner } from '../../interfaces/sample-designer';
 @Component({
     selector: 'app-elise-design-harness',
     templateUrl: './elise-design-harness.component.html',
-    styleUrls: [ './elise-design-harness.component.scss' ]
+    styleUrls: ['./elise-design-harness.component.scss']
 })
 export class EliseDesignHarnessComponent implements OnInit, ISampleDesigner {
     @ViewChild('elise', { read: ElementRef, static: true })
@@ -35,10 +36,12 @@ export class EliseDesignHarnessComponent implements OnInit, ISampleDesigner {
     mouseOverView = false;
     displayModel = true;
     formattedJson: string;
-    errorMessage: string;
     selectionEnabled: boolean;
 
-    constructor(private _designTestService: DesignTestService, private _route: ActivatedRoute) {
+    constructor(
+        private _designTestService: DesignTestService,
+        private _route: ActivatedRoute,
+        private toasterService: ToastrService) {
         this._title = 'Elise Design Component Test Harness';
         this._description = 'Tests Elise design component public interface';
         this._model = Model.create(320, 320);
@@ -67,19 +70,18 @@ export class EliseDesignHarnessComponent implements OnInit, ISampleDesigner {
     @Input()
     set model(model: Model) {
         if (model !== this._model) {
-            const self = this;
-            model.prepareResources(null, function(result) {
+            model.prepareResources(null, (result) => {
                 if (result) {
-                    for(const el of model.elements) {
+                    for (const el of model.elements) {
                         el.setInteractive(true);
                     }
-                    self._model = model;
-                    if (self.displayModel) {
-                        self.formattedJson = model.formattedJSON();
+                    this._model = model;
+                    if (this.displayModel) {
+                        this.formattedJson = model.formattedJSON();
                     }
                 }
                 else {
-                    self.errorMessage = 'Error loading model resources.';
+                    this.toasterService.error('Error loading model resources.');
                 }
             });
         }

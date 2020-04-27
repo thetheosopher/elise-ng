@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ViewSample } from '../../interfaces/view-sample';
 import { ViewTestService } from '../../services/view-test.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-view-tests',
@@ -9,19 +10,19 @@ import { ViewTestService } from '../../services/view-test.service';
 })
 export class ViewTestsComponent implements OnInit {
     tests: ViewSample[];
-    errorMessage: string;
 
-  constructor(private viewTestService: ViewTestService) { }
+  constructor(
+      private viewTestService: ViewTestService,
+      private toasterService: ToastrService) { }
 
   getTests() {
       this.viewTestService.tests().subscribe({
           next: (testArray) => {
               this.tests = testArray;
-              this.errorMessage = undefined;
           },
-          error: (er) => {
-              console.log(er);
-              this.errorMessage = 'Unable to load  view test list.';
+          error: (err) => {
+              console.log(err);
+              this.toasterService.error(err, 'Initialization Error');
               this.tests = [];
           }
       });

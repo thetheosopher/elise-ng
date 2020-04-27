@@ -9,7 +9,7 @@ import { ManifestDTO } from '../../schematrix/classes/manifest-dto';
 import { ManifestFileDTO } from '../../schematrix/classes/manifest-file-dto';
 import { ContainerTreeComponent } from '../../components/container-tree/container-tree.component';
 import { SignedUrlRequestDTO } from '../../schematrix/classes/signed-url-request-dto';
-import { AlertService } from '../../services/alert.service';
+import { ToastrService } from 'ngx-toastr';
 
 import { Model } from 'elise-graphics/lib/core/model';
 import { Region } from 'elise-graphics/lib/core/Region';
@@ -26,8 +26,12 @@ import { PenTool } from 'elise-graphics/lib/design/tools/pen-tool';
 
 import { LinearGradientFill } from 'elise-graphics/lib/fill/linear-gradient-fill';
 import { RadialGradientFill } from 'elise-graphics/lib/fill/radial-gradient-fill';
-import { Color, ViewDragArgs, ImageElement, BitmapResource, ModelResource, ModelElement } from 'elise-graphics';
+import { Color, ViewDragArgs, ImageElement, BitmapResource, ModelResource, ModelElement, model } from 'elise-graphics';
 import { Utility } from 'elise-graphics'
+
+import { ImageActionModalComponent, ImageActionModalInfo } from '../image-action-modal/image-action-modal.component';
+import { ModelActionModalComponent, ModelActionModalInfo } from '../model-action-modal/model-action-modal.component';
+import { NewModelModalComponent, NewModelModalInfo } from '../new-model-modal/new-model-modal.component';
 
 @Component({
     selector: 'app-model-designer',
@@ -38,18 +42,6 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
     @ViewChild(ContainerTreeComponent, { static: true })
     containerTree: ContainerTreeComponent;
-
-    @ViewChild('errorModal', { static: true })
-    errorModal: ElementRef;
-
-    @ViewChild('newModelModal', { static: true })
-    newModelModal: ElementRef;
-
-    @ViewChild('modelActionModal', { static: true })
-    modelActionModal: ElementRef;
-
-    @ViewChild('imagePreviewModal', { static: true })
-    imagePreviewModal: ElementRef;
 
     @ViewChildren('fileUploadInput', { read: ElementRef })
     fileUploadInputRefs: QueryList<ElementRef>;
@@ -62,7 +54,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     selectedContainerName: string;
     @Output() public selectedFolderPath?: string;
 
-    currentModal: NgbModalRef;
+    // currentModal: NgbModalRef;
 
     folderFiles?: ManifestFileDTO[];
     uploads: Upload[] = [];
@@ -78,48 +70,35 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     background = 'grid';
     viewMouseX: number;
     viewMouseY: number;
+    modelEditorNavId: number;
     mouseOverView = false;
     formattedJson: string;
     isBusy: boolean = false;
     isDragging: boolean = false;
 
-    _activeStroke: string;
-    _activeFill: string | LinearGradientFill | RadialGradientFill;
-    _activeTool?: DesignTool;
-    _activeToolName: string = 'select';
+    activeStroke: string;
+    activeFill: string | LinearGradientFill | RadialGradientFill;
+    activeTool?: DesignTool;
 
-    creatingModel: boolean;
-    newModelName: string;
-    newModelWidth?: number = 1024;
-    newModelHeight?: number = 768;
-    newModelBackgroundColor: Color = Color.Transparent;
-    newModelBackgroundOpacity: number = 255;
-    newModelBackgroundColorDisplay: Color = Color.Transparent;
+    _activeToolName: string = 'select';
 
     model: Model;
     modelContainerID: string;
     modelContainerName: string;
     modelPath: string;
 
-    imagePreviewSource: string;
-    imagePreviewInfo: string;
-
-    modelPreviewModel: Model;
-    modelPreviewInfo: string;
-    modelPreviewScale: number = 1.0;
-
     constructor(
         private apiService: ApiService,
         private uploadService: UploadService,
         private http: HttpClient,
-        private alertService: AlertService,
+        private toasterService: ToastrService,
         private modalService: NgbModal) {
     }
 
     ngOnInit() {
 
-        this._activeStroke = 'Black,2';
-        this._activeFill = '0.5;White';
+        this.activeStroke = 'Black,2';
+        this.activeFill = '0.5;White';
     }
 
     ngAfterViewInit() {
@@ -147,16 +126,16 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     }
 
     setActiveTool(tool: DesignTool | null) {
-        if(tool) {
-            this._activeTool = tool;
-            if(this.controller) {
+        if (tool) {
+            this.activeTool = tool;
+            if (this.controller) {
                 this.controller.setActiveTool(tool);
                 this.controller.selectionEnabled = false;
             }
         }
         else {
-            this._activeTool = null;
-            if(this.controller) {
+            this.activeTool = null;
+            if (this.controller) {
                 this.controller.clearActiveTool();
                 this.controller.selectionEnabled = true;
             }
@@ -165,37 +144,37 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
     set activeToolName(value: string) {
         this._activeToolName = value;
-        switch(this.activeToolName.toLowerCase()) {
+        switch (this.activeToolName.toLowerCase()) {
             case 'select':
                 this.setActiveTool(null);
                 break;
 
             case 'pen':
                 const penTool = new PenTool();
-                penTool.stroke = this._activeStroke;
+                penTool.stroke = this.activeStroke;
                 this.setActiveTool(penTool);
                 break;
 
             case 'line':
                 const lineTool = new LineTool();
-                lineTool.stroke = this._activeStroke;
+                lineTool.stroke = this.activeStroke;
                 this.setActiveTool(lineTool);
                 break;
 
             case 'rectangle':
                 const rectangleTool = new RectangleTool();
-                rectangleTool.stroke = this._activeStroke;
-                rectangleTool.fill = this._activeFill;
+                rectangleTool.stroke = this.activeStroke;
+                rectangleTool.fill = this.activeFill;
                 this.setActiveTool(rectangleTool);
                 break;
 
             case 'ellipse':
                 const ellipseTool = new EllipseTool();
-                ellipseTool.stroke = this._activeStroke;
-                ellipseTool.fill = this._activeFill;
+                ellipseTool.stroke = this.activeStroke;
+                ellipseTool.fill = this.activeFill;
                 this.setActiveTool(ellipseTool);
                 break;
-            }
+        }
     }
 
     get activeToolName(): string {
@@ -258,20 +237,11 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         });
     }
 
-    openModal(content) {
-        this.currentModal = this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title' });
-        this.currentModal.result.then((result) => {
-            console.log(`Closed with: ${result}`);
-        }, (reason) => {
-            console.log(`Dismissed ${reason}`);
-        });
-    }
-
     onNavChange(changeEvent: NgbNavChangeEvent) {
-        if(changeEvent.nextId === 1) {
-            if(this.controller) {
-                if(this._activeTool) {
-                    this.controller.setActiveTool(this._activeTool);
+        if (changeEvent.nextId === 1) {
+            if (this.controller) {
+                if (this.activeTool) {
+                    this.controller.setActiveTool(this.activeTool);
                     this.controller.selectionEnabled = false;
                 }
                 else {
@@ -281,7 +251,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             }
         }
         else if (changeEvent.nextId === 2) {
-            if(!this.model) {
+            if (!this.model) {
                 this.formattedJson = '';
             }
             else {
@@ -291,9 +261,9 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         }
     }
 
-    onError(error, alertId = 'container-explorer') {
+    onError(error, title?) {
         console.log(error);
-        this.alertService.error(error, { id: alertId });
+        this.toasterService.error(error, title);
     }
 
     onFileDropped($event) {
@@ -326,7 +296,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                     next: (result) => {
                         if (result.success) {
                             console.log('Upload callback: Success');
-                            this.alertService.success(`Upload of ${upload.name} succeeded.`, { autoClose: true, id: 'container-explorer' });
+                            this.toasterService.success(upload.name, 'File Upload Complete')
                             if (upload.containerID == this.selectedContainerID && upload.folderPath === this.selectedFolderPath) {
                                 this.listFolderFiles();
                             }
@@ -361,8 +331,6 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     }
 
     selectFile(fileName: string) {
-        // alert(file);
-
         // Handle file types
         this.selectedFilePath = this.selectedFolderPath + fileName;
 
@@ -371,8 +339,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         switch (extension) {
             case '.mdl':
                 {
-                    // this.openModal(this.modelActionModal);
-                    this.loadModelPreview();
+                    this.loadModelActionModal();
                 }
                 break;
 
@@ -380,24 +347,44 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             case '.gif':
             case '.png':
                 {
-                    this.loadImagePreview();
+                    this.loadImageActionModal();
                 }
                 break;
         }
     }
 
-    loadImagePreview() {
+    loadImageActionModal() {
         const urlRequest = new SignedUrlRequestDTO();
         urlRequest.ContainerID = this.selectedContainerID;
         urlRequest.Path = this.selectedFilePath;
         urlRequest.Verb = 'get';
         this.apiService.getSignedUrl(urlRequest).subscribe({
             next: (signedUrlRequest) => {
-                this.imagePreviewSource = signedUrlRequest.Url;
-                this.currentModal = this.modalService.open(this.imagePreviewModal, {
+                const modalInfo = new ImageActionModalInfo();
+                modalInfo.source = signedUrlRequest.Url;
+                modalInfo.path = this.selectedFilePath;
+                modalInfo.containerID = this.selectedContainerID;
+                modalInfo.canEmbed = this.model != null && this.modelContainerID == this.selectedContainerID;
+                const modal = this.modalService.open(ImageActionModalComponent, {
                     ariaLabelledBy: 'modal-basic-title',
                     size: 'xl',
                     scrollable: true
+                });
+                modal.componentInstance.modalInfo = modalInfo;
+                modal.result.then((result: ImageActionModalInfo) => {
+                    switch (result.action) {
+                        case 'view':
+                            this.imageActionView(result);
+                            break;
+
+                        case 'create-element':
+                            this.imageActionCreateElement(result);
+                            break;
+
+                        case 'add-resource':
+                            break;
+                    }
+                }, (error) => {
                 });
             },
             error: (error) => {
@@ -406,219 +393,142 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         });
     }
 
-    imagePreviewLoaded(event) {
-        this.imagePreviewInfo = event.target.naturalWidth + 'x' + event.target.naturalHeight;
+    imageActionView(modalInfo: ImageActionModalInfo) {
+        window.open(modalInfo.source);
     }
 
-    imageActionView() {
-        this.currentModal.close();
-        this.loadImage(this.selectedFilePath);
+    imageActionCreateElement(modalInfo: ImageActionModalInfo) {
+        const bitmapResource = new BitmapResource();
+        bitmapResource.uri = modalInfo.path;
+        bitmapResource.image = modalInfo.image;
+        bitmapResource.key = Utility.guid();
+        this.model.resourceManager.add(bitmapResource);
+        const imageElement = ImageElement.create(bitmapResource, 0, 0,
+            modalInfo.image.width, modalInfo.image.height);
+        imageElement.setInteractive(true);
+        imageElement.aspectLocked = true;
+        this.controller.addElement(imageElement);
     }
 
-    imageActionCreateElement() {
-        this.currentModal.close();
-        const imageResourcePath = this.selectedFilePath;
-        const urlRequest = new SignedUrlRequestDTO();
-        urlRequest.ContainerID = this.selectedContainerID;
-        urlRequest.Path = imageResourcePath;
-        urlRequest.Verb = 'get';
-        this.apiService.getSignedUrl(urlRequest).subscribe({
-            next: (signedUrlRequest) => {
-                const image = new Image();
-                image.onload = e => {
-                    const bitmapResource = new BitmapResource();
-                    bitmapResource.uri = this.selectedFilePath;
-                    bitmapResource.image = image;
-                    bitmapResource.key = Utility.guid();
-                    this.model.resourceManager.add(bitmapResource);
-                    const imageElement = ImageElement.create(bitmapResource, 0, 0, image.width, image.height);
-                    imageElement.setInteractive(true);
-                    imageElement.aspectLocked = true;
-                    this.controller.addElement(imageElement);
-                };
-                image.src = signedUrlRequest.Url;
-            },
-            error: (error) => {
-                this.onError(error);
-            }
-        });
-    }
-
-    loadImage(filePath: string) {
-        const urlRequest = new SignedUrlRequestDTO();
-        urlRequest.ContainerID = this.selectedContainerID;
-        urlRequest.Path = filePath;
-        // urlRequest.ContentType = this.MODEL_MIME_TYPE;
-        urlRequest.Verb = 'get';
-        this.apiService.getSignedUrl(urlRequest).subscribe({
-            next: (signedUrlRequest) => {
-                window.open(signedUrlRequest.Url);
-            },
-            error: (error) => {
-                this.onError(error);
-            }
-        });
-    }
-
-    loadModelPreview() {
+    loadModelActionModal() {
         const urlRequest = new SignedUrlRequestDTO();
         urlRequest.ContainerID = this.selectedContainerID;
         urlRequest.Path = this.selectedFilePath;
         urlRequest.Verb = 'get';
-        var self = this;
-        self.isBusy = true;
+        this.isBusy = true;
         this.apiService.getSignedUrl(urlRequest).subscribe({
             next: (signedUrlRequest) => {
-                self.http.get(signedUrlRequest.Url, { responseType: 'text' }).subscribe({
-                    next: (modelJson: string) => {
-                        try {
-                            const model = Model.parse(modelJson);
-                            const proxy = new ContainerUrlProxy(this.apiService, this.selectedContainerID);
-                            model.resourceManager.urlProxy = proxy;
-                            model.prepareResources(null, function (result) {
-                                self.isBusy = false;
-                                if (result) {
-                                    self.modelPreviewModel = model;
-                                    const wr = Math.min((window.innerWidth - 360), 1000) / model.getSize().width;
-                                    const hr = (window.innerHeight - 360) / model.getSize().height;
-                                    self.modelPreviewScale = Math.min(wr, hr);
-                                    self.modelPreviewInfo = model.getSize().width + 'x' + model.getSize().height;
-                                    self.currentModal = self.modalService.open(self.modelActionModal, {
-                                        ariaLabelledBy: 'modal-basic-title',
-                                        size: 'xl',
-                                        scrollable: true
-                                    });
-                                }
-                                else {
-                                    self.onError('Error loading model resources.', 'model-editor');
-                                }
-                            });
-                        }
-                        catch (error) {
-                            self.isBusy = false;
-                            self.onError(error);
-                        }
-                    },
-                    error: (error) => {
-                        self.isBusy = false;
-                        self.onError(error);
-                    }
-                })
-            },
-            error: (error) => {
-                self.isBusy = false;
-                this.onError(error);
-            }
-        });
-    }
-
-    modelActionLoad() {
-        this.currentModal.close();
-        this.loadModel(this.selectedFilePath);
-    }
-
-    modelActionCreateElement() {
-        this.currentModal.close();
-        const modelResourcePath = this.selectedFilePath;
-        const urlRequest = new SignedUrlRequestDTO();
-        urlRequest.ContainerID = this.selectedContainerID;
-        urlRequest.Path = modelResourcePath;
-        urlRequest.Verb = 'get';
-        var self = this;
-        this.apiService.getSignedUrl(urlRequest).subscribe({
-            next: (signedUrlRequest) => {
-                self.http.get(signedUrlRequest.Url, { responseType: 'text' }).subscribe({
-                    next: (modelJson: string) => {
-                        try {
-                            const model = Model.parse(modelJson);
-                            const proxy = new ContainerUrlProxy(self.apiService, self.selectedContainerID);
-                            model.resourceManager.urlProxy = proxy;
-                            model.prepareResources(null, function (result) {
-                                if (result) {
-                                    const modelResource = new ModelResource();
-                                    modelResource.uri = self.selectedFilePath;
-                                    modelResource.model = model;
-                                    modelResource.key = Utility.guid();
-                                    self.model.resourceManager.add(modelResource);
-                                    const modelElement = ModelElement.create(modelResource, 0, 0, model.getSize().width, model.getSize().height);
-                                    modelElement.setInteractive(true);
-                                    modelElement.aspectLocked = true;
-                                    self.controller.addElement(modelElement);
-                                }
-                                else {
-                                    self.onError('Error loading model resources.', 'model-editor');
-                                }
-                            });
-                        }
-                        catch (error) {
-                            self.onError(error);
-                        }
-                    },
-                    error: (error) => {
-                        self.onError(error);
-                    }
-                })
-            },
-            error: (error) => {
-                self.onError(error);
-            }
-        });
-    }
-
-    setModel(model: Model, modelContainerID: string, modelContainerName: string, modelPath: string) {
-        if (model !== this.model) {
-            var self = this;
-            this.modelContainerID = modelContainerID;
-            this.modelContainerName = modelContainerName;
-            this.modelPath = modelPath;
-            const proxy = new ContainerUrlProxy(this.apiService, modelContainerID);
-            model.resourceManager.urlProxy = proxy;
-            model.prepareResources(null, function (result) {
-                if (result) {
-                    for (const el of model.elements) {
-                        el.setInteractive(true);
-                    }
-                    self.scale = 1.0;
-                    self.model = model;
-                    // self.formattedJson = model.formattedJSON();
-                }
-                else {
-                    self.onError('Error loading model resources.', 'model-editor');
-                }
-            });
-        }
-    }
-
-    loadModel(modelPath: string) {
-        const urlRequest = new SignedUrlRequestDTO();
-        urlRequest.ContainerID = this.selectedContainerID;
-        urlRequest.Path = modelPath;
-        urlRequest.ContentType = this.MODEL_MIME_TYPE;
-        urlRequest.Verb = 'get';
-        this.apiService.getSignedUrl(urlRequest).subscribe({
-            next: (signedUrlRequest) => {
-                // window.open(signedUrlRequest.Url);
                 this.http.get(signedUrlRequest.Url, { responseType: 'text' }).subscribe({
                     next: (modelJson: string) => {
                         try {
                             const model = Model.parse(modelJson);
                             const proxy = new ContainerUrlProxy(this.apiService, this.selectedContainerID);
                             model.resourceManager.urlProxy = proxy;
-                            this.setModel(model, this.selectedContainerID, this.selectedContainerName, modelPath);
+                            model.prepareResources(null, (result) => {
+                                this.isBusy = false;
+                                if (result) {
+                                    const modalInfo = new ModelActionModalInfo();
+                                    modalInfo.model = model;
+                                    modalInfo.path = this.selectedFilePath;
+                                    modalInfo.containerID = this.selectedContainerID;
+                                    modalInfo.containerName = this.selectedContainerName;
+                                    modalInfo.canEmbed = this.model != null && this.modelContainerID == this.selectedContainerID;
+                                    const wr = Math.min((window.innerWidth - 360), 1000) / model.getSize().width;
+                                    const hr = (window.innerHeight - 360) / model.getSize().height;
+                                    modalInfo.scale = Math.min(wr, hr);
+                                    modalInfo.info = model.getSize().width + 'x' + model.getSize().height;
+                                    const modal = this.modalService.open(ModelActionModalComponent, {
+                                        ariaLabelledBy: 'modal-basic-title',
+                                        size: 'xl',
+                                        scrollable: true
+                                    });
+                                    modal.componentInstance.modalInfo = modalInfo;
+                                    modal.result.then((result: ModelActionModalInfo) => {
+                                        switch (result.action) {
+                                            case 'edit':
+                                                this.modelActionEdit(result);
+                                                break;
+
+                                            case 'create-element':
+                                                this.modelActionCreateElement(result);
+                                                break;
+
+                                            case 'add-resource':
+                                                break;
+                                        }
+                                    }, (error) => {
+                                    });
+                                }
+                                else {
+                                    this.onError('Error loading preview model resources.');
+                                }
+                            });
                         }
                         catch (error) {
+                            this.isBusy = false;
                             this.onError(error);
                         }
                     },
                     error: (error) => {
+                        this.isBusy = false;
                         this.onError(error);
                     }
                 })
             },
             error: (error) => {
+                this.isBusy = false;
                 this.onError(error);
             }
         });
+    }
+
+    modelActionEdit(modalInfo: ModelActionModalInfo) {
+        this.modelContainerID = modalInfo.containerID;
+        this.modelContainerName = modalInfo.containerName;
+        this.modelPath = modalInfo.path;
+        const model = modalInfo.model;
+        for (const el of model.elements) {
+            el.setInteractive(true);
+        }
+        this.scale = 1.0;
+        this.model = model;
+        this.modelEditorNavId = 1;
+    }
+
+    modelActionCreateElement(modalInfo: ModelActionModalInfo) {
+        const modelResource = new ModelResource();
+        modelResource.uri = modalInfo.path;
+        modelResource.model = modalInfo.model;
+        modelResource.key = Utility.guid();
+        this.model.resourceManager.add(modelResource);
+        const modelElement = ModelElement.create(modelResource, 0, 0,
+            modalInfo.model.getSize().width, modalInfo.model.getSize().height);
+        modelElement.setInteractive(true);
+        modelElement.aspectLocked = true;
+        this.controller.addElement(modelElement);
+    }
+
+    setModel(model: Model, modelContainerID: string, modelContainerName: string, modelPath: string) {
+        if (model !== this.model) {
+            this.modelContainerID = modelContainerID;
+            this.modelContainerName = modelContainerName;
+            this.modelPath = modelPath;
+            const proxy = new ContainerUrlProxy(this.apiService, modelContainerID);
+            model.resourceManager.urlProxy = proxy;
+            model.prepareResources(null, (result) => {
+                if (result) {
+                    for (const el of model.elements) {
+                        el.setInteractive(true);
+                    }
+                    this.scale = 1.0;
+                    this.model = model;
+                    this.modelEditorNavId = 1;
+                }
+                else {
+                    this.onError('Error loading model resources.');
+                }
+            });
+        }
     }
 
     ensureExtension(input: string, extension: string) {
@@ -641,18 +551,33 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         return path.substr(index);
     }
 
-    createModel(newmodelform) {
+    showNewModelModal() {
+        const modalInfo = new NewModelModalInfo();
+        modalInfo.width = 1024;
+        modalInfo.height = 768;
+        modalInfo.backgroundColor = Color.Transparent;
+        modalInfo.backgroundOpacity = 255;
+        modalInfo.backgroundColorDisplay = Color.Transparent;
+        const modal = this.modalService.open(NewModelModalComponent);
+        modal.componentInstance.modalInfo = modalInfo;
+        modal.result.then((result: NewModelModalInfo) => {
+            this.createModel(result);
+        }, (error) => {
+        });
+    }
 
-        this.creatingModel = true;
+    createModel(modalInfo: NewModelModalInfo) {
 
-        // Create Elise model
-        const model = Model.create(this.newModelWidth, this.newModelHeight);
-        model.fill = this.newModelBackgroundColorDisplay.toString();
+        this.isBusy = true;
+
+        // Create model from modal settings
+        const model = Model.create(modalInfo.width, modalInfo.height);
+        model.fill = modalInfo.backgroundColorDisplay.toString();
         const serializedModel = model.rawJSON();
+        modalInfo.name = this.ensureExtension(modalInfo.name, '.mdl');
+        const newModelPath = this.selectedFolderPath + modalInfo.name;
 
-        this.newModelName = this.ensureExtension(this.newModelName, '.mdl');
-        const newModelPath = this.selectedFolderPath + this.newModelName;
-
+        // Save model
         const urlRequest = new SignedUrlRequestDTO();
         urlRequest.ContainerID = this.selectedContainerID;
         urlRequest.Path = newModelPath;
@@ -669,23 +594,20 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                 upload.removeOnSuccess = true;
                 upload.callback.subscribe({
                     next: (result) => {
-                        this.creatingModel = false;
                         this.isBusy = false;
-                        this.currentModal.close();
                         if (result.success) {
                             this.setModel(model, this.selectedContainerID, this.selectedContainerName, newModelPath);
-                            this.newModelName = '';
-                            this.alertService.success(`Model ${upload.name} created.`, { autoClose: true, id: 'model-editor' });
+                            this.toasterService.success(upload.name, 'Model Created');
                             if (upload.folderPath === this.selectedFolderPath) {
                                 this.listFolderFiles();
                             }
                         }
                         else {
                             if (upload.state.code == UploadStateCode.FAILED) {
-                                this.onError(`Model ${upload.name} could not be created.`, 'model-editor');
+                                this.onError(upload.name, 'Model Create Error');
                             }
                             if (upload.state.code == UploadStateCode.ABORTED) {
-                                this.onError(`Model ${upload.name} save was aborted.`, 'model-editor');
+                                this.onError(upload.name, 'Model Create Aborted');
                             }
                         }
                         const index = this.uploads.indexOf(upload);
@@ -699,9 +621,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             },
             error: (error) => {
                 this.isBusy = false;
-                this.creatingModel = false;
-                this.currentModal.close();
-                this.onError(error, 'model-editor');
+                this.onError(error);
             }
         });
     }
@@ -730,7 +650,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                     next: (result) => {
                         this.isBusy = false;
                         if (result.success) {
-                            this.alertService.success(`Model ${upload.name} saved.`, { autoClose: true, id: 'model-editor' });
+                            this.toasterService.success(upload.name, 'Model Saved');
                             if (upload.containerID == this.selectedContainerID && upload.folderPath === this.selectedFolderPath) {
                                 this.listFolderFiles();
                             }
@@ -759,29 +679,6 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                 this.onError(error, 'model-editor');
             }
         });
-    }
-
-    onNewModelBackgroundColorSelected(color) {
-        this.newModelBackgroundColor = color.color;
-        if (color.color.a === 0) {
-            this.newModelBackgroundColorDisplay = Color.Transparent;
-        }
-        else {
-            this.newModelBackgroundColorDisplay = new Color(this.newModelBackgroundOpacity, color.color.r, color.color.g, color.color.b);
-        }
-    }
-
-    onNewModelBackgroundOpacityChanged(event) {
-        this.newModelBackgroundOpacity = parseInt(event.target.value);
-        if (this.newModelBackgroundColor.a === 0) {
-            this.newModelBackgroundColorDisplay = Color.Transparent;
-        }
-        else {
-            this.newModelBackgroundColorDisplay.r = this.newModelBackgroundColor.r;
-            this.newModelBackgroundColorDisplay.g = this.newModelBackgroundColor.g;
-            this.newModelBackgroundColorDisplay.b = this.newModelBackgroundColor.b;
-            this.newModelBackgroundColorDisplay.a = this.newModelBackgroundOpacity;
-        }
     }
 
     mouseEnteredView(e: PointEventParameters) {
@@ -832,8 +729,8 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         if (!this.controller) {
             return;
         };
-        if(this._activeTool) {
-            this.controller.setActiveTool(this._activeTool);
+        if (this.activeTool) {
+            this.controller.setActiveTool(this.activeTool);
             this.controller.selectionEnabled = false;
         }
         else {

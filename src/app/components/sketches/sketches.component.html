@@ -1,8 +1,5 @@
 <div style='padding: 10px;'>
     <h3>Sketches</h3>
-    <div *ngIf='errorMessage' class='alert alert-danger'>
-        <strong>Error</strong> {{errorMessage}}
-    </div>
     <ul>
         <li *ngFor='let model of models'>
             <span><a routerLink='/sketches/{{model.id}}'>{{model.name}}</a></span>

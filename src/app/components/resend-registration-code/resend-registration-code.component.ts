@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../schematrix/services/api.service';
+import { ToastrService } from 'ngx-toastr';
 import { UserRegistrationDTO } from '../../schematrix/classes/user-registration-dto';
 
 @Component({
@@ -8,14 +9,14 @@ import { UserRegistrationDTO } from '../../schematrix/classes/user-registration-
   styleUrls: ['./resend-registration-code.component.scss']
 })
 export class ResendRegistrationCodeComponent implements OnInit {
-    errorMessage: string = null;
-    successMessage: string = null;
     processing: boolean = false;
     formSubmitted: boolean = false;
     userRegistrationDTO: UserRegistrationDTO = new UserRegistrationDTO();
     confirmationComplete: boolean = false;
 
-    constructor(private apiService: ApiService) {
+    constructor(
+        private apiService: ApiService,
+        private toasterService: ToastrService) {
     }
 
     ngOnInit() {
@@ -26,14 +27,12 @@ export class ResendRegistrationCodeComponent implements OnInit {
         this.apiService.resendRegistrationCode(this.userRegistrationDTO).subscribe({
             next: (confirmationResult) => {
                 this.processing = false;
-                this.errorMessage = null;
-                this.successMessage = 'Registration code resent.\nPlease check email for registration code.';
+                this.toasterService.success('Please check email for registration code.', 'Registration Code Resent');
                 this.formSubmitted = true;
             },
             error: (err) => {
                 this.processing = false;
-                this.errorMessage = err;
-                this.successMessage = null;
+                this.toasterService.error(err, 'Submission Failed');
                 this.formSubmitted = false;
             }
         });
@@ -44,14 +43,12 @@ export class ResendRegistrationCodeComponent implements OnInit {
         this.apiService.confirmRegistration(this.userRegistrationDTO).subscribe({
             next: (confirmationResult) => {
                 this.processing = false;
-                this.errorMessage = null;
-                this.successMessage = 'Registration confirmed.\nYou may now log in.';
+                this.toasterService.success('You may now log in.', 'Registration Confirmed');
                 this.confirmationComplete = true;
             },
             error: (err) => {
                 this.processing = false;
-                this.errorMessage = err;
-                this.successMessage = null;
+                this.toasterService.error(err, 'Confirmation Failed');
             }
         });
     }

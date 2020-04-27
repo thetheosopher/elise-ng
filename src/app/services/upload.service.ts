@@ -39,24 +39,22 @@ export class UploadService {
 	}
 
 	queue(upload: Upload) {
-		let self = this;
 		upload.state = UploadState.create(UploadStateCode.QUEUED, 0, "Queued");
-		upload.id = self.uploadCounter++;
-		self.uploads.push(upload);
-        self.uploadQueued.emit(upload);
-		self.beginNext();
+		upload.id = this.uploadCounter++;
+		this.uploads.push(upload);
+        this.uploadQueued.emit(upload);
+		this.beginNext();
 	};
 
 	immediate(upload: Upload) {
-	    let self = this;
 	    upload.state = UploadState.create(UploadStateCode.UPLOADING, 0, "Immediate Upload");
-	    upload.id = self.uploadCounter++;
+	    upload.id = this.uploadCounter++;
 	    upload.isImmediate = true;
 
 	    // Insert after completed and any other immediate, but before any queued
 	    let i = 0, index = 0;
-        while(i < self.uploads.length) {
-            let u = self.uploads[i];
+        while(i < this.uploads.length) {
+            let u = this.uploads[i];
 	        let code = u.state.code;
 	        if (!u.isImmediate && (code === UploadStateCode.QUEUED)) {
 	            break;
@@ -65,80 +63,80 @@ export class UploadService {
 	        index++;
 	    }
 
-	    self.uploads.splice(index, 0, upload);
+	    this.uploads.splice(index, 0, upload);
 
         // Call upload forced event
-        self.uploadForced.emit(upload);
+        this.uploadForced.emit(upload);
 
 	    // Create XMLHttpRequest for upload
 	    let xhr = new XMLHttpRequest();
 	    upload.request = xhr;
 
 	    // Attach to monitor upload progress
-	    xhr.upload.addEventListener("progress", function (evt: any) {
+	    xhr.upload.addEventListener("progress", (evt: any) => {
 	        if (evt.lengthComputable) {
 	            var percent = (evt.loaded / evt.total) * 100;
 	            upload.state = UploadState.create(UploadStateCode.UPLOADING, percent, upload.name + " [" + percent + "%]");
-                self.uploadProgress.emit(upload);
+                this.uploadProgress.emit(upload);
 	        }
 	    }, false);
 
 	    // Monitor file completion
-	    xhr.addEventListener("load", function () {
+	    xhr.addEventListener("load", () => {
 	        upload.state = UploadState.create(UploadStateCode.COMPLETED, 100, upload.name + " completed successfully.");
 
 	        // If status is in 400-500 range, report as error
 	        if (xhr.status >= 400) {
 	            upload.state = UploadState.create(UploadStateCode.FAILED, upload.state.percent, upload.name + " failed. " + xhr.statusText);
-	            self.onUploadFailed(upload);
+	            this.onUploadFailed(upload);
                 upload.callback.emit(new UploadResult(upload, false));
 	            if (upload.removeOnFailure) {
-	                self.remove(upload);
+	                this.remove(upload);
 	            }
 	        }
 	        else {
-	            self.onUploadCompleted(upload);
+	            this.onUploadCompleted(upload);
                 upload.callback.emit(new UploadResult(upload, true));
 	            if (upload.removeOnSuccess) {
-	                self.remove(upload);
+	                this.remove(upload);
 	            }
 	        }
 	    }, false);
 
 	    // Monitor file cancellation
-	    xhr.addEventListener("abort", function () {
+	    xhr.addEventListener("abort", () => {
 	        upload.state = UploadState.create(UploadStateCode.ABORTED, upload.state.percent, upload.name + " aborted. " + xhr.statusText);
-	        self.onUploadAborted(upload);
+	        this.onUploadAborted(upload);
             upload.callback.emit(new UploadResult(upload, false));
 	        if (upload.removeOnFailure) {
-	            self.remove(upload);
+	            this.remove(upload);
 	        }
 	    }, false);
 
 	    // Monitor upload failure
-	    xhr.addEventListener("error", function () {
+	    xhr.addEventListener("error", () => {
 	        upload.state = UploadState.create(UploadStateCode.FAILED, upload.state.percent, upload.name + " failed. " + xhr.statusText);
-	        self.onUploadFailed(upload);
+	        this.onUploadFailed(upload);
             upload.callback.emit(new UploadResult(upload, false));
 	        if (upload.removeOnFailure) {
-	            self.remove(upload);
+	            this.remove(upload);
 	        }
 	    }, false);
 
 	    // Open request and set any assigned headers
 	    xhr.open(upload.method, upload.url, true);
-	    upload.headers.forEach(function (header) {
+	    upload.headers.forEach((header) => {
 	        xhr.setRequestHeader(header.name, header.value);
 	    });
 
 	    // Increment active uploads
-	    self.activeUploads++;
+	    this.activeUploads++;
 
 	    // Set upload state to uploading
 	    upload.state = UploadState.create(UploadStateCode.UPLOADING, 0, upload.name + " starting.");
 
 	    // Call start event
-	    self.onUploadStarted(upload);
+	    this.onUploadStarted(upload);
 
 	    // Upload file or data
 	    var blob;
@@ -173,34 +171,31 @@ export class UploadService {
 	}
 
 	remove(upload: Upload) {
-		let self = this;
-		let index = self.uploads.indexOf(upload);
+		let index = this.uploads.indexOf(upload);
 		if(index !== -1) {
 			if (upload.state.code === UploadStateCode.UPLOADING) {
 				upload.request.abort();
 			}
-			self.uploads.splice(index, 1);
-            self.uploadRemoved.emit(upload);
+			this.uploads.splice(index, 1);
+            this.uploadRemoved.emit(upload);
 		}
 	}
 
 	removeById(id: number) {
-	    let self = this;
 	    let found = null;
-	    self.uploads.forEach(function (upload) {
+	    this.uploads.forEach((upload) => {
 	        if (upload.id === id) {
 	            found = upload;
 	        }
 	    });
 	    if (found) {
-	        self.remove(found);
+	        this.remove(found);
 	    }
 	}
 
 	removeFinished() {
-	    let self = this;
 	    let finished: Upload[] = [];
-	    self.uploads.forEach(function (upload) {
+	    this.uploads.forEach((upload) => {
 	        switch (upload.state.code) {
 	            case UploadStateCode.COMPLETED:
 	            case UploadStateCode.ABORTED:
@@ -209,19 +204,18 @@ export class UploadService {
 	                break;
 	        }
 	    });
-	    finished.forEach(function (upload) {
-	        self.remove(upload);
+	    finished.forEach((upload) => {
+	        this.remove(upload);
 	    });
 	}
 
 	removeAll() {
-	    let self = this;
 	    let trash: Upload[] = [];
-	    self.uploads.forEach(function (upload) {
+	    this.uploads.forEach((upload) => {
 	        trash.push(upload);
 	    });
-	    trash.forEach(function (upload) {
-	        self.remove(upload);
+	    trash.forEach((upload) => {
+	        this.remove(upload);
 	    });
 	}
 
@@ -253,19 +247,17 @@ export class UploadService {
 
 	beginNext() {
 
-	    let self = this;
-
 	    // Exit if disabled
-	    if (!self.enabled) { return; }
+	    if (!this.enabled) { return; }
 
 	    // Exit if max active reached
-	    if (self.activeUploads >= self.maxActive) { return; }
+	    if (this.activeUploads >= this.maxActive) { return; }
 
 	    // Look for next file to upload
 		let nextUpload = null, upload: Upload;
-		let l = self.uploads.length;
+		let l = this.uploads.length;
 		for (let i = 0; i < l; i++) {
-			upload = self.uploads[i];
+			upload = this.uploads[i];
 			if (upload.state.code === UploadStateCode.QUEUED) {
 				nextUpload = upload;
 				break;
@@ -282,70 +274,70 @@ export class UploadService {
 		upload.request = xhr;
 
 		// Attach to monitor upload progress
-		xhr.upload.addEventListener("progress", function (evt: any) {
+		xhr.upload.addEventListener("progress", (evt: any) => {
 			if (evt.lengthComputable) {
 				var percent = (evt.loaded / evt.total) * 100;
 				upload.state = UploadState.create(UploadStateCode.UPLOADING, percent, upload.name + " [" + percent + "%]");
-				self.onUploadProgress(upload);
+				this.onUploadProgress(upload);
 			}
 		}, false);
 
 		// Monitor file completion
-		xhr.addEventListener("load", function () {
+		xhr.addEventListener("load", () => {
 			upload.state = UploadState.create(UploadStateCode.COMPLETED, 100, upload.name + " completed successfully.");
 
 		    // If status is in 400-500 range, report as error
 			if (xhr.status >= 400) {
 			    upload.state = UploadState.create(UploadStateCode.FAILED, upload.state.percent, upload.name + " failed. " + xhr.statusText);
-			    self.onUploadFailed(upload);
+			    this.onUploadFailed(upload);
                 upload.callback.emit(new UploadResult(upload, false));
 			    if (upload.removeOnFailure) {
-			        self.remove(upload);
+			        this.remove(upload);
 			    }
             }
 			else {
-			    self.onUploadCompleted(upload);
+			    this.onUploadCompleted(upload);
                 upload.callback.emit(new UploadResult(upload, true));
 			    if (upload.removeOnSuccess) {
-			        self.remove(upload);
+			        this.remove(upload);
 			    }
 			}
 		}, false);
 
 		// Monitor file cancellation
-		xhr.addEventListener("abort", function () {
+		xhr.addEventListener("abort", () => {
 			upload.state = UploadState.create(UploadStateCode.ABORTED, upload.state.percent, upload.name + " aborted. " + xhr.statusText);
-			self.onUploadAborted(upload);
+			this.onUploadAborted(upload);
             upload.callback.emit(new UploadResult(upload, false));
 			if (upload.removeOnFailure) {
-			    self.remove(upload);
+			    this.remove(upload);
 			}
 		}, false);
 
 		// Monitor upload failure
-		xhr.addEventListener("error", function () {
+		xhr.addEventListener("error", () => {
 			upload.state = UploadState.create(UploadStateCode.FAILED, upload.state.percent, upload.name + " failed. " + xhr.statusText);
-			self.onUploadFailed(upload);
+			this.onUploadFailed(upload);
             upload.callback.emit(new UploadResult(upload, false));
 			if (upload.removeOnFailure) {
-			    self.remove(upload);
+			    this.remove(upload);
 			}
 		}, false);
 
 		// Open request and set any assigned headers
 		xhr.open(upload.method, upload.url, true);
-		upload.headers.forEach(function (header) {
+		upload.headers.forEach((header) => {
 			xhr.setRequestHeader(header.name, header.value);
 		});
 
 		// Increment active uploads
-		self.activeUploads++;
+		this.activeUploads++;
 
 		// Set upload state to uploading
 		upload.state = UploadState.create(UploadStateCode.UPLOADING, 0, upload.name + " starting.");
 
 		// Call start event
-		self.onUploadStarted(upload);
+		this.onUploadStarted(upload);
 
 	    // Upload file or data
 		var blob;

@@ -1,0 +1,25 @@
+<!-- Modal Header -->
+<div class="modal-header">
+    <h4 class="modal-title">New Container</h4>
+    <button type="button" class="close" (click)="activeModal.dismiss('X')">&times;</button>
+</div>
+
+<!-- Modal body -->
+<form>
+    <div class="modal-body">
+        <div class="form-group">
+            <label for="containername">Container Name</label>
+            <input type="text" id="containername" name="containername" #containername="ngModel"
+                class="form-control" required [(ngModel)]="modalInfo.name" ngbAutofocus />
+            <div [hidden]="containername.valid || containername.pristine" class="alert alert-danger">
+                Container Name Is Required
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- Modal footer -->
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="commit()">Create Container</button>
+    <button type="button" class="btn btn-danger" (click)="activeModal.dismiss('Cancel')">Cancel</button>
+</div>

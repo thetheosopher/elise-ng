@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
@@ -8,6 +9,7 @@ import { SchematrixModule } from './schematrix/schematrix.module';
 import { TreeModule } from 'angular-tree-component';
 import { AngularSplitModule } from 'angular-split';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { ToastrModule } from 'ngx-toastr';
 
 import { AppComponent } from './app.component';
 import { RedGreenBlueComponent } from './components/redgreenblue/redgreenblue.component';
@@ -44,6 +46,14 @@ import { ModelDesignerComponent } from './components/model-designer/model-design
 import { FileListComponent } from './components/file-list/file-list.component';
 import { UploadListComponent } from './components/upload-list/upload-list.component';
 import { ColorSelectorComponent } from './components/color-selector/color-selector.component';
+import { NewFolderModalComponent } from './components/new-folder-modal/new-folder-modal.component';
+import { DeleteFolderModalComponent, DeleteFolderModalInfo } from './components/delete-folder-modal/delete-folder-modal.component';
+import { DeleteFileModalComponent } from './components/delete-file-modal/delete-file-modal.component';
+import { NewContainerModalComponent } from './components/new-container-modal/new-container-modal.component';
+import { DeleteContainerModalComponent } from './components/delete-container-modal/delete-container-modal.component';
+import { ImageActionModalComponent } from './components/image-action-modal/image-action-modal.component';
+import { NewModelModalComponent } from './components/new-model-modal/new-model-modal.component';
+import { ModelActionModalComponent } from './components/model-action-modal/model-action-modal.component';
 
 @NgModule({
     declarations: [
@@ -81,10 +91,19 @@ import { ColorSelectorComponent } from './components/color-selector/color-select
         ModelDesignerComponent,
         FileListComponent,
         UploadListComponent,
-        ColorSelectorComponent
+        ColorSelectorComponent,
+        NewFolderModalComponent,
+        DeleteFolderModalComponent,
+        DeleteFileModalComponent,
+        NewContainerModalComponent,
+        DeleteContainerModalComponent,
+        ImageActionModalComponent,
+        NewModelModalComponent,
+        ModelActionModalComponent
     ],
     imports: [
         BrowserModule,
+        BrowserAnimationsModule,
         AppRoutingModule,
         HttpClientModule,
         FormsModule,
@@ -92,8 +111,15 @@ import { ColorSelectorComponent } from './components/color-selector/color-select
         SchematrixModule,
         NgbModule,
         TreeModule.forRoot(),
-        AngularSplitModule.forRoot()
+        AngularSplitModule.forRoot(),
+        ToastrModule.forRoot()
     ],
-    bootstrap: [ AppComponent ]
+    bootstrap: [ AppComponent ],
+    entryComponents: [
+        DeleteFolderModalComponent,
+        NewFolderModalComponent,
+        DeleteFileModalComponent,
+        NewContainerModalComponent,
+    ]
 })
 export class AppModule {}

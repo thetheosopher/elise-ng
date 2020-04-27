@@ -1,5 +1,6 @@
 import { Component, OnInit, ElementRef, ViewChild, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 import { Model } from 'elise-graphics/lib/core/model';
 import { ViewController } from 'elise-graphics/lib/view/view-controller';
@@ -37,10 +38,12 @@ export class EliseViewHarnessComponent implements OnInit, ISampleViewer {
     mouseOverView = false;
     displayModel = true;
     formattedJson: string;
-    errorMessage: string;
     codeString: string;
 
-    constructor(private _viewTestService: ViewTestService, private _route: ActivatedRoute) {
+    constructor(
+        private _viewTestService: ViewTestService,
+        private _route: ActivatedRoute,
+        private toasterService: ToastrService) {
         this._title = 'Elise View Component Test Harness';
         this._description = 'Tests Elise view component public interface';
         this._model = Model.create(320, 320);
@@ -68,16 +71,15 @@ export class EliseViewHarnessComponent implements OnInit, ISampleViewer {
     @Input()
     set model(model: Model) {
         if (model !== this._model) {
-            const self = this;
-            model.prepareResources(null, function(result) {
+            model.prepareResources(null, (result) => {
                 if (result) {
-                    self._model = model;
-                    if (self.displayModel) {
-                        self.formattedJson = model.formattedJSON();
+                    this._model = model;
+                    if (this.displayModel) {
+                        this.formattedJson = model.formattedJSON();
                     }
                 }
                 else {
-                    self.errorMessage = 'Error loading model resources.';
+                    this.toasterService.error('Error loading model resources.');
                 }
             });
         }

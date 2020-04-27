@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../schematrix/services/api.service';
+import { ToastrService } from 'ngx-toastr';
 import { LoginDTO } from '../../schematrix/classes/login-dto';
 
 @Component({
@@ -8,15 +9,15 @@ import { LoginDTO } from '../../schematrix/classes/login-dto';
     styleUrls: ['./send-password-reset-code.component.scss']
 })
 export class SendPasswordResetCodeComponent implements OnInit {
-    errorMessage: string = null;
-    successMessage: string = null;
     processing: boolean = false;
     formSubmitted: boolean = false;
     loginDTO: LoginDTO = new LoginDTO();
     passwordConfirm: string = null;
     resetComplete: boolean = false;
 
-    constructor(private apiService: ApiService) {
+    constructor(
+        private apiService: ApiService,
+        private toasterService: ToastrService) {
     }
 
     ngOnInit() {
@@ -27,14 +28,12 @@ export class SendPasswordResetCodeComponent implements OnInit {
         this.apiService.sendPasswordResetCode(this.loginDTO).subscribe({
             next: (confirmationResult) => {
                 this.processing = false;
-                this.errorMessage = null;
-                this.successMessage = 'Password reset code sent.\nPlease check email for password reset code.';
+                this.toasterService.success('Please check email for password reset code.', 'Password Reset Code Sent');
                 this.formSubmitted = true;
             },
             error: (err) => {
                 this.processing = false;
-                this.errorMessage = err;
-                this.successMessage = null;
+                this.toasterService.error(err, 'Submission Failed');
                 this.formSubmitted = false;
             }
         });
@@ -45,14 +44,12 @@ export class SendPasswordResetCodeComponent implements OnInit {
         this.apiService.resetPassword(this.loginDTO).subscribe({
             next: (confirmationResult) => {
                 this.processing = false;
-                this.errorMessage = null;
-                this.successMessage = 'Password reset successfully.\nYou may now log in with your new password.';
+                this.toasterService.success('You may now log in with your new password.', 'Password Reset Complete');
                 this.resetComplete = true;
             },
             error: (err) => {
                 this.processing = false;
-                this.errorMessage = err;
-                this.successMessage = null;
+                this.toasterService.error(err, 'Password Reset Failed');
             }
         });
     }

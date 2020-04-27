@@ -7,7 +7,7 @@ import { ManifestDTO } from '../../schematrix/classes/manifest-dto';
 import { ManifestFileDTO } from '../../schematrix/classes/manifest-file-dto';
 import { ContainerTreeComponent } from '../../components/container-tree/container-tree.component';
 import { SignedUrlRequestDTO } from '../../schematrix/classes/signed-url-request-dto';
-import { AlertService } from '../../services/alert.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
     selector: 'app-container-explorer',
@@ -32,7 +32,7 @@ export class ContainerExplorerComponent implements OnInit, AfterViewInit {
         private apiService: ApiService,
         private uploadService: UploadService,
         private http: HttpClient,
-        private alertService: AlertService) {
+        private toasterService: ToastrService) {
     }
 
     ngOnInit() {
@@ -92,9 +92,9 @@ export class ContainerExplorerComponent implements OnInit, AfterViewInit {
         });
     }
 
-    onError(error) {
+    onError(error, title?) {
         console.log(error);
-        this.alertService.error(error, { id: 'container-explorer' });
+        this.toasterService.error(error, title);
     }
 
     onFileDropped($event) {
@@ -155,6 +155,7 @@ export class ContainerExplorerComponent implements OnInit, AfterViewInit {
                         if(deletedFile) {
                             this.folderFiles.splice(this.folderFiles.indexOf(deletedFile), 1);
                         }
+                        this.toasterService.success(file, 'File Deleted');
                     }
                 })
             },
@@ -183,7 +184,7 @@ export class ContainerExplorerComponent implements OnInit, AfterViewInit {
                     next: (result) => {
                         if (result.success) {
                             console.log('Upload callback: Success');
-                            this.alertService.success(`Upload of ${upload.name} succeeded.`, { autoClose: true, id: 'container-explorer' });
+                            this.toasterService.success(upload.name, 'File Upload Complete');
                             if(upload.folderPath === this.selectedFolderPath) {
                                 this.listFolderFiles();
                             }

@@ -126,53 +126,52 @@ export class EliseSurfaceComponent implements AfterViewInit, OnDestroy {
     private initializeController() {
         this.surface.scale = this.scale;
         this.surface.opacity = this.opacity;
-        const self = this;
         this.surface.bind(
             this._hostDiv,
-            function(surface: Surface) {
-                self.controller = surface.controller;
-                self.controller.mouseEnteredView.add((c, e) => {
-                    self.mouseEnteredView.emit(e);
+            (surface: Surface) => {
+                this.controller = surface.controller;
+                this.controller.mouseEnteredView.add((c, e) => {
+                    this.mouseEnteredView.emit(e);
                 });
-                self.controller.mouseLeftView.add((c, e) => {
-                    self.mouseLeftView.emit(e);
+                this.controller.mouseLeftView.add((c, e) => {
+                    this.mouseLeftView.emit(e);
                 });
-                self.controller.mouseDownView.add((c, e) => {
-                    self.mouseDownView.emit(e);
+                this.controller.mouseDownView.add((c, e) => {
+                    this.mouseDownView.emit(e);
                 });
-                self.controller.mouseUpView.add((c, e) => {
-                    self.mouseUpView.emit(e);
+                this.controller.mouseUpView.add((c, e) => {
+                    this.mouseUpView.emit(e);
                 });
-                self.controller.mouseMovedView.add((c, e) => {
-                    self.mouseMovedView.emit(e);
+                this.controller.mouseMovedView.add((c, e) => {
+                    this.mouseMovedView.emit(e);
                 });
-                self.controller.modelUpdated.add((c, m) => {
-                    self.modelUpdated.emit(m);
+                this.controller.modelUpdated.add((c, m) => {
+                    this.modelUpdated.emit(m);
                 });
-                self.controller.enabledChanged.add((c, enabled) => {
-                    self.enabledChanged.emit(enabled);
+                this.controller.enabledChanged.add((c, enabled) => {
+                    this.enabledChanged.emit(enabled);
                 });
-                self.controller.mouseEnteredElement.add((c, e) => {
-                    self.mouseEnteredElement.emit(e);
+                this.controller.mouseEnteredElement.add((c, e) => {
+                    this.mouseEnteredElement.emit(e);
                 });
-                self.controller.mouseLeftElement.add((c, e) => {
-                    self.mouseLeftElement.emit(e);
+                this.controller.mouseLeftElement.add((c, e) => {
+                    this.mouseLeftElement.emit(e);
                 });
-                self.controller.mouseDownElement.add((c, e) => {
-                    self.mouseDownElement.emit(e);
+                this.controller.mouseDownElement.add((c, e) => {
+                    this.mouseDownElement.emit(e);
                 });
-                self.controller.mouseUpElement.add((c, e) => {
-                    self.mouseUpElement.emit(e);
+                this.controller.mouseUpElement.add((c, e) => {
+                    this.mouseUpElement.emit(e);
                 });
-                self.controller.elementClicked.add((c, e) => {
-                    self.elementClicked.emit(e);
+                this.controller.elementClicked.add((c, e) => {
+                    this.elementClicked.emit(e);
                 });
-                self.controller.timer.add((c, t) => {
-                    self.timerTick.emit(t);
+                this.controller.timer.add((c, t) => {
+                    this.timerTick.emit(t);
                 });
-                self.controllerSet.emit(self.controller);
-                if (self.timerEnabled) {
-                    self.controller.startTimer();
+                this.controllerSet.emit(this.controller);
+                if (this.timerEnabled) {
+                    this.controller.startTimer();
                 }
                 surface.onload();
             },

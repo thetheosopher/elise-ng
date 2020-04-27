@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter } from '@angular/core';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { ManifestFileDTO } from '../../schematrix/classes/manifest-file-dto';
+import { DeleteFileModalComponent, DeleteFileModalInfo } from '../delete-file-modal/delete-file-modal.component';
 
 @Component({
     selector: 'app-file-list',
@@ -34,20 +35,9 @@ export class FileListComponent implements OnInit {
 
     selectedFile: string;
 
-    currentModal: NgbModalRef;
-
     constructor(private modalService: NgbModal) { }
 
     ngOnInit() {
-    }
-
-    openModal(content) {
-        this.currentModal = this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title' });
-        this.currentModal.result.then((result) => {
-            // console.log(`Closed with: ${result}`);
-        }, (reason) => {
-            // console.log(`Dismissed ${reason}`);
-        });
     }
 
     formatBytes(bytes, decimals) {
@@ -72,16 +62,16 @@ export class FileListComponent implements OnInit {
 
     onRequestDeleteFile(file) {
         if(this.confirmFileDelete) {
-            this.selectedFile = file;
-            this.openModal(this.deleteFileModal);
+            const modalInfo = new DeleteFileModalInfo();
+            modalInfo.path = file;
+            const modal = this.modalService.open(DeleteFileModalComponent);
+            modal.componentInstance.modalInfo = modalInfo;
+            modal.result.then((result: DeleteFileModalInfo) => {
+                this.deleteFile.emit(result.path);
+            })
         }
         else {
             this.deleteFile.emit(file);
         }
-    }
-
-    onConfirmDeleteFile() {
-        this.deleteFile.emit(this.selectedFile);
-        this.currentModal.close();
     }
 }

@@ -1,5 +1,6 @@
 import { Component, OnInit, ElementRef, ViewChild, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 import { Surface } from 'elise-graphics/lib/surface/surface';
 import { PointEventParameters } from 'elise-graphics/lib/core/point-event-parameters';
@@ -40,9 +41,11 @@ export class EliseSurfaceHarnessComponent implements OnInit, ISurfaceViewer {
     timerEnabled = false;
     mouseOverView = false;
     displayModel = true;
-    errorMessage: string;
 
-    constructor(private _surfaceTestService: SurfaceTestService, private _route: ActivatedRoute) {
+    constructor(
+        private _surfaceTestService: SurfaceTestService,
+        private _route: ActivatedRoute,
+        private toasterService: ToastrService) {
         this._title = 'Elise Surface Component Test Harness';
         this._description = 'Tests Elise surface component public interface';
         this._surface = Surface.create(320, 320, '', 1.0);
@@ -90,8 +93,7 @@ export class EliseSurfaceHarnessComponent implements OnInit, ISurfaceViewer {
     @Input()
     set surface(surface: Surface) {
         if (surface !== this._surface) {
-            const self = this;
-            self._surface = surface;
+            this._surface = surface;
         }
     }
 

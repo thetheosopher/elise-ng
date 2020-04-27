@@ -1,0 +1,31 @@
+<!-- Modal Header -->
+<div class="modal-header">
+    <h4 class="modal-title">Model Action</h4>
+    <button type="button" class="close" (click)="activeModal.dismiss('X')">&times;</button>
+</div>
+
+<!-- Modal body -->
+<div class="modal-body">
+    <div style="text-align: center;">
+        <app-elise-view [model]="modalInfo.model" [scale]="modalInfo.scale"
+            class="m-2" style="display: inline-block;">
+        </app-elise-view>
+        <h5>{{modalInfo.info}}</h5>
+    </div>
+    <button class='btn btn-primary py-2 px-2 mx-2' (click)="actionEdit()">
+        <span>Edit Model</span>
+    </button>
+    <button class='btn btn-primary py-2 px-2 mx-2' (click)="actionCreateElement()"
+        *ngIf="modalInfo.canEmbed">
+        <span>Embed Model</span>
+    </button>
+    <button class='btn btn-primary py-2 px-2 mx-2' (click)="actionAddResource()"
+        *ngIf="modalInfo.canEmbed">
+        <span>Add Resource</span>
+    </button>
+</div>
+
+<!-- Modal footer -->
+<div class="modal-footer">
+    <button type="button" class="btn btn-danger" (click)="activeModal.dismiss('Cancel')" ngbAutofocus>Cancel</button>
+</div>

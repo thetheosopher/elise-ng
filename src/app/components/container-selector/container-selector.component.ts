@@ -2,6 +2,9 @@ import { Component, OnInit, ElementRef, Input, Output, EventEmitter, ViewChild }
 import { NgbModal, NgbModalRef, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { ApiService } from '../../schematrix/services/api.service';
 import { ContainerDTO } from '../../schematrix/classes/container-dto';
+import { ToastrService } from 'ngx-toastr';
+import { NewContainerModalComponent, NewContainerModalInfo } from '../new-container-modal/new-container-modal.component';
+import { DeleteContainerModalComponent, DeleteContainerModalInfo } from '../delete-container-modal/delete-container-modal.component';
 
 @Component({
     selector: 'app-container-selector',
@@ -11,21 +14,13 @@ import { ContainerDTO } from '../../schematrix/classes/container-dto';
 export class ContainerSelectorComponent implements OnInit {
 
     constructor(private apiService: ApiService,
+        private toasterService: ToastrService,
         private modalService: NgbModal) { }
 
-    @ViewChild('errorModal', { static: true })
-    errorModal: ElementRef;
-
     containers: ContainerDTO[];
-    containerName: string;
     isEnabled: boolean = true;
     isContainerSelected: boolean = false;
-    creatingContainer: boolean = false;
-    deletingContainer: boolean = false;
     isLoggedIn: boolean = false;
-
-    errorMessage: string;
-    currentModal: NgbModalRef;
 
     @Output() public containerSelected: EventEmitter<ContainerDTO | null> = new EventEmitter();
 
@@ -65,12 +60,6 @@ export class ContainerSelectorComponent implements OnInit {
                     this.isEnabled = false;
                 }
                 else {
-                    /*
-                    containers.unshift({
-                        ContainerID: null,
-                        Name: 'Select Container'
-                    })
-                    */
                     const currentlySelected = this.selectedContainer;
                     this.selectedContainer = { Name: 'Select Container' };
                     containers.unshift(this.selectedContainer);
@@ -91,50 +80,51 @@ export class ContainerSelectorComponent implements OnInit {
         })
     }
 
-    createContainer(form) {
-        this.creatingContainer = true;
-        const newContainer = { Name: this.containerName };
+    showNewContainerModal() {
+        const modalInfo = new NewContainerModalInfo();
+        const modal = this.modalService.open(NewContainerModalComponent);
+        modal.componentInstance.modalInfo = modalInfo;
+        modal.result.then((result: NewContainerModalInfo) => {
+            this.createContainer(result);
+        }, (cancelReason) => {
+        })
+    }
+
+    createContainer(modalInfo: NewContainerModalInfo) {
+        const newContainer = { Name: modalInfo.name };
         this.apiService.createContainer(newContainer).subscribe({
             next: (newContainer) => {
-                this.creatingContainer = false;
-                this.currentModal.close('Success');
                 this.selectedContainer = newContainer;
                 this.refreshContainers();
-                form.reset();
             },
             error: (error) => {
-                this.creatingContainer = false;
-                this.currentModal.close('Error');
-                this.errorMessage = error;
-                this.modalService.open(this.errorModal);
+                this.toasterService.error(error, 'Create Container Failed');
             }
         });
     }
 
-    deleteContainer() {
-        this.deletingContainer = true;
-        this.apiService.deleteContainer(this.selectedContainer.ContainerID).subscribe({
+    showDeleteContainerModal() {
+        const modalInfo = new DeleteContainerModalInfo();
+        modalInfo.name = this.selectedContainer.Name;
+        modalInfo.containerID = this.selectedContainer.ContainerID;
+        const modal = this.modalService.open(DeleteContainerModalComponent);
+        modal.componentInstance.modalInfo = modalInfo;
+        modal.result.then((result: DeleteContainerModalInfo) => {
+            this.deleteContainer(result);
+        }, (cancelReason) => {
+        })
+    }
+
+    deleteContainer(modalInfo: DeleteContainerModalInfo) {
+        this.apiService.deleteContainer(modalInfo.containerID).subscribe({
             next: () => {
-                this.deletingContainer = false;
-                this.currentModal.close('Success');
+                this.toasterService.success(modalInfo.name, 'Container Deleted');
                 this.selectedContainer = { Name: 'Select Container' };
                 this.refreshContainers();
             },
             error: (error) => {
-                this.deletingContainer = false;
-                this.currentModal.close('Error');
-                this.errorMessage = error;
-                this.modalService.open(this.errorModal);
+                this.toasterService.error(error, 'Delete Container Failed')
             }
-        });
-    }
-
-    openModal(content) {
-        this.currentModal = this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title' });
-        this.currentModal.result.then((result) => {
-            // console.log(`Closed with: ${result}`);
-        }, (reason) => {
-            // console.log(`Dismissed ${reason}`);
         });
     }
 }

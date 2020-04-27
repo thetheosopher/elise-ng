@@ -8,88 +8,11 @@
         </select>
     </div>
     <div class="col-auto btn-group">
-        <button class="btn btn-light py-0 px-0 mx-1" (click)="openModal(newContainerModal)" [disabled]="!isLoggedIn">
+        <button class="btn btn-light py-0 px-0 mx-1" (click)="showNewContainerModal()" [disabled]="!isLoggedIn">
             <span placement="bottom" ngbTooltip="Create Container" class="fas fa-database fa-2x"></span>
         </button>
-        <button class="btn btn-light py-0 px-0 mx-1" (click)="openModal(deleteContainerModal)" [disabled]='!isContainerSelected'>
+        <button class="btn btn-light py-0 px-0 mx-1" (click)="showDeleteContainerModal()" [disabled]='!isContainerSelected'>
             <span placement="bottom" ngbTooltip="Delete Container" class="fas fa-trash-alt fa-2x"></span>
         </button>
     </div>
 </div>
-
-<!-- Error Modal -->
-<ng-template #errorModal let-modal>
-    <!-- Modal Header -->
-    <div class="modal-header">
-        <h4 class="modal-title">Error</h4>
-        <button type="button" class="close" (click)="modal.dismiss('X')">&times;</button>
-    </div>
-
-    <!-- Modal body -->
-    <div class="modal-body">
-        <div class="alert alert-danger">
-            {{errorMessage}}
-        </div>
-    </div>
-
-    <!-- Modal footer -->
-    <div class="modal-footer">
-        <button type="button" class="btn btn-danger" (click)="modal.dismiss('OK')">OK</button>
-    </div>
-</ng-template>
-
-<!-- New Container -->
-<ng-template #newContainerModal let-modal>
-
-    <!-- Modal Header -->
-    <div class="modal-header">
-        <h4 class="modal-title">New Container</h4>
-        <button type="button" class="close" (click)="modal.dismiss('X')">&times;</button>
-    </div>
-
-    <!-- Modal body -->
-    <form #newcontainerform>
-        <div class="modal-body">
-            <div class="form-group">
-                <label for="containername">Container Name</label>
-                <input type="text" id="containername" name="containername" #containername="ngModel"
-                    class="form-control" required [(ngModel)]="containerName" ngbAutofocus />
-                <div [hidden]="containername.valid || containername.pristine" class="alert alert-danger">
-                    Container Name Is Required
-                </div>
-            </div>
-        </div>
-    </form>
-
-    <!-- Modal footer -->
-    <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="createContainer(newcontainerform)">Create Container
-            <span *ngIf="creatingContainer" class="spinner-border spinner-border-sm"></span>
-        </button>
-        <button type="button" class="btn btn-danger" (click)="modal.dismiss('Cancel')">Cancel</button>
-    </div>
-</ng-template>
-
-<!-- Delete Container -->
-<ng-template #deleteContainerModal let-modal>
-    <!-- Modal Header -->
-    <div class="modal-header">
-        <h4 class="modal-title">Delete Container</h4>
-        <button type="button" class="close" (click)="modal.dismiss('X')">&times;</button>
-    </div>
-
-    <!-- Modal body -->
-    <div class="modal-body">
-        <div class="alert alert-danger">
-            Are you sure you want to delete container {{selectedContainer.Name}}?
-        </div>
-    </div>
-
-    <!-- Modal footer -->
-    <div class="modal-footer">
-        <button type="button" class="btn btn-danger" (click)="deleteContainer()" [disabled]='deletingContainer'>Yes, Delete Container
-            <span *ngIf="deletingContainer" class="spinner-border spinner-border-sm"></span>
-        </button>
-        <button type="button" class="btn btn-primary" [disabled]="deletingContainer" (click)="modal.dismiss('Cancel')" ngbAutofocus>Cancel</button>
-    </div>
-</ng-template>
