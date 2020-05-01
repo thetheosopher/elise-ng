@@ -1,6 +1,6 @@
 <select class='custom-select custom-select-sm form-control' [disabled]='!isEnabled' [(ngModel)]='selectedColor'
     [compareWith]='compareColors' (change)='onColorSelected($event)'>
-    <option *ngFor='let color of colors' [ngValue]='color'>
+    <option *ngFor='let color of colors' [ngValue]='color.color'>
         <div>
             <span>{{color.name}}</span>
         </div>

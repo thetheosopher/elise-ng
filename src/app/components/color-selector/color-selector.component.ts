@@ -12,35 +12,25 @@ export class ColorSelectorComponent implements OnInit {
     constructor() { }
 
     colors: NamedColor[] = Color.NamedColors;
-    colorName: string;
     isEnabled: boolean = true;
 
-    @Output() public colorSelected: EventEmitter<NamedColor | null> = new EventEmitter();
+    @Output() public colorSelected: EventEmitter<Color | null> = new EventEmitter();
 
-    @Input() public selectedColor: NamedColor = Color.NamedColors[0];
+    @Input() public selectedColor: Color = Color.NamedColors[0].color;
 
     ngOnInit() {
     }
 
     onColorSelected(event) {
-        if (this.selectedColor.name) {
-            this.colorSelected.emit(this.selectedColor);
-        }
-        /*
-        else {
-            this.colorSelected.emit(null);
-        }*/
+        this.colorSelected.emit(this.selectedColor);
     }
 
-    compareColors(colorA: NamedColor, colorB: Color) {
-        if(!colorA || !colorB) {
-            return false;
-        }
+    compareColors(colorA: Color, colorB: Color) {
         try {
-            if(colorA.color.a === 0 && colorB.a === 0) {
+            if(colorA.a === 0 && colorB.a === 0) {
                 return true;
             }
-            return colorA.color.equalsHue(colorB);
+            return colorA.equalsHue(colorB);
         }
         catch {
             return false;

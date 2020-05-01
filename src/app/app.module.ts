@@ -54,6 +54,7 @@ import { DeleteContainerModalComponent } from './components/delete-container-mod
 import { ImageActionModalComponent } from './components/image-action-modal/image-action-modal.component';
 import { NewModelModalComponent } from './components/new-model-modal/new-model-modal.component';
 import { ModelActionModalComponent } from './components/model-action-modal/model-action-modal.component';
+import { StrokeModalComponent } from './components/stroke-modal/stroke-modal.component';
 
 @NgModule({
     declarations: [
@@ -99,7 +100,8 @@ import { ModelActionModalComponent } from './components/model-action-modal/model
         DeleteContainerModalComponent,
         ImageActionModalComponent,
         NewModelModalComponent,
-        ModelActionModalComponent
+        ModelActionModalComponent,
+        StrokeModalComponent
     ],
     imports: [
         BrowserModule,

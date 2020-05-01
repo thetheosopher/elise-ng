@@ -32,6 +32,8 @@ import { Utility } from 'elise-graphics'
 import { ImageActionModalComponent, ImageActionModalInfo } from '../image-action-modal/image-action-modal.component';
 import { ModelActionModalComponent, ModelActionModalInfo } from '../model-action-modal/model-action-modal.component';
 import { NewModelModalComponent, NewModelModalInfo } from '../new-model-modal/new-model-modal.component';
+import { StrokeModalComponent, StrokeModalInfo } from '../stroke-modal/stroke-modal.component';
+import { ModelInfo } from 'src/app/services/model-info';
 
 @Component({
     selector: 'app-model-designer',
@@ -76,6 +78,10 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     isBusy: boolean = false;
     isDragging: boolean = false;
 
+    strokeColor: Color = new Color(192, 0, 0, 0);
+    strokeWidth: number = 2;
+    strokeOpacity: number = 192;
+
     activeStroke: string;
     activeFill: string | LinearGradientFill | RadialGradientFill;
     activeTool?: DesignTool;
@@ -96,8 +102,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit() {
-
-        this.activeStroke = 'Black,2';
+        this.setStroke(this.strokeColor, this.strokeWidth);
         this.activeFill = '0.5;White';
     }
 
@@ -123,6 +128,20 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             gray: this.background === 'gray',
             'fileover': true
         };
+    }
+
+    setStroke(color: Color, width: number) {
+        this.strokeColor = color;
+        this.strokeWidth = width;
+        this.strokeOpacity = color.a;
+        let stroke = color.toString();
+        if(width != 1) {
+            stroke += ',' + width;
+        }
+        this.activeStroke = stroke;
+        if(this.activeTool) {
+            this.activeTool.stroke = this.activeStroke;
+        }
     }
 
     setActiveTool(tool: DesignTool | null) {
@@ -551,12 +570,26 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         return path.substr(index);
     }
 
+    showStrokeModal() {
+        const modalInfo = new StrokeModalInfo();
+        modalInfo.width = this.strokeWidth;
+        modalInfo.color = this.strokeColor;
+        modalInfo.opacity = this.strokeOpacity;
+        modalInfo.colorDisplay = modalInfo.color;
+        const modal = this.modalService.open(StrokeModalComponent);
+        modal.componentInstance.modalInfo = modalInfo;
+        modal.result.then((result: StrokeModalInfo) => {
+            this.setStroke(result.colorDisplay, result.width);
+        }, (error) => {
+        });
+    }
+
     showNewModelModal() {
         const modalInfo = new NewModelModalInfo();
         modalInfo.width = 1024;
         modalInfo.height = 768;
         modalInfo.backgroundColor = Color.Transparent;
-        modalInfo.backgroundOpacity = 255;
+        modalInfo.backgroundOpacity = 0;
         modalInfo.backgroundColorDisplay = Color.Transparent;
         const modal = this.modalService.open(NewModelModalComponent);
         modal.componentInstance.modalInfo = modalInfo;
