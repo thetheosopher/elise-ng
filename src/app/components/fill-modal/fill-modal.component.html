@@ -1,0 +1,151 @@
+<!-- Modal Header -->
+<div class="modal-header">
+    <h4 class="modal-title">Fill</h4>
+    <button type="button" class="close" (click)="activeModal.dismiss('X')">&times;</button>
+</div>
+
+<!-- Modal body -->
+<form>
+    <div class="modal-body">
+        <div class="form-row" style="margin-top: 8px;">
+            <div class="col">
+                <label>Fill Type</label>
+                <select class='custom-select custom-select-sm form-control' name='fillType' [(ngModel)]='modalInfo.fillType'>
+                    <option value='none'>None</option>
+                    <option value='color'>Color</option>
+                    <option *ngIf='modalInfo.bitmapResources && modalInfo.bitmapResources.length > 0' value='image'>Image</option>
+                    <option *ngIf='modalInfo.modelResources && modalInfo.modelResources.length > 0' value='model'>Model</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Color Fill -->
+        <div *ngIf="modalInfo.fillType == 'color'">
+            <div class="form-row" style="margin-top: 8px;">
+                <div class="col">
+                    <label>Color</label>
+                    <app-color-selector [(selectedColor)]="modalInfo.color"
+                        (colorSelected)="onColorSelected($event)"></app-color-selector>
+                </div>
+                <div class="col">
+                    <div class="grid" style="margin-top: 33px; width: 128px; height: 30px; border: 1px solid black;">
+                        <div [style.backgroundColor]="modalInfo.colorDisplay.toStyleString()"
+                            style="width: 100%; height: 100%"></div>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="modalInfo.color.a !== 0" class="form-row" style="margin-top: 8px;">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="formControlRange">Opacity</label>
+                        <span style="float: right;"><strong>{{modalInfo.opacity}}</strong></span>
+                        <input type="range" class="form-control-range" min="0" max="255"
+                            [(ngModel)]="modalInfo.opacity" name="opacity"
+                            id="opacity" (input)="onOpacityChanged($event)">
+                    </div>
+                </div>
+                <div class="col">
+                </div>
+            </div>
+        </div>
+
+        <!-- Image Fill -->
+        <div *ngIf="modalInfo.fillType == 'image'">
+            <div class="form-row" style="margin-top: 8px;">
+                <div class="col">
+                    <label>Image Resource</label>
+                    <select class='custom-select custom-select-sm form-control'
+                        name='selectedBitmapResource'
+                        [(ngModel)]='modalInfo.selectedBitmapResource'
+                        [compareWith]='compareBitmapResources'>
+                        <option *ngFor='let resource of modalInfo.bitmapResources' [ngValue]='resource'>
+                            <div>
+                                <span>{{resource.key}}</span>
+                            </div>
+                        </option>
+                        </select>
+                </div>
+            </div>
+            <div class="form-row" style="margin-top: 8px;">
+                <div class="col">
+                    <div class="form-group">
+                        <label>Opacity</label>
+                        <span style="float: right;"><strong>{{modalInfo.opacity}}</strong></span>
+                        <input type="range" class="form-control-range" min="0" max="255"
+                            [(ngModel)]="modalInfo.opacity" name="imageFillOpacity"
+                            id="imageFillOpacity" (input)="onOpacityChanged($event)">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label>Scale</label>
+                        <span style="float: right;"><strong>{{modalInfo.scale / 100}}</strong></span>
+                        <input type="range" class="form-control-range" min="1" max="100"
+                            [(ngModel)]="modalInfo.scale" name="imageFillScale"
+                            id="imageFillScale">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Model Fill -->
+        <div *ngIf="modalInfo.fillType == 'model'">
+            <div class="form-row" style="margin-top: 8px;">
+                <div class="col">
+                    <label>Model Resource</label>
+                    <select class='custom-select custom-select-sm form-control'
+                        name='selectedModelResource'
+                        [(ngModel)]='modalInfo.selectedModelResource'
+                        [compareWith]='compareModelResources'>
+                        <option *ngFor='let resource of modalInfo.modelResources' [ngValue]='resource'>
+                            <div>
+                                <span>{{resource.key}}</span>
+                            </div>
+                        </option>
+                        </select>
+                </div>
+            </div>
+            <div class="form-row" style="margin-top: 8px;">
+                <div class="col">
+                    <div class="form-group">
+                        <label>Opacity</label>
+                        <span style="float: right;"><strong>{{modalInfo.opacity}}</strong></span>
+                        <input type="range" class="form-control-range" min="0" max="255"
+                            [(ngModel)]="modalInfo.opacity" name="modelFillOpacity"
+                            id="modelFillOpacity" (input)="onOpacityChanged($event)">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label>Scale</label>
+                        <span style="float: right;"><strong>{{modalInfo.scale / 100}}</strong></span>
+                        <input type="range" class="form-control-range" min="1" max="1000"
+                            [(ngModel)]="modalInfo.scale" name="modelFillScale"
+                            id="modelFillScale">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Apply To Model/Selected Options  -->
+        <div class="form-row" style="margin-top: 8px;">
+            <div class="form-check form-check-inline col">
+                <input type="checkbox" [(ngModel)]="modalInfo.applyToModel" name="applyToModel"
+                    id="applyToModel" class="form-check-input">
+                <label class="form-check-label" for="applyToModel">Apply To Model</label>
+            </div>
+            <div *ngIf="modalInfo.selectedElementCount > 0" class="form-check form-check-inline col">
+                <input type="checkbox" [(ngModel)]="modalInfo.applyToSelected" name="applyToSelected"
+                    id="applyToSelected" class="form-check-input">
+                <label class="form-check-label" for="applyToSelected">Apply To Selected Elements</label>
+            </div>
+        </div>
+
+    </div>
+</form>
+
+<!-- Modal footer -->
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="commit()" ngbAutofocus>OK</button>
+    <button type="button" class="btn btn-danger" (click)="activeModal.dismiss('Cancel')">Cancel</button>
+</div>

@@ -1,24 +1,20 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { Color } from 'elise-graphics';
+import { Color, ModelResource, BitmapResource } from 'elise-graphics';
 
 @Component({
-    selector: 'app-stroke-modal',
-    templateUrl: './stroke-modal.component.html',
-    styleUrls: ['./stroke-modal.component.scss']
+    selector: 'app-fill-modal',
+    templateUrl: './fill-modal.component.html',
+    styleUrls: ['./fill-modal.component.scss']
 })
-export class StrokeModalComponent implements OnInit {
+export class FillModalComponent implements OnInit {
 
     constructor(public activeModal: NgbActiveModal) { }
 
     @Input()
-    modalInfo: StrokeModalInfo;
+    modalInfo: FillModalInfo;
 
     ngOnInit(): void {
-    }
-
-    onWidthChanged(event) {
-        this.modalInfo.width = parseFloat(event.target.value);
     }
 
     onColorSelected(color) {
@@ -47,14 +43,35 @@ export class StrokeModalComponent implements OnInit {
         this.activeModal.close(this.modalInfo);
     }
 
+    compareBitmapResources(resourceA: BitmapResource, resourceB: BitmapResource) {
+        try {
+            return resourceA.key == resourceB.key;
+        }
+        catch {
+            return false;
+        }
+    }
+
+    compareModelResources(resourceA: ModelResource, resourceB: ModelResource) {
+        try {
+            return resourceA.key == resourceB.key;
+        }
+        catch {
+            return false;
+        }
+    }
 }
 
-export class StrokeModalInfo {
-    strokeType: string = 'color';
-    width?: number;
+export class FillModalInfo {
+    fillType: string = 'color';
     color?: Color;
     opacity?: number;
+    scale?: number;
     colorDisplay?: Color;
+    bitmapResources: BitmapResource[];
+    selectedBitmapResource: BitmapResource;
+    modelResources: ModelResource[];
+    selectedModelResource: ModelResource;
     applyToModel: boolean;
     applyToSelected: boolean;
     selectedElementCount: number;

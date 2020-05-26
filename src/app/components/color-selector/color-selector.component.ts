@@ -1,6 +1,7 @@
 import { Component, OnInit, ElementRef, Input, Output, EventEmitter, ViewChild, AfterViewInit } from '@angular/core';
 import { Color } from 'elise-graphics/lib/core/color';
 import { NamedColor } from 'elise-graphics/lib/core/named-color';
+import { color } from 'elise-graphics';
 
 @Component({
     selector: 'app-color-selector',
@@ -29,6 +30,12 @@ export class ColorSelectorComponent implements OnInit {
         try {
             if(colorA.a === 0 && colorB.a === 0) {
                 return true;
+            }
+            if(colorA.a === 0 && colorB.a !== 0) {
+                return false;
+            }
+            if(colorA.a !== 0 && colorB.a === 0) {
+                return false;
             }
             return colorA.equalsHue(colorB);
         }

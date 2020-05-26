@@ -75,20 +75,19 @@
             </as-split>
         </as-split-area>
         <as-split-area size='70'>
-            <!-- Model editor alerts -->
-            <app-alert id='model-editor'></app-alert>
-
+            <div *ngIf="model != null" >
             <nav ngbNav #nav="ngbNav" class="nav-tabs" [(activeId)]="modelEditorNavId" (navChange)="onNavChange($event)" [destroyOnHide]="false">
                 <ng-container [ngbNavItem]="1">
                     <a ngbNavLink>Editor</a>
                     <ng-template ngbNavContent>
                         <!-- Model Editor -->
-                        <div *ngIf="model != null">
+                        <div *ngIf="model != null" style="margin-bottom: 4px;">
                             <table style="margin-left: 4px;">
                                 <tr style="vertical-align: baseline;">
                                     <td>
-                                        <label for="scale" style="margin-right: 4px;"><strong>Scale</strong></label>
-                                        <select id="scale" [(ngModel)]="scale" ngbTooltip="Zoom">
+                                        <!-- <label for="scale" style="margin-right: 4px;"><strong>Scale</strong></label> -->
+                                        <select id="scale" [(ngModel)]="scale" ngbTooltip="Zoom"
+                                            class='btn btn-sm btn-outline-primary'>
                                             <option [ngValue]="0.25">25%</option>
                                             <option [ngValue]="0.5">50%</option>
                                             <option [ngValue]="0.75">75%</option>
@@ -101,8 +100,9 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <select id="background" [(ngModel)]="background" style="margin-left: 4px;"
-                                            ngbTooltip="Editor Background">
+                                        <select id="background" [(ngModel)]="background"
+                                            class='btn btn-sm btn-outline-primary'
+                                            ngbTooltip="Drawing Surface">
                                             <option value="grid">Grid</option>
                                             <option value="white">White</option>
                                             <option value="black">Black</option>
@@ -110,23 +110,99 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <select id="activeToolName" [(ngModel)]="activeToolName"
-                                            style="margin-left: 4px;" ngbTooltip="Active Tool">
+                                        <div ngbDropdown class="d-inline-block">
+                                            <button class="btn btn-sm btn-outline-primary" id="editMenuDropdown" ngbDropdownToggle>Edit</button>
+                                            <div ngbDropdownMenu aria-labelledby="editMenuDropdown">
+
+                                                <button ngbDropdownItem class="btn btn-sm" (click)="showModelSizeModal()">Model Size...</button>
+
+                                                <button *ngIf="selectedElementCount === 1" ngbDropdownItem class="btn btn-sm" (click)="showElementSizeModal()">Element Size...</button>
+
+                                                <!-- Single element property dialogs -->
+                                                <button *ngIf="singleElementType=='text'" ngbDropdownItem class="btn btn-sm" (click)="showTextElementModal()">Element Properties...</button>
+                                                <button *ngIf="singleElementType=='image'" ngbDropdownItem class="btn btn-sm" (click)="showImageElementModal()">Element Properties...</button>
+                                                <button *ngIf="singleElementType=='model'" ngbDropdownItem class="btn btn-sm" (click)="showModelElementModal()">Element Properties...</button>
+
+                                                <button ngbDropdownItem class="btn btn-sm" [disabled]="!canDuplicateSelected()" (click)="duplicateSelected()">Duplicate</button>
+                                                <div ngbDropdown style="padding-left: 15px;">
+                                                    <button id="editMoveMenuDropdown" class="btn btn-sm btn-light" style="background-color: white;" ngbDropdownToggle>Move</button>
+                                                    <div ngbDropdownMenu aria-labelledby="editMoveMenuDropdown">
+                                                        <button ngbDropdownItem class="btn btn-sm" [disabled]="!canMoveSelectedUp()" (click)="moveSelectedUp()">Forward</button>
+                                                        <button ngbDropdownItem class="btn btn-sm" [disabled]="!canMoveSelectedDown()" (click)="moveSelectedDown()">Backward</button>
+                                                        <button ngbDropdownItem class="btn btn-sm" [disabled]="!canMoveSelectedToTop()" (click)="moveSelectedToTop()">To Top</button>
+                                                        <button ngbDropdownItem class="btn btn-sm" [disabled]="!canMoveSelectedToBottom()" (click)="moveSelectedToBottom()">To Bottom</button>
+                                                    </div>
+                                                </div>
+                                                <div ngbDropdown style="padding-left: 15px;">
+                                                    <button id="editArrangMenuDropdown" class="btn btn-sm btn-light" style="background-color: white;" ngbDropdownToggle>Arrange</button>
+                                                    <div ngbDropdownMenu aria-labelledby="editArrangeMenuDropdown">
+                                                        <button ngbDropdownItem class="btn btn-sm" [disabled]="!canArrange()" (click)="alignSelectedLeft()">Align Left</button>
+                                                        <button ngbDropdownItem class="btn btn-sm" [disabled]="!canArrange()" (click)="alignSelectedCenter()">Align Center</button>
+                                                        <button ngbDropdownItem class="btn btn-sm" [disabled]="!canArrange()" (click)="alignSelectedRight()">Align Right</button>
+                                                        <button ngbDropdownItem class="btn btn-sm" [disabled]="!canArrange()" (click)="alignSelectedTop()">Align Top</button>
+                                                        <button ngbDropdownItem class="btn btn-sm" [disabled]="!canArrange()" (click)="alignSelectedMiddle()">Align Middle</button>
+                                                        <button ngbDropdownItem class="btn btn-sm" [disabled]="!canArrange()" (click)="alignSelectedBottom()">Align Bottom</button>
+                                                    </div>
+                                                </div>
+                                                <div ngbDropdown style="padding-left: 15px;">
+                                                    <button id="editResizeMenuDropdown" class="btn btn-sm btn-light" style="background-color: white;" ngbDropdownToggle>Resize</button>
+                                                    <div ngbDropdownMenu aria-labelledby="editResizeMenuDropdown">
+                                                        <button ngbDropdownItem class="btn btn-sm" [disabled]="!canResize()" (click)="resizeSelectedWidth()">Make Same Width</button>
+                                                        <button ngbDropdownItem class="btn btn-sm" [disabled]="!canResize()" (click)="resizeSelectedHeight()">Make Same Height</button>
+                                                        <button ngbDropdownItem class="btn btn-sm" [disabled]="!canResize()" (click)="resizeSelectedSize()">Make Same Size</button>
+                                                    </div>
+                                                </div>
+                                                <button ngbDropdownItem class="btn btn-sm" (click)="removeUnusedResources()">Remove Unused Resources</button>
+                                                <button ngbDropdownItem class="btn btn-sm" [disabled]="!canDeleteSelected()" (click)="deleteSelected()">Delete</button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <!--
+                                    <td>
+                                        <div ngbDropdown class="d-inline-block">
+                                            <button class="btn btn-sm btn-outline-primary" id="editMenuDropdown" ngbDropdownToggle>Edit</button>
+                                            <div ngbDropdownMenu aria-labelledby="editMenuDropdown">
+                                              <button ngbDropdownItem [disabled]="!canDuplicateSelected()" (click)="duplicateSelected()">Duplicate</button>
+                                              <button ngbDropdownItem [disabled]="!canMoveSelectedUp()" (click)="moveSelectedUp()">Move Up</button>
+                                              <button ngbDropdownItem [disabled]="!canMoveSelectedDown()" (click)="moveSelectedDown()">Move Down</button>
+                                              <button ngbDropdownItem [disabled]="!canMoveSelectedToTop()" (click)="moveSelectedToTop()">Move To Top</button>
+                                              <button ngbDropdownItem [disabled]="!canMoveSelectedToBottom()" (click)="moveSelectedToBottom()">Move To Bottom</button>
+                                              <button ngbDropdownItem (click)="removeUnusedResources()">Remove Unused Resources</button>
+                                              <button ngbDropdownItem [disabled]="!canDeleteSelected()" (click)="deleteSelected()">Delete</button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    -->
+                                    <td>
+                                        <select id="activeToolName" [ngModel]="activeToolName"
+                                            #ngActiveTool="ngModel"
+                                            (ngModelChange)="activeToolChange($event, ngActiveTool)"
+                                            class='btn btn-sm btn-outline-primary'
+                                            ngbTooltip="Tool">
                                             <option value="select">Select</option>
                                             <option value="pen">Pen</option>
                                             <option value="line">Line</option>
                                             <option value="rectangle">Rectangle</option>
                                             <option value="ellipse">Ellipse</option>
+                                            <option value="polyline">Polyline</option>
+                                            <option value="polygon">Polygon</option>
+                                            <option value="text">Text</option>
+                                            <option value="image">Image</option>
+                                            <option value="model">Model</option>
                                         </select>
                                     </td>
                                     <td>
-                                        <button class='btn btn-link px-1 py-0' (click)="showStrokeModal()"
+                                        <button class='btn btn-sm btn-outline-primary' (click)="showStrokeModal()"
                                             ngbTooltip="Set Stroke">Stroke</button>
                                     </td>
                                     <td>
-                                        <div class="grid" style="height: 24px; width: 32px; position: relative; top: 6px;">
-                                            <div style="width: 100%; height: 100%" [style.backgroundColor]="strokeColor.toStyleString()"></div>
+                                        <div class="grid" style="margin-right: 4px; height: 24px; width: 32px; position: relative; top: 9px;">
+                                            <div *ngIf="strokeType == 'color'" [ngbTooltip]='strokeTooltip' style="width: 100%; height: 100%" [style.backgroundColor]="strokeColor.toStyleString()"></div>
                                         </div>
+                                    </td>
+                                    <td>
+                                        <button class='btn btn-sm btn-outline-primary' (click)="showFillModal()"
+                                            ngbTooltip="Set Fill">Fill</button>
                                     </td>
                                     <!--
                                     <td>
@@ -136,6 +212,7 @@
                                                 Mode</strong></label>
                                     </td>
                                     -->
+                                    <!--
                                     <td *ngIf="mouseOverView" style="min-width: 60px;">
                                         <label for="xpos"><strong>X:</strong></label>&nbsp;
                                         <span id="xpos">{{viewMouseX}}</span>
@@ -144,12 +221,13 @@
                                         <label for="ypos"><strong>Y:</strong></label>&nbsp;
                                         <span id="ypos">{{viewMouseY}}</span>
                                     </td>
+                                    -->
                                 </tr>
                             </table>
                         </div>
                         <div>
                             <div [ngClass]='backgroundClass()'>
-                                <div [class.fileover]='isDragging'>
+                                <div [class.fileover]='isDragging' oncontextmenu="return false;">
                                     <app-elise-design #elise [model]="model" [scale]="scale"
                                         (mouseMovedView)="mouseMovedView($event)"
                                         (mouseEnteredView)="mouseEnteredView($event)"
@@ -187,6 +265,8 @@
             </nav>
 
             <div [ngbNavOutlet]="nav" class="mt-2"></div>
+
+        </div>
 
         </as-split-area>
     </as-split>

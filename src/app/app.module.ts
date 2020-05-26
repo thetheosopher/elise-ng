@@ -55,6 +55,11 @@ import { ImageActionModalComponent } from './components/image-action-modal/image
 import { NewModelModalComponent } from './components/new-model-modal/new-model-modal.component';
 import { ModelActionModalComponent } from './components/model-action-modal/model-action-modal.component';
 import { StrokeModalComponent } from './components/stroke-modal/stroke-modal.component';
+import { ImageElementModalComponent } from './components/image-element-modal/image-element-modal.component';
+import { FillModalComponent } from './components/fill-modal/fill-modal.component';
+import { ModelElementModalComponent } from './components/model-element-modal/model-element-modal.component';
+import { TextElementModalComponent } from './components/text-element-modal/text-element-modal.component';
+import { SizeModalComponent } from './components/size-modal/size-modal.component';
 
 @NgModule({
     declarations: [
@@ -101,7 +106,12 @@ import { StrokeModalComponent } from './components/stroke-modal/stroke-modal.com
         ImageActionModalComponent,
         NewModelModalComponent,
         ModelActionModalComponent,
-        StrokeModalComponent
+        StrokeModalComponent,
+        ImageElementModalComponent,
+        FillModalComponent,
+        ModelElementModalComponent,
+        TextElementModalComponent,
+        SizeModalComponent
     ],
     imports: [
         BrowserModule,

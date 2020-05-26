@@ -1,0 +1,53 @@
+<!-- Model Resource Modal -->
+<!-- Modal Header -->
+<div class="modal-header">
+    <h4 class="modal-title">Model Element Properties</h4>
+    <button type="button" class="close" (click)="activeModal.dismiss('X')">&times;</button>
+</div>
+
+<!-- Modal body -->
+<div class="modal-body">
+    <form>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="selectedResource">Model Resource</label>
+                <select class='custom-select custom-select-sm form-control' [disabled]='!isEnabled'
+                    [(ngModel)]='modalInfo.selectedResource' [compareWith]='compareResources' name='selectedResource'
+                    (change)='onResourceSelected($event)'>
+                    <option *ngFor='let resource of modalInfo.resources' [ngValue]='resource'>
+                        <div>
+                            <span>{{resource.key}}</span>
+                        </div>
+                    </option>
+                </select>
+            </div>
+            <div class="form-group col-md-3">
+                <label>Opacity</label>
+                <span style="float: right;"><strong>{{modalInfo.opacity}}</strong></span>
+                <input type="range" class="form-control-range" min="0" max="255" [(ngModel)]="modalInfo.opacity"
+                    name="opacity" id="opacity">
+            </div>
+            <div class="form-group col-md-3">
+                <div class="form-check form-check-inline" style="padding-top: 24px;">
+                    <input type="checkbox" class="form-check-input" [(ngModel)]="modalInfo.lockAspect" name="lockAspect"
+                        id="lockAspect">
+                    <label for="lockAspect" class="form-check-label">Lock Aspect Ratio</label>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div style="text-align: center;">
+        <div class="grid" style="display: inline-block;">
+            <app-elise-view [model]="modalInfo.model" [scale]="modalInfo.scale" class="m-2"
+                [style.opacity]="modalInfo.opacity / 255" style="display: inline-block; border: 1px solid black;">
+            </app-elise-view>
+        </div>
+        <h5>{{modalInfo.info}}</h5>
+    </div>
+</div>
+
+<!-- Modal footer -->
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="commit()">OK</button>
+    <button type="button" class="btn btn-danger" (click)="activeModal.dismiss('Cancel')" ngbAutofocus>Cancel</button>
+</div>

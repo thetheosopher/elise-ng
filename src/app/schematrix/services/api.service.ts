@@ -167,11 +167,11 @@ export class ApiService {
             error: (response) => {
                 const header = response.headers.get('WWW-Authenticate');
                 if (header && header.indexOf('expired') != 1) {
-                    this.errorEvent.emit('Token has expired. Please re-login. ')
+                    this.errorEvent.emit('Session has expired.<br/>Please log in again.')
                     this.logoutEvent.emit();
                     return;
                 }
-                this.errorEvent.emit('Token is invalid. Please login.');
+                this.errorEvent.emit('Session is invalid. Please log in.');
                 this.logoutEvent.emit();
             }
         });

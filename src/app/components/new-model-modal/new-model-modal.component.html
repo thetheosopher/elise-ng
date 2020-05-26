@@ -52,7 +52,7 @@
                     <label for="formControlRange">Background Opacity</label>
                     <input type="range" class="form-control-range" min="0" max="255"
                         [(ngModel)]="modalInfo.backgroundOpacity" name="backgroundOpacity"
-                        id="backgroundOpacity" (change)="onBackgroundOpacityChanged($event)">
+                        id="backgroundOpacity" (input)="onBackgroundOpacityChanged($event)">
                 </div>
             </div>
             <div class="col">

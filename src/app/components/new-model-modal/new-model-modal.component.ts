@@ -18,12 +18,12 @@ export class NewModelModalComponent implements OnInit {
     }
 
     onBackgroundColorSelected(color) {
-        this.modalInfo.backgroundColor = color.color;
-        if (color.color.a === 0) {
+        this.modalInfo.backgroundColor = color;
+        if (color.a === 0) {
             this.modalInfo.backgroundColorDisplay = Color.Transparent;
         }
         else {
-            this.modalInfo.backgroundColorDisplay = new Color(this.modalInfo.backgroundOpacity, color.color.r, color.color.g, color.color.b);
+            this.modalInfo.backgroundColorDisplay = new Color(this.modalInfo.backgroundOpacity, color.r, color.g, color.b);
         }
     }
 
@@ -50,6 +50,6 @@ export class NewModelModalInfo {
     width?: number = 1024;
     height?: number = 768;
     backgroundColor: Color = Color.Transparent;
-    backgroundOpacity: number = 255;
+    backgroundOpacity: number = 0;
     backgroundColorDisplay: Color = Color.Transparent;
 }

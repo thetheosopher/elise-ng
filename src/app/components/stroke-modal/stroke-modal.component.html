@@ -9,52 +9,76 @@
     <div class="modal-body">
         <div class="form-row" style="margin-top: 8px;">
             <div class="col">
-                <label>Width</label>
-                <input type="range" class="form-control-range" min="1" max="48"
-                    [(ngModel)]="modalInfo.width" name="width"
-                    id="width" (change)="onWidthChanged($event)">
+                <label>Stroke Type</label>
+                <select class='custom-select custom-select-sm form-control' name='strokeType'
+                    [(ngModel)]='modalInfo.strokeType'>
+                    <option value='none'>None</option>
+                    <option value='color'>Color</option>
+                </select>
             </div>
-            <div class="col">
-                <div class="grid" style="width: 128px; position: relative;"
+        </div>
+        <div *ngIf="modalInfo.strokeType == 'color'">
+            <div class="form-row" style="margin-top: 8px;">
+                <div class="col">
+                    <label>Width</label>
+                    <span style="float: right;"><strong>{{modalInfo.width}}</strong></span>
+                    <input type="range" class="form-control-range" min="1" max="48" [(ngModel)]="modalInfo.width"
+                        name="width" id="width" (change)="onWidthChanged($event)">
+                </div>
+                <div class="col">
+                    <div class="grid" style="width: 128px; position: relative; display: inline-block;"
                         [style.height]="modalInfo.width+'px'" [style.top]="(24 - modalInfo.width / 2)+'px'">
-                    <div [style.backgroundColor]="modalInfo.colorDisplay.toStyleString()"
-                        style="width: 100%; height: 100%"></div>
+                        <div [style.backgroundColor]="modalInfo.colorDisplay.toStyleString()"
+                            style="width: 100%; height: 100%"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row" style="margin-top: 8px;">
+                <div class="col">
+                    <label>Color</label>
+                    <app-color-selector [(selectedColor)]="modalInfo.color" (colorSelected)="onColorSelected($event)">
+                    </app-color-selector>
+                </div>
+                <div class="col">
+                    <div class="grid" style="margin-top: 33px; width: 128px; height: 30px; border: 1px solid black;">
+                        <div [style.backgroundColor]="modalInfo.colorDisplay.toStyleString()"
+                            style="width: 100%; height: 100%"></div>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="modalInfo.color.a !== 0" class="form-row" style="margin-top: 8px;">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="formControlRange">Opacity</label>
+                        <span style="float: right;"><strong>{{modalInfo.opacity}}</strong></span>
+                        <input type="range" class="form-control-range" min="0" max="255" [(ngModel)]="modalInfo.opacity"
+                            name="opacity" id="opacity" (input)="onOpacityChanged($event)">
+                    </div>
+                </div>
+                <div class="col">
                 </div>
             </div>
         </div>
+
+        <!-- Apply To Model/Selected Options  -->
         <div class="form-row" style="margin-top: 8px;">
-            <div class="col">
-                <label>Color</label>
-                <app-color-selector [(selectedColor)]="modalInfo.color"
-                    (colorSelected)="onColorSelected($event)"></app-color-selector>
+            <div class="form-check form-check-inline col">
+                <input type="checkbox" [(ngModel)]="modalInfo.applyToModel" name="applyToModel" id="applyToModel"
+                    class="form-check-input">
+                <label class="form-check-label" for="applyToModel">Apply To Model</label>
             </div>
-            <div class="col">
-                <div class="grid" style="margin-top: 33px; width: 128px; height: 30px; border: 1px solid black;">
-                    <div [style.backgroundColor]="modalInfo.colorDisplay.toStyleString()"
-                        style="width: 100%; height: 100%"></div>
-                </div>
-            </div>
-        </div>
-        <div *ngIf="modalInfo.color.a !== 0" class="form-row" style="margin-top: 8px;">
-            <div class="col">
-                <div class="form-group">
-                    <label for="formControlRange">Opacity</label>
-                    <input type="range" class="form-control-range" min="0" max="255"
-                        [(ngModel)]="modalInfo.opacity" name="opacity"
-                        id="opacity" (input)="onOpacityChanged($event)">
-                </div>
-            </div>
-            <div class="col">
-                <div class="form-group" style="margin-top: 30px;">
-                    <span><strong>{{modalInfo.opacity}}</strong></span>
-                </div>
+            <div *ngIf="modalInfo.selectedElementCount > 0" class="form-check form-check-inline col">
+                <input type="checkbox" [(ngModel)]="modalInfo.applyToSelected" name="applyToSelected"
+                    id="applyToSelected" class="form-check-input">
+                <label class="form-check-label" for="applyToSelected">Apply To Selected Elements</label>
             </div>
         </div>
+
     </div>
 </form>
 
 <!-- Modal footer -->
 <div class="modal-footer">
-    <button type="button" class="btn btn-primary" (click)="commit()">OK</button>
+    <button type="button" class="btn btn-primary" (click)="commit()" ngbAutofocus>OK</button>
     <button type="button" class="btn btn-danger" (click)="activeModal.dismiss('Cancel')">Cancel</button>
 </div>

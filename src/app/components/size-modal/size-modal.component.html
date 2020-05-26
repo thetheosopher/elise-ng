@@ -1,0 +1,35 @@
+<!-- Modal Header -->
+<div class="modal-header">
+    <h4 class="modal-title">Size</h4>
+    <button type="button" class="close" (click)="activeModal.dismiss('X')">&times;</button>
+</div>
+
+<!-- Modal body -->
+<form #newmodelform>
+    <div class="modal-body">
+        <div class="form-row">
+            <div class="col">
+                <label for="modelwidth">Width</label>
+                <input type="number" min="1" max="32768" id="modelwidth" name="modelwidth" #modelwidth="ngModel"
+                    class="form-control" required [(ngModel)]="modalInfo.width" />
+                <div [hidden]="modelwidth.valid || modelwidth.pristine" class="alert alert-danger">
+                    Width Is Required
+                </div>
+            </div>
+            <div class="col">
+                <label for="modelheight">Height</label>
+                <input type="number" min="1" max="32768" id="modelheight" name="modelheight" #modelheight="ngModel"
+                    class="form-control" required [(ngModel)]="modalInfo.height" />
+                <div [hidden]="modelheight.valid || modelheight.pristine" class="alert alert-danger">
+                    Height Is Required
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- Modal footer -->
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="commit()">OK</button>
+    <button type="button" class="btn btn-danger" (click)="activeModal.dismiss('Cancel')">Cancel</button>
+</div>

@@ -1,0 +1,102 @@
+<!-- Image Resource Modal -->
+<!-- Modal Header -->
+<div class="modal-header">
+    <h4 class="modal-title">Text Element</h4>
+    <button type="button" class="close" (click)="activeModal.dismiss('X')">&times;</button>
+</div>
+
+<!-- Modal body -->
+<div class="modal-body">
+    <form>
+        <div class="form-row">
+            <div class="form-group col-md-2">
+                <label for="selectedFont">Font</label>
+                <select class='custom-select custom-select-sm form-control' [(ngModel)]='modalInfo.typeface'
+                    id="typeface" name="typeface">
+                    <option *ngFor='let font of modalInfo.fonts' [ngValue]='font'>
+                        {{font}}
+                    </option>
+                </select>
+            </div>
+            <div class="form-group col-md-2">
+                <label>Size</label>
+                <span style="float: right;"><strong>{{modalInfo.typesize}}</strong></span>
+                <input type="range" class="form-control-range" min="2" max="256" [(ngModel)]="modalInfo.typesize"
+                    name="typesize" id="typesize">
+            </div>
+            <div class="form-group col-md-2">
+                <div>
+                    <label>Style</label>
+                </div>
+                <div style="margin-left: 24px;">
+                    <input type="checkbox" class="form-check-input" [(ngModel)]="modalInfo.isBold" name="isBold"
+                        id="isBold">
+                    <label for="isBold" class="form-check-label">Bold</label>
+                </div>
+                <div style="margin-left: 24px;">
+                    <input type="checkbox" class="form-check-input" [(ngModel)]="modalInfo.isItalic" name="isItalic"
+                        id="isItalic">
+                    <label for="isItalic" class="form-check-label">Italic</label>
+                </div>
+            </div>
+            <div class="form-group col-md-2">
+                <div>
+                    <label>Horizontal Alignment</label>
+                </div>
+                <div style="margin-left: 24px;">
+                    <input type="radio" class="form-check-input" [(ngModel)]="modalInfo.halign" name="halign"
+                        id="halign-left" value="left">
+                    <label for="halign-left" class="form-check-label">Left</label>
+                </div>
+                <div style="margin-left: 24px;">
+                    <input type="radio" class="form-check-input" [(ngModel)]="modalInfo.halign" name="halign"
+                        id="halign-center" value="center">
+                    <label for="halign-center" class="form-check-label">Center</label>
+                </div>
+                <div style="margin-left: 24px;">
+                    <input type="radio" class="form-check-input" [(ngModel)]="modalInfo.halign" name="halign"
+                        id="halign-right" value="right">
+                    <label for="halign-right" class="form-check-label">Right</label>
+                </div>
+            </div>
+            <div class="form-group col-md-2">
+                <div>
+                    <label>Vertical Alignment</label>
+                </div>
+                <div style="margin-left: 24px;">
+                    <input type="radio" class="form-check-input" [(ngModel)]="modalInfo.valign" name="valign"
+                        id="valign-top" value="top">
+                    <label for="valign-top" class="form-check-label">Top</label>
+                </div>
+                <div style="margin-left: 24px;">
+                    <input type="radio" class="form-check-input" [(ngModel)]="modalInfo.valign" name="valign"
+                        id="valign-middle" value="middle">
+                    <label for="valign-middle" class="form-check-label">Middle</label>
+                </div>
+                <div style="margin-left: 24px;">
+                    <input type="radio" class="form-check-input" [(ngModel)]="modalInfo.valign" name="valign"
+                        id="valign-bottom" value="bottom">
+                    <label for="valign-bottom" class="form-check-label">Bottom</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-12">
+                <label for="text">Text</label>
+                <textarea [(ngModel)]="modalInfo.text" name="text" id="text"
+                  class="form-control" [style.font-family]="modalInfo.typeface"
+                    [style.font-size]="modalInfo.typesize+'px'"
+                    [style.font-weight]="modalInfo.isBold?'Bold':'Normal'"
+                    [style.font-style]="modalInfo.isItalic?'Italic':'Normal'"
+                    [style.text-align]="modalInfo.halign"
+                    rows="12" style="max-height: calc(100vh - 480px);"></textarea>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Modal footer -->
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="commit()">OK</button>
+    <button type="button" class="btn btn-danger" (click)="activeModal.dismiss('Cancel')" ngbAutofocus>Cancel</button>
+</div>

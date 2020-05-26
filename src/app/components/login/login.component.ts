@@ -18,7 +18,9 @@ export class LoginComponent implements OnInit {
         private apiService: ApiService,
         private toasterService: ToastrService) {
         this.isLoggedIn = apiService.isLoggedIn;
-        this.loginDTO = apiService.login;
+        if(apiService.login) {
+            this.loginDTO = apiService.login;
+        }
      }
 
     ngOnInit() {
@@ -39,11 +41,13 @@ export class LoginComponent implements OnInit {
         this.apiService.errorEvent.subscribe({
             next: (error) => {
                 this.processing = false;
-                this.toasterService.error(error, 'Login Error');
+                this.toasterService.error(error, 'Login Error', {
+                    enableHtml: true
+                });
             }
         });
-        this.processing = true;
-        this.apiService.checkToken();
+        // this.processing = true;
+        // this.apiService.checkToken();
     }
 
     onSubmit() {
