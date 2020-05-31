@@ -1,6 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { Color } from 'elise-graphics';
 
 @Component({
     selector: 'app-new-model-modal',
@@ -17,29 +16,6 @@ export class NewModelModalComponent implements OnInit {
     ngOnInit(): void {
     }
 
-    onBackgroundColorSelected(color) {
-        this.modalInfo.backgroundColor = color;
-        if (color.a === 0) {
-            this.modalInfo.backgroundColorDisplay = Color.Transparent;
-        }
-        else {
-            this.modalInfo.backgroundColorDisplay = new Color(this.modalInfo.backgroundOpacity, color.r, color.g, color.b);
-        }
-    }
-
-    onBackgroundOpacityChanged(event) {
-        this.modalInfo.backgroundOpacity = parseInt(event.target.value);
-        if (this.modalInfo.backgroundColor.a === 0) {
-            this.modalInfo.backgroundColorDisplay = Color.Transparent;
-        }
-        else {
-            this.modalInfo.backgroundColorDisplay.r = this.modalInfo.backgroundColor.r;
-            this.modalInfo.backgroundColorDisplay.g = this.modalInfo.backgroundColor.g;
-            this.modalInfo.backgroundColorDisplay.b = this.modalInfo.backgroundColor.b;
-            this.modalInfo.backgroundColorDisplay.a = this.modalInfo.backgroundOpacity;
-        }
-    }
-
     commit() {
         this.activeModal.close(this.modalInfo);
     }
@@ -49,7 +25,4 @@ export class NewModelModalInfo {
     name: string;
     width?: number = 1024;
     height?: number = 768;
-    backgroundColor: Color = Color.Transparent;
-    backgroundOpacity: number = 0;
-    backgroundColorDisplay: Color = Color.Transparent;
 }

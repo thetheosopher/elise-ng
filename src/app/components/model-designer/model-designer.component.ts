@@ -1,11 +1,12 @@
 import { Component, OnInit, ViewChild, ViewChildren, QueryList, Input, Output, ElementRef, AfterViewInit, ChangeDetectorRef } from '@angular/core';
-import { NgbModal, NgbNavChangeEvent } from '@ng-bootstrap/ng-bootstrap';
 import { NgModel } from '@angular/forms';
+import { ContainerTreeComponent } from '../../components/container-tree/container-tree.component';
+import { NgbModal, NgbNavChangeEvent } from '@ng-bootstrap/ng-bootstrap';
 import { ContainerUrlProxy } from '../../schematrix/classes/container-url-proxy';
+
 import { ContainerDTO } from '../../schematrix/classes/container-dto';
 import { ManifestDTO } from '../../schematrix/classes/manifest-dto';
 import { ManifestFileDTO } from '../../schematrix/classes/manifest-file-dto';
-import { ContainerTreeComponent } from '../../components/container-tree/container-tree.component';
 import { SignedUrlRequestDTO } from '../../schematrix/classes/signed-url-request-dto';
 
 // Services
@@ -15,37 +16,22 @@ import { HttpClient } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
 import { UploadService, UploadStateCode, Upload, UploadState } from '../../services/upload.service';
 
-import { Model } from 'elise-graphics/lib/core/model';
-import { PointEventParameters } from 'elise-graphics/lib/core/point-event-parameters';
-import { DesignController } from 'elise-graphics/lib/design/design-controller';
-import { ElementBase } from 'elise-graphics/lib/elements/element-base';
-import { StrokeInfo } from 'elise-graphics/lib/core/stroke-info';
-import { FillInfo } from 'elise-graphics/lib/fill/fill-info';
-import { Resource } from 'elise-graphics/lib/resource/resource';
+// Elise core classes
+import { BitmapResource, Color, Model, ModelResource, Point, Region, Resource, Size } from 'elise-graphics';
+import { FillInfo, LinearGradientFill, PointEventParameters, RadialGradientFill, StrokeInfo, ViewDragArgs } from 'elise-graphics';
+import { ElementBase, ImageElement, ModelElement, TextElement } from 'elise-graphics';
+import { DesignController } from 'elise-graphics';
 
-import { DesignTool } from 'elise-graphics/lib/design/tools/design-tool';
+// Design tools
+import { DesignTool, EllipseTool, ImageElementTool, LineTool, ModelElementTool,
+            PenTool, PolygonTool, PolylineTool, RectangleTool, TextTool } from 'elise-graphics';
 
-import { EllipseTool } from 'elise-graphics/lib/design/tools/ellipse-tool';
-import { LineTool } from 'elise-graphics/lib/design/tools/line-tool';
-import { RectangleTool } from 'elise-graphics/lib/design/tools/rectangle-tool';
-import { PenTool } from 'elise-graphics/lib/design/tools/pen-tool';
-import { PolylineTool } from 'elise-graphics/lib/design/tools/polyline-tool';
-import { PolygonTool } from 'elise-graphics/lib/design/tools/polygon-tool';
-import { ImageElementTool } from 'elise-graphics/lib/design/tools/image-element-tool';
-import { ModelElementTool } from 'elise-graphics/lib/design/tools/model-element-tool';
-import { TextTool } from 'elise-graphics/lib/design/tools/text-tool';
-
-import { LinearGradientFill } from 'elise-graphics/lib/fill/linear-gradient-fill';
-import { RadialGradientFill } from 'elise-graphics/lib/fill/radial-gradient-fill';
-import { Color, ViewDragArgs, BitmapResource, ModelResource, Point, Region, Size, text } from 'elise-graphics';
-import { ImageElement, ModelElement, TextElement } from 'elise-graphics';
-
+// Modals
 import { ImageActionModalComponent, ImageActionModalInfo } from '../image-action-modal/image-action-modal.component';
 import { ModelActionModalComponent, ModelActionModalInfo } from '../model-action-modal/model-action-modal.component';
 import { NewModelModalComponent, NewModelModalInfo } from '../new-model-modal/new-model-modal.component';
 import { StrokeModalComponent, StrokeModalInfo } from '../stroke-modal/stroke-modal.component';
 import { FillModalComponent, FillModalInfo } from '../fill-modal/fill-modal.component';
-
 import { ImageElementModalComponent, ImageElementModalInfo } from '../image-element-modal/image-element-modal.component';
 import { ModelElementModalComponent, ModelElementModalInfo } from '../model-element-modal/model-element-modal.component';
 import { TextElementModalComponent, TextElementModalInfo } from '../text-element-modal/text-element-modal.component';
@@ -99,17 +85,16 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     singleElementType: string;
 
     strokeType: string = 'color';
-    strokeColor: Color = new Color(192, 0, 0, 0);
+    strokeColor: string = ('#000000cc');
     strokeWidth: number = 2;
-    strokeOpacity: number = 192;
     strokeTooltip: string;
     applyStrokeToModel: boolean = false;
     applyStrokeToSelected: boolean = true;
     activeStroke: string;
 
     fillType: string = 'color';
-    fillColor: Color = new Color(255, 255, 255, 255);
-    fillOpacity: number = 255;
+    fillColor: string = '#ffffffff';
+    fillOpacity: number = 1;
     fillScale: number = 1;
     fillTooltip: string;
     fillBitmapSource: string;
@@ -203,16 +188,15 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         this.setStroke(null, updateSelectedElements, updateModel);
     }
 
-    setColorStroke(color: Color, width: number, updateSelectedElements: boolean, updateModel: boolean) {
+    setColorStroke(color: string, width: number, updateSelectedElements: boolean, updateModel: boolean) {
         this.strokeType = 'color';
         this.strokeColor = color;
         this.strokeWidth = width;
-        this.strokeOpacity = color.a;
-        let stroke = color.toString();
+        let stroke = color;
         if (width != 1) {
             stroke += ',' + width;
         }
-        this.strokeTooltip = stroke;
+        this.strokeTooltip = color;
         this.setStroke(stroke, updateSelectedElements, updateModel);
     }
 
@@ -257,13 +241,11 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         this.setFill(null, null, updateSelectedElements, updateModel);
     }
 
-    setColorFill(color: Color, updateSelectedElements: boolean, updateModel: boolean) {
+    setColorFill(color: string, updateSelectedElements: boolean, updateModel: boolean) {
         this.fillType = 'color';
         this.fillColor = color;
-        this.fillOpacity = color.a;
-        let fill = color.toString();
-        this.fillTooltip = fill;
-        this.setFill(fill, null, updateSelectedElements, updateModel);
+        this.fillTooltip = color;
+        this.setFill(color, null, updateSelectedElements, updateModel);
     }
 
     setImageFill(bitmapResourceKey: string, opacity: number, scale: number, updateSelectedElements: boolean, updateModel: boolean) {
@@ -390,14 +372,14 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
     ensureStroke() {
         if (!this.activeStroke || this.activeStroke == 'None') {
-            this.setColorStroke(Color.Black, 1, false, false);
+            this.setColorStroke('#000000ff', 1, false, false);
         }
     }
 
     ensureStrokeOrFill() {
         if ((!this.activeStroke || this.activeStroke == 'None') &&
             (!this.activeFill || this.activeFill == 'None')) {
-            this.setColorStroke(Color.Black, 1, false, false);
+            this.setColorStroke('#000000ff', 1, false, false);
         }
     }
 
@@ -992,8 +974,6 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         const modalInfo = new StrokeModalInfo();
         modalInfo.width = this.strokeWidth;
         modalInfo.color = this.strokeColor;
-        modalInfo.opacity = this.strokeOpacity;
-        modalInfo.colorDisplay = modalInfo.color;
         modalInfo.strokeType = this.strokeType;
         modalInfo.applyToModel = this.applyStrokeToModel;
         modalInfo.applyToSelected = this.applyStrokeToSelected;
@@ -1002,7 +982,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         modal.componentInstance.modalInfo = modalInfo;
         modal.result.then((result: StrokeModalInfo) => {
             if (result.strokeType == 'color') {
-                this.setColorStroke(result.colorDisplay, result.width, result.applyToSelected, result.applyToModel);
+                this.setColorStroke(result.color, result.width, result.applyToSelected, result.applyToModel);
             }
             else {
                 this.setNoStroke(result.applyToSelected, result.applyToModel);
@@ -1014,8 +994,13 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     showFillModal() {
         const modalInfo = new FillModalInfo();
         modalInfo.color = this.fillColor;
+        let color = Color.parse(this.fillColor);
+        if(color.isNamedColor()) {
+            let namedColor = Color.NamedColors.find((c) => c.color.equalsHue(color));
+            modalInfo.namedColor = namedColor;
+        }
+
         modalInfo.opacity = this.fillOpacity;
-        modalInfo.colorDisplay = modalInfo.color;
         modalInfo.fillType = this.fillType;
         modalInfo.scale = this.fillScale * 100;
         modalInfo.applyToModel = this.applyFillToModel;
@@ -1060,7 +1045,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             this.applyFillToSelected = result.applyToSelected;
             this.applyFillToModel = result.applyToModel;
             if (result.fillType == 'color') {
-                this.setColorFill(result.colorDisplay, modalInfo.applyToSelected, modalInfo.applyToModel);
+                this.setColorFill(result.color, modalInfo.applyToSelected, modalInfo.applyToModel);
             }
             else if (result.fillType == 'image') {
                 this.setImageFill(result.selectedBitmapResource.key, result.opacity, result.scale / 100, modalInfo.applyToSelected, modalInfo.applyToModel);
@@ -1079,9 +1064,6 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         const modalInfo = new NewModelModalInfo();
         modalInfo.width = 1024;
         modalInfo.height = 768;
-        modalInfo.backgroundColor = Color.Transparent;
-        modalInfo.backgroundOpacity = 255;
-        modalInfo.backgroundColorDisplay = Color.Transparent;
         const modal = this.modalService.open(NewModelModalComponent);
         modal.componentInstance.modalInfo = modalInfo;
         modal.result.then((result: NewModelModalInfo) => {
@@ -1096,7 +1078,6 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
         // Create model from modal settings
         const model = Model.create(modalInfo.width, modalInfo.height);
-        model.fill = modalInfo.backgroundColorDisplay.toString();
         const serializedModel = model.rawJSON();
         modalInfo.name = this.ensureExtension(modalInfo.name, '.mdl');
         const newModelPath = this.selectedFolderPath + modalInfo.name;
@@ -1320,10 +1301,8 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         if (selectedElement.canStroke()) {
             const strokeInfo = StrokeInfo.getStrokeInfo(selectedElement);
             if (strokeInfo.strokeType == 'color') {
-                this.strokeColor = Color.parse(strokeInfo.strokeColor);
-                this.strokeColor.a = strokeInfo.strokeOpacity;
+                this.strokeColor = strokeInfo.strokeColor;
                 this.strokeWidth = strokeInfo.strokeWidth;
-                this.strokeOpacity = strokeInfo.strokeOpacity;
                 this.activeStroke = selectedElement.stroke;
                 this.setColorStroke(this.strokeColor, this.strokeWidth, false, false);
             }
@@ -1349,9 +1328,11 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                 this.setModelFill(fillInfo.source, fillInfo.opacity, fillInfo.scale, false, false);
             }
             else if (fillInfo.type === 'color') {
-                this.fillColor = Color.parse(fillInfo.color);
-                this.fillColor.a = fillInfo.opacity;
-                this.fillOpacity = fillInfo.opacity;
+                let color = Color.parse(fillInfo.color);
+                if(fillInfo.opacity != 255) {
+                    color.a = Math.floor(fillInfo.opacity);
+                }
+                this.fillColor = color.toHexString();
                 this.activeFill = selectedElement.fill;
                 this.fillScale = selectedElement.fillScale ?? 1;
                 this.setColorFill(this.fillColor, false, false);

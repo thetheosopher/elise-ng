@@ -1,7 +1,5 @@
-import { Component, OnInit, ElementRef, Input, Output, EventEmitter, ViewChild, AfterViewInit } from '@angular/core';
-import { Color } from 'elise-graphics/lib/core/color';
-import { NamedColor } from 'elise-graphics/lib/core/named-color';
-import { color } from 'elise-graphics';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Color, NamedColor } from 'elise-graphics';
 
 @Component({
     selector: 'app-color-selector',
@@ -12,12 +10,12 @@ export class ColorSelectorComponent implements OnInit {
 
     constructor() { }
 
-    colors: NamedColor[] = Color.NamedColors;
+    colors: NamedColor[] = Color.NamedColors.filter((c) => c.color.a === 255);
     isEnabled: boolean = true;
 
-    @Output() public colorSelected: EventEmitter<Color | null> = new EventEmitter();
+    @Output() public colorSelected: EventEmitter<NamedColor> = new EventEmitter();
 
-    @Input() public selectedColor: Color = Color.NamedColors[0].color;
+    @Input() @Output() public selectedColor: NamedColor = Color.NamedColors[0];
 
     ngOnInit() {
     }
@@ -26,22 +24,12 @@ export class ColorSelectorComponent implements OnInit {
         this.colorSelected.emit(this.selectedColor);
     }
 
-    compareColors(colorA: Color, colorB: Color) {
+    compareColors(colorA: NamedColor, colorB: NamedColor) {
         try {
-            if(colorA.a === 0 && colorB.a === 0) {
-                return true;
-            }
-            if(colorA.a === 0 && colorB.a !== 0) {
-                return false;
-            }
-            if(colorA.a !== 0 && colorB.a === 0) {
-                return false;
-            }
-            return colorA.equalsHue(colorB);
+            return colorA.name === colorB.name;
         }
         catch {
             return false;
         }
     }
-
 }

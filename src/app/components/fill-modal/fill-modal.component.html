@@ -24,27 +24,25 @@
             <div class="form-row" style="margin-top: 8px;">
                 <div class="col">
                     <label>Color</label>
-                    <app-color-selector [(selectedColor)]="modalInfo.color"
-                        (colorSelected)="onColorSelected($event)"></app-color-selector>
+                    <span
+                        [cpDialogDisplay]="'inline'"
+                        [cpToggle]="true"
+                        [colorPicker]="modalInfo.color"
+                        [cpAlphaChannel]="'forced'" (colorPickerChange)="colorPickerChange($event)"
+                        [cpOutputFormat]="'hex'"></span>
                 </div>
                 <div class="col">
+                    <!--
                     <div class="grid" style="margin-top: 33px; width: 128px; height: 30px; border: 1px solid black;">
-                        <div [style.backgroundColor]="modalInfo.colorDisplay.toStyleString()"
+                        <div [style.backgroundColor]="modalInfo.color"
                             style="width: 100%; height: 100%"></div>
                     </div>
-                </div>
-            </div>
-            <div *ngIf="modalInfo.color.a !== 0" class="form-row" style="margin-top: 8px;">
-                <div class="col">
-                    <div class="form-group">
-                        <label for="formControlRange">Opacity</label>
-                        <span style="float: right;"><strong>{{modalInfo.opacity}}</strong></span>
-                        <input type="range" class="form-control-range" min="0" max="255"
-                            [(ngModel)]="modalInfo.opacity" name="opacity"
-                            id="opacity" (input)="onOpacityChanged($event)">
-                    </div>
-                </div>
-                <div class="col">
+                    -->
+                    <label>Named Colors</label>
+                    <select class='custom-select custom-select-sm form-control' [(ngModel)]='modalInfo.namedColor'
+                        [compareWith]='compareColors' (change)='onColorSelected(namedColor)' name='namedColor'>
+                        <option *ngFor='let color of colors' [ngValue]='color'>{{color.name}}</option>
+                </select>
                 </div>
             </div>
         </div>

@@ -60,6 +60,7 @@ import { FillModalComponent } from './components/fill-modal/fill-modal.component
 import { ModelElementModalComponent } from './components/model-element-modal/model-element-modal.component';
 import { TextElementModalComponent } from './components/text-element-modal/text-element-modal.component';
 import { SizeModalComponent } from './components/size-modal/size-modal.component';
+import { ColorPickerModule } from 'ngx-color-picker';
 
 @NgModule({
     declarations: [
@@ -122,6 +123,7 @@ import { SizeModalComponent } from './components/size-modal/size-modal.component
         EliseModule,
         SchematrixModule,
         NgbModule,
+        ColorPickerModule,
         TreeModule.forRoot(),
         AngularSplitModule.forRoot(),
         ToastrModule.forRoot()

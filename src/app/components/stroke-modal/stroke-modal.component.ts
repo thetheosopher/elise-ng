@@ -21,28 +21,6 @@ export class StrokeModalComponent implements OnInit {
         this.modalInfo.width = parseFloat(event.target.value);
     }
 
-    onColorSelected(color) {
-        this.modalInfo.color = color;
-        if (color.a === 0) {
-            this.modalInfo.colorDisplay = Color.Transparent;
-        }
-        else {
-            this.modalInfo.colorDisplay = new Color(this.modalInfo.opacity, color.r, color.g, color.b);
-        }
-    }
-
-    onOpacityChanged(event) {
-        if (this.modalInfo.color.a === 0) {
-            this.modalInfo.colorDisplay = Color.Transparent;
-        }
-        else {
-            this.modalInfo.colorDisplay.r = this.modalInfo.color.r;
-            this.modalInfo.colorDisplay.g = this.modalInfo.color.g;
-            this.modalInfo.colorDisplay.b = this.modalInfo.color.b;
-            this.modalInfo.colorDisplay.a = this.modalInfo.opacity;
-        }
-    }
-
     commit() {
         this.activeModal.close(this.modalInfo);
     }
@@ -52,9 +30,7 @@ export class StrokeModalComponent implements OnInit {
 export class StrokeModalInfo {
     strokeType: string = 'color';
     width?: number;
-    color?: Color;
-    opacity?: number;
-    colorDisplay?: Color;
+    color: string;
     applyToModel: boolean;
     applyToSelected: boolean;
     selectedElementCount: number;

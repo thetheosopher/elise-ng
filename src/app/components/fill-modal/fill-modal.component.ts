@@ -1,6 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { Color, ModelResource, BitmapResource } from 'elise-graphics';
+import { Color, ModelResource, BitmapResource, NamedColor } from 'elise-graphics';
 
 @Component({
     selector: 'app-fill-modal',
@@ -9,38 +9,43 @@ import { Color, ModelResource, BitmapResource } from 'elise-graphics';
 })
 export class FillModalComponent implements OnInit {
 
-    constructor(public activeModal: NgbActiveModal) { }
+    constructor(public activeModal: NgbActiveModal) {
+        // this.compareColors = this.compareColors.bind(this);
+     }
 
     @Input()
     modalInfo: FillModalInfo;
 
+    colors: NamedColor[] = Color.NamedColors.filter((c) => c.color.a === 255);
+
     ngOnInit(): void {
-    }
-
-    onColorSelected(color) {
-        this.modalInfo.color = color;
-        if (color.a === 0) {
-            this.modalInfo.colorDisplay = Color.Transparent;
-        }
-        else {
-            this.modalInfo.colorDisplay = new Color(this.modalInfo.opacity, color.r, color.g, color.b);
-        }
-    }
-
-    onOpacityChanged(event) {
-        if (this.modalInfo.color.a === 0) {
-            this.modalInfo.colorDisplay = Color.Transparent;
-        }
-        else {
-            this.modalInfo.colorDisplay.r = this.modalInfo.color.r;
-            this.modalInfo.colorDisplay.g = this.modalInfo.color.g;
-            this.modalInfo.colorDisplay.b = this.modalInfo.color.b;
-            this.modalInfo.colorDisplay.a = this.modalInfo.opacity;
-        }
     }
 
     commit() {
         this.activeModal.close(this.modalInfo);
+    }
+
+    onColorSelected(event) {
+        if(this.modalInfo.namedColor) {
+            this.modalInfo.color = this.modalInfo.namedColor.color.toHexString();
+        }
+    }
+
+    colorPickerChange(event) {
+        console.log(event);
+        this.modalInfo.color = event;
+    }
+
+    compareColors(colorA: NamedColor, colorB: NamedColor) {
+        try {
+            if(!colorB) {
+                return false;
+            }
+            return colorA.name == colorB.name;
+        }
+        catch {
+            return false;
+        }
     }
 
     compareBitmapResources(resourceA: BitmapResource, resourceB: BitmapResource) {
@@ -64,10 +69,10 @@ export class FillModalComponent implements OnInit {
 
 export class FillModalInfo {
     fillType: string = 'color';
-    color?: Color;
-    opacity?: number;
+    color: string;
+    namedColor: NamedColor;
     scale?: number;
-    colorDisplay?: Color;
+    opacity: number = 1;
     bitmapResources: BitmapResource[];
     selectedBitmapResource: BitmapResource;
     modelResources: ModelResource[];

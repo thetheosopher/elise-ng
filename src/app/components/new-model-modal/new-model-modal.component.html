@@ -10,7 +10,7 @@
         <div class="form-group">
             <label for="modelname">Model Name</label>
             <input type="text" id="modelname" name="modelname" #modelname="ngModel" class="form-control" required
-                [(ngModel)]="modalInfo.name" />
+                [(ngModel)]="modalInfo.name" ngbAutofocus />
             <div [hidden]="modelname.valid || modelname.pristine" class="alert alert-danger">
                 Model Name Is Required
             </div>
@@ -30,34 +30,6 @@
                     class="form-control" required [(ngModel)]="modalInfo.height" />
                 <div [hidden]="modelheight.valid || modelheight.pristine" class="alert alert-danger">
                     Model Height Is Required
-                </div>
-            </div>
-        </div>
-        <div class="form-row" style="margin-top: 8px;">
-            <div class="col">
-                <label>Background Color</label>
-                <app-color-selector [selectedColor]="modalInfo.backgroundColor"
-                    (colorSelected)="onBackgroundColorSelected($event)"></app-color-selector>
-            </div>
-            <div class="col">
-                <div class="grid" style="margin-top: 33px; width: 128px; height: 30px; border: 1px solid black;">
-                    <div [style.backgroundColor]="modalInfo.backgroundColorDisplay.toStyleString()"
-                        style="width: 100%; height: 100%"></div>
-                </div>
-            </div>
-        </div>
-        <div *ngIf="modalInfo.backgroundColor.a !== 0" class="form-row" style="margin-top: 8px;">
-            <div class="col">
-                <div class="form-group">
-                    <label for="formControlRange">Background Opacity</label>
-                    <input type="range" class="form-control-range" min="0" max="255"
-                        [(ngModel)]="modalInfo.backgroundOpacity" name="backgroundOpacity"
-                        id="backgroundOpacity" (input)="onBackgroundOpacityChanged($event)">
-                </div>
-            </div>
-            <div class="col">
-                <div class="form-group" style="margin-top: 30px;">
-                    <span><strong>{{modalInfo.backgroundOpacity}}</strong></span>
                 </div>
             </div>
         </div>

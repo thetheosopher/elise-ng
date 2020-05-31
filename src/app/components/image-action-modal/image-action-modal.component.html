@@ -8,8 +8,8 @@
 <!-- Modal body -->
 <div class="modal-body">
     <div style="text-align: center;">
-        <img [src]="modalInfo.source" (load)="imagePreviewLoaded($event)" class="img-responsive m-2" />
-        <h5>{{imagePreviewInfo}}</h5>
+        <img [src]="modalInfo.source" (load)="imagePreviewLoaded($event)" class="img-responsive grid" />
+        <h5 class="m-2">{{imagePreviewInfo}}</h5>
     </div>
 
     <button class='btn btn-primary py-2 px-2 mx-2' (click)="imageActionView()">
