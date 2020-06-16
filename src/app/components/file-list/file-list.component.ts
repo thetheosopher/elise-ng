@@ -1,5 +1,5 @@
-import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter } from '@angular/core';
-import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ManifestFileDTO } from '../../schematrix/classes/manifest-file-dto';
 import { DeleteFileModalComponent, DeleteFileModalInfo } from '../delete-file-modal/delete-file-modal.component';
 
@@ -29,9 +29,6 @@ export class FileListComponent implements OnInit {
     @Output() public downloadFile: EventEmitter<string> = new EventEmitter();
 
     @Output() public deleteFile: EventEmitter<string> = new EventEmitter();
-
-    @ViewChild('deleteFileModal', { static: true })
-    deleteFileModal: ElementRef;
 
     selectedFile: string;
 

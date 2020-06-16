@@ -17,6 +17,8 @@
                 </select>
             </div>
         </div>
+
+        <!-- Color Stroke -->
         <div *ngIf="modalInfo.strokeType == 'color'">
             <div class="form-row" style="margin-top: 8px;">
                 <div class="col">
@@ -36,17 +38,25 @@
             <div class="form-row" style="margin-top: 8px;">
                 <div class="col">
                     <label>Color</label>
-                    <input [value]="modalInfo.color"
-                        [(colorPicker)]="modalInfo.color"
-                        [cpAlphaChannel]="'forced'"
-                        [cpOutputFormat]="'hex'"
-                        class="form-control form-control-sm" />
+                    <span
+                        [cpDialogDisplay]="'inline'"
+                        [cpToggle]="true"
+                        [colorPicker]="modalInfo.color"
+                        [cpAlphaChannel]="'forced'" (colorPickerChange)="colorPickerChange($event)"
+                        [cpOutputFormat]="'hex'"></span>
                 </div>
                 <div class="col">
+                    <label>Named Colors</label>
+                    <select class='custom-select custom-select-sm form-control' [(ngModel)]='modalInfo.namedColor'
+                        [compareWith]='compareColors' (change)='onColorSelected(namedColor)' name='namedColor'>
+                        <option *ngFor='let color of colors' [ngValue]='color'>{{color.name}}</option>
+                    </select>
+                    <!--
                     <div class="grid" style="margin-top: 33px; width: 128px; height: 30px; border: 1px solid black;">
                         <div [style.backgroundColor]="modalInfo.color"
                             style="width: 100%; height: 100%"></div>
                     </div>
+                    -->
                 </div>
             </div>
         </div>

@@ -7,12 +7,14 @@
 <!-- Modal body -->
 <form>
     <div class="modal-body">
-        <div class="form-row" style="margin-top: 8px;">
+        <div class="form-row">
             <div class="col">
                 <label>Fill Type</label>
                 <select class='custom-select custom-select-sm form-control' name='fillType' [(ngModel)]='modalInfo.fillType'>
                     <option value='none'>None</option>
                     <option value='color'>Color</option>
+                    <option value='linearGradient'>Linear Gradient</option>
+                    <option value='radialGradient'>Radial Gradient</option>
                     <option *ngIf='modalInfo.bitmapResources && modalInfo.bitmapResources.length > 0' value='image'>Image</option>
                     <option *ngIf='modalInfo.modelResources && modalInfo.modelResources.length > 0' value='model'>Model</option>
                 </select>
@@ -21,7 +23,7 @@
 
         <!-- Color Fill -->
         <div *ngIf="modalInfo.fillType == 'color'">
-            <div class="form-row" style="margin-top: 8px;">
+            <div class="form-row">
                 <div class="col">
                     <label>Color</label>
                     <span
@@ -42,9 +44,124 @@
                     <select class='custom-select custom-select-sm form-control' [(ngModel)]='modalInfo.namedColor'
                         [compareWith]='compareColors' (change)='onColorSelected(namedColor)' name='namedColor'>
                         <option *ngFor='let color of colors' [ngValue]='color'>{{color.name}}</option>
-                </select>
+                    </select>
                 </div>
             </div>
+        </div>
+
+        <!-- Linear Gradient Fill -->
+        <div *ngIf="modalInfo.fillType == 'linearGradient' || modalInfo.fillType == 'radialGradient'">
+            <div class="form-row">
+                <div class="col">
+                    <div class="form-group">
+                        <label>Start Color</label>
+                        <select class='custom-select custom-select-sm form-control' [(ngModel)]='modalInfo.gradientNamedColor1'
+                            [compareWith]='compareColors' (change)='onGradient1ColorSelected(gradientNamedColor1)' name='gradientNamedColor1'>
+                            <option *ngFor='let color of colors' [ngValue]='color'>{{color.name}}</option>
+                        </select>
+                        <input class="form-control"
+                            [value]="modalInfo.gradientColor1"
+                            [colorPicker]="modalInfo.gradientColor1"
+                            [cpAlphaChannel]="'forced'" (colorPickerChange)="gradient1ColorPickerChange($event)"
+                            [cpOutputFormat]="'hex'">
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="form-group">
+                        <label>End Color</label>
+                        <select class='custom-select custom-select-sm form-control' [(ngModel)]='modalInfo.gradientNamedColor2'
+                            [compareWith]='compareColors' (change)='onGradient2ColorSelected(gradientNamedColor2)' name='gradientNamedColor2'>
+                            <option *ngFor='let color of colors' [ngValue]='color'>{{color.name}}</option>
+                        </select>
+                        <input class="form-control"
+                            [value]="modalInfo.gradientColor2"
+                            [colorPicker]="modalInfo.gradientColor2"
+                            [cpAlphaChannel]="'forced'" (colorPickerChange)="gradient2ColorPickerChange($event)"
+                            [cpOutputFormat]="'hex'">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row" *ngIf="modalInfo.fillType == 'linearGradient'">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="startX">Start X</label>
+                        <input class="form-control" id="startx" #startx="ngModel" name="startx"
+                           type="number" [(ngModel)]="modalInfo.linearGradientStartX">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="starty">Start Y</label>
+                        <input class="form-control" id="starty" #starty="ngModel" name="starty"
+                         type="number" [(ngModel)]="modalInfo.linearGradientStartY">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="endx">End X</label>
+                        <input class="form-control" id="endx" #endx="ngModel" name="endx"
+                         type="number" [(ngModel)]="modalInfo.linearGradientEndX">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="endy">End Y</label>
+                        <input class="form-control" id="endy" #endy="ngModel" name="endy"
+                         type="number" [(ngModel)]="modalInfo.linearGradientEndY">
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="form-row" *ngIf="modalInfo.fillType == 'radialGradient'">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="centerx">Center X</label>
+                        <input class="form-control" id="centerx" #centerx="ngModel" name="centerx"
+                         type="number" [(ngModel)]="modalInfo.radialGradientCenterX">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="centery">Center Y</label>
+                        <input class="form-control" id="centery" #centery="ngModel" name="centery"
+                         type="number" [(ngModel)]="modalInfo.radialGradientCenterY">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="focusx">Focus X</label>
+                        <input class="form-control" id="focusx" #focusx="ngModel" name="focusx"
+                         type="number" [(ngModel)]="modalInfo.radialGradientFocusX">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="focusy">Focus Y</label>
+                        <input class="form-control" id="focusy" #focusy="ngModel" name="focusy"
+                         type="number" [(ngModel)]="modalInfo.radialGradientFocusY">
+                    </div>
+                </div>
+            </div>
+            <div class="form-row" *ngIf="modalInfo.fillType == 'radialGradient'">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="radiusx">Radius X</label>
+                        <input class="form-control" id="radiusx" #radiusx="ngModel" name="radiusx"
+                         type="number" [(ngModel)]="modalInfo.radialGradientRadiusX">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="radiusy">Radius Y</label>
+                        <input class="form-control" id="radiusy" #radiusy="ngModel" name="radiusy"
+                         type="number" [(ngModel)]="modalInfo.radialGradientRadiusY">
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <!-- Image Fill -->

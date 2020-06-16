@@ -10,7 +10,6 @@ import { Color, ModelResource, BitmapResource, NamedColor } from 'elise-graphics
 export class FillModalComponent implements OnInit {
 
     constructor(public activeModal: NgbActiveModal) {
-        // this.compareColors = this.compareColors.bind(this);
      }
 
     @Input()
@@ -25,15 +24,34 @@ export class FillModalComponent implements OnInit {
         this.activeModal.close(this.modalInfo);
     }
 
+    colorPickerChange(event) {
+        this.modalInfo.color = event;
+    }
+
     onColorSelected(event) {
         if(this.modalInfo.namedColor) {
             this.modalInfo.color = this.modalInfo.namedColor.color.toHexString();
         }
     }
 
-    colorPickerChange(event) {
-        console.log(event);
-        this.modalInfo.color = event;
+    gradient1ColorPickerChange(event) {
+        this.modalInfo.gradientColor1 = event;
+    }
+
+    onGradient1ColorSelected(event) {
+        if(this.modalInfo.gradientNamedColor1) {
+            this.modalInfo.gradientColor1 = this.modalInfo.gradientNamedColor1.color.toHexString();
+        }
+    }
+
+    gradient2ColorPickerChange(event) {
+        this.modalInfo.gradientColor2 = event;
+    }
+
+    onGradient2ColorSelected(event) {
+        if(this.modalInfo.gradientNamedColor2) {
+            this.modalInfo.gradientColor2 = this.modalInfo.gradientNamedColor2.color.toHexString();
+        }
     }
 
     compareColors(colorA: NamedColor, colorB: NamedColor) {
@@ -68,16 +86,35 @@ export class FillModalComponent implements OnInit {
 }
 
 export class FillModalInfo {
+    scale?: number;
     fillType: string = 'color';
+    applyToModel: boolean;
+    applyToSelected: boolean;
+    selectedElementCount: number;
+
     color: string;
     namedColor: NamedColor;
-    scale?: number;
+
+    gradientColor1: string = "#000000ff";
+    gradientNamedColor1: NamedColor = new NamedColor("Black", Color.Black);
+    gradientColor2: string = "#ffffffff";
+    gradientNamedColor2: NamedColor = new NamedColor("White", Color.White);
+
+    linearGradientStartX: number;
+    linearGradientStartY: number;
+    linearGradientEndX: number;
+    linearGradientEndY: number;
+
+    radialGradientCenterX: number;
+    radialGradientCenterY: number;
+    radialGradientFocusX: number;
+    radialGradientFocusY: number;
+    radialGradientRadiusX: number;
+    radialGradientRadiusY: number;
+
     opacity: number = 1;
     bitmapResources: BitmapResource[];
     selectedBitmapResource: BitmapResource;
     modelResources: ModelResource[];
     selectedModelResource: ModelResource;
-    applyToModel: boolean;
-    applyToSelected: boolean;
-    selectedElementCount: number;
 }

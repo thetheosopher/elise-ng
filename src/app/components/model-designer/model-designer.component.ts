@@ -99,6 +99,19 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     fillTooltip: string;
     fillBitmapSource: string;
     fillModelSource: string;
+    fillgradientColor1: string = "#000000ff";
+    fillgradientColor2: string = "#ffffffff";
+    fillLinearGradientStartX: number = 0;
+    fillLinearGradientStartY: number = 0;
+    fillLinearGradientEndX: number = 100;
+    fillLinearGradientEndY: number = 100;
+    fillRadialGradientCenterX: number = 50;
+    fillRadialGradientCenterY: number = 50;
+    fillRadialGradientFocusX: number = 50;
+    fillRadialGradientFocusY: number = 50;
+    fillRadialGradientRadiusX: number = 50;
+    fillradialGradientRadiusY: number = 50;
+
     applyFillToModel: boolean = false;
     applyFillToSelected: boolean = true;
     activeFill: string | LinearGradientFill | RadialGradientFill;
@@ -274,6 +287,45 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         }
         fill = `model(${fill})`;
         this.setFill(fill, scale, updateSelectedElements, updateModel);
+    }
+
+    setLinearGradientFill(fillInfo: FillModalInfo) {
+        this.fillType = 'linearGradient';
+        this.fillTooltip = 'Linear Gradient';
+        this.fillScale = 1;
+        let fill = new LinearGradientFill(
+            `${fillInfo.linearGradientStartX},${fillInfo.linearGradientStartY}`,
+            `${fillInfo.linearGradientEndX},${fillInfo.linearGradientEndY}`);
+        fill.addFillStop(fillInfo.gradientColor1, 0);
+        fill.addFillStop(fillInfo.gradientColor2, 1);
+        this.setFill(fill, fillInfo.scale, fillInfo.applyToSelected, fillInfo.applyToModel);
+        this.fillgradientColor1 = fillInfo.gradientColor1;
+        this.fillgradientColor2 = fillInfo.gradientColor2;
+        this.fillLinearGradientStartX = fillInfo.linearGradientStartX;
+        this.fillLinearGradientStartY = fillInfo.linearGradientStartY;
+        this.fillLinearGradientEndX = fillInfo.linearGradientEndX;
+        this.fillLinearGradientEndY = fillInfo.linearGradientEndY;
+    }
+
+    setRadialGradientFill(fillInfo: FillModalInfo) {
+        this.fillType = 'radialGradient';
+        this.fillTooltip = 'Radial Gradient';
+        this.fillScale = 1;
+        let fill = new RadialGradientFill(
+            `${fillInfo.radialGradientCenterX},${fillInfo.radialGradientCenterY}`,
+            `${fillInfo.radialGradientFocusX},${fillInfo.radialGradientFocusY}`,
+            fillInfo.radialGradientRadiusX, fillInfo.radialGradientRadiusY);
+        fill.addFillStop(fillInfo.gradientColor1, 0);
+        fill.addFillStop(fillInfo.gradientColor2, 1);
+        this.setFill(fill, fillInfo.scale, fillInfo.applyToSelected, fillInfo.applyToModel);
+        this.fillgradientColor1 = fillInfo.gradientColor1;
+        this.fillgradientColor2 = fillInfo.gradientColor2;
+        this.fillRadialGradientCenterX = fillInfo.radialGradientCenterX;
+        this.fillRadialGradientCenterY = fillInfo.radialGradientCenterY;
+        this.fillRadialGradientFocusX = fillInfo.radialGradientFocusX;
+        this.fillRadialGradientFocusY = fillInfo.radialGradientFocusY;
+        this.fillRadialGradientRadiusX = fillInfo.radialGradientRadiusX;
+        this.fillradialGradientRadiusY = fillInfo.radialGradientRadiusY;
     }
 
     setActiveTool(tool: DesignTool | null) {
@@ -612,6 +664,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     }
 
     onNavChange(changeEvent: NgbNavChangeEvent) {
+        // Designer tab
         if (changeEvent.nextId === 1) {
             if (this.controller) {
                 if (this.activeTool) {
@@ -622,8 +675,10 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                     this.controller.clearActiveTool();
                     this.controller.selectionEnabled = true;
                 }
+                this.controller.draw();
             }
         }
+        // Model JSON tab
         else if (changeEvent.nextId === 2) {
             if (!this.model) {
                 this.formattedJson = '';
@@ -631,7 +686,10 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             else {
                 this.formattedJson = this.model.formattedJSON();
             }
-            // changeEvent.preventDefault();
+        }
+        // Element list
+        else if(changeEvent.nextId === 3) {
+
         }
     }
 
@@ -974,6 +1032,11 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         const modalInfo = new StrokeModalInfo();
         modalInfo.width = this.strokeWidth;
         modalInfo.color = this.strokeColor;
+        let color = Color.parse(this.strokeColor);
+        if(color.isNamedColor()) {
+            let namedColor = Color.NamedColors.find((c) => c.color.equalsHue(color));
+            modalInfo.namedColor = namedColor;
+        }
         modalInfo.strokeType = this.strokeType;
         modalInfo.applyToModel = this.applyStrokeToModel;
         modalInfo.applyToSelected = this.applyStrokeToSelected;
@@ -993,6 +1056,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
     showFillModal() {
         const modalInfo = new FillModalInfo();
+
         modalInfo.color = this.fillColor;
         let color = Color.parse(this.fillColor);
         if(color.isNamedColor()) {
@@ -1000,9 +1064,36 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             modalInfo.namedColor = namedColor;
         }
 
+        modalInfo.gradientColor1 = this.fillgradientColor1;
+        color = Color.parse(this.fillgradientColor1);
+        if(color.isNamedColor()) {
+            let namedColor = Color.NamedColors.find((c) => c.color.equalsHue(color));
+            modalInfo.gradientNamedColor1 = namedColor;
+        }
+
+        modalInfo.gradientColor2 = this.fillgradientColor2;
+        color = Color.parse(this.fillgradientColor2);
+        if(color.isNamedColor()) {
+            let namedColor = Color.NamedColors.find((c) => c.color.equalsHue(color));
+            modalInfo.gradientNamedColor2 = namedColor;
+        }
+
         modalInfo.opacity = this.fillOpacity;
         modalInfo.fillType = this.fillType;
         modalInfo.scale = this.fillScale * 100;
+
+        modalInfo.linearGradientStartX = this.fillLinearGradientStartX;
+        modalInfo.linearGradientStartY = this.fillLinearGradientStartY;
+        modalInfo.linearGradientEndX = this.fillLinearGradientEndX;
+        modalInfo.linearGradientEndY = this.fillLinearGradientEndY;
+
+        modalInfo.radialGradientCenterX = this.fillRadialGradientCenterX;
+        modalInfo.radialGradientCenterY = this.fillRadialGradientCenterY;
+        modalInfo.radialGradientFocusX = this.fillRadialGradientFocusX;
+        modalInfo.radialGradientFocusY = this.fillRadialGradientFocusY;
+        modalInfo.radialGradientRadiusX = this.fillRadialGradientRadiusX;
+        modalInfo.radialGradientRadiusY = this.fillradialGradientRadiusY;
+
         modalInfo.applyToModel = this.applyFillToModel;
         modalInfo.applyToSelected = this.applyFillToSelected;
         modalInfo.selectedElementCount = this.selectedElementCount;
@@ -1039,7 +1130,10 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             modalInfo.selectedModelResource = selectedModelResource ?? modelResources[0];
         }
 
-        const modal = this.modalService.open(FillModalComponent);
+        const modal = this.modalService.open(FillModalComponent, {
+            ariaLabelledBy: 'modal-basic-title',
+            scrollable: true
+        });
         modal.componentInstance.modalInfo = modalInfo;
         modal.result.then((result: FillModalInfo) => {
             this.applyFillToSelected = result.applyToSelected;
@@ -1052,6 +1146,12 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             }
             else if (result.fillType == 'model') {
                 this.setModelFill(result.selectedModelResource.key, result.opacity, result.scale / 100, modalInfo.applyToSelected, modalInfo.applyToModel);
+            }
+            else if(result.fillType == 'linearGradient') {
+                this.setLinearGradientFill(result);
+            }
+            else if(result.fillType == 'radialGradient') {
+                this.setRadialGradientFill(result);
             }
             else {
                 this.setNoFill(modalInfo.applyToSelected, modalInfo.applyToModel);
@@ -1248,6 +1348,20 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         // this.controller.renderer = new DesignRenderer(this.controller);
     }
 
+    elementSelected(element: ElementBase) {
+        return this.controller.isSelected(element);
+    }
+
+    selectElement(element: ElementBase) {
+        this.controller.toggleSelected(element);
+    }
+
+    onRequestDeleteElement(element: ElementBase) {
+        if(this.model && this.controller) {
+            this.controller.removeElement(element);
+        }
+    }
+
     selectionChanged(c: number) {
         let selectedElement: ElementBase;
         if (this.controller) {
@@ -1336,6 +1450,30 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                 this.activeFill = selectedElement.fill;
                 this.fillScale = selectedElement.fillScale ?? 1;
                 this.setColorFill(this.fillColor, false, false);
+            }
+            else if(fillInfo.type === 'linear') {
+                this.fillType = 'linearGradient';
+                let start = Point.parse(fillInfo.start);
+                this.fillLinearGradientStartX = start.x;
+                this.fillLinearGradientStartY = start.y;
+                let end = Point.parse(fillInfo.end);
+                this.fillLinearGradientEndX = end.x;
+                this.fillLinearGradientEndY = end.y;
+                this.fillgradientColor1 = fillInfo.fillStops[0].color;
+                this.fillgradientColor2 = fillInfo.fillStops[1].color;
+            }
+            else if(fillInfo.type === 'radial') {
+                this.fillType = 'radialGradient';
+                let center = Point.parse(fillInfo.center);
+                this.fillRadialGradientCenterX = center.x;
+                this.fillRadialGradientCenterY = center.y;
+                let focus = Point.parse(fillInfo.focus);
+                this.fillRadialGradientFocusX = focus.x;
+                this.fillRadialGradientFocusY = focus.y;
+                this.fillRadialGradientRadiusX = fillInfo.radiusX;
+                this.fillradialGradientRadiusY = fillInfo.radiusY;
+                this.fillgradientColor1 = fillInfo.fillStops[0].color;
+                this.fillgradientColor2 = fillInfo.fillStops[1].color;
             }
             else if (fillInfo.type == 'none') {
                 // this.setNoFill(false, false);
