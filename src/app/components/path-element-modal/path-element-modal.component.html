@@ -1,0 +1,25 @@
+<!-- Image Resource Modal -->
+<!-- Modal Header -->
+<div class="modal-header">
+    <h4 class="modal-title">Edit Path Commands</h4>
+    <button type="button" class="close" (click)="activeModal.dismiss('X')">&times;</button>
+</div>
+
+<!-- Modal body -->
+<div class="modal-body">
+    <form>
+        <div class="form-row">
+            <div class="form-group col-md-12">
+                <label for="text">Commands</label>
+                <textarea [(ngModel)]="modalInfo.commandString" name="commandString" id="commandString"
+                  class="form-control" rows="12" style="max-height: calc(100vh - 480px);"></textarea>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Modal footer -->
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="commit()">OK</button>
+    <button type="button" class="btn btn-danger" (click)="activeModal.dismiss('Cancel')" ngbAutofocus>Cancel</button>
+</div>

@@ -61,6 +61,9 @@ import { ModelElementModalComponent } from './components/model-element-modal/mod
 import { TextElementModalComponent } from './components/text-element-modal/text-element-modal.component';
 import { SizeModalComponent } from './components/size-modal/size-modal.component';
 import { ColorPickerModule } from 'ngx-color-picker';
+import { PointsModalComponent } from './components/points-modal/points-modal.component';
+import { PathElementModalComponent } from './components/path-element-modal/path-element-modal.component';
+import { ModelPlaygroundComponent } from './components/model-playground/model-playground.component';
 
 @NgModule({
     declarations: [
@@ -112,7 +115,10 @@ import { ColorPickerModule } from 'ngx-color-picker';
         FillModalComponent,
         ModelElementModalComponent,
         TextElementModalComponent,
-        SizeModalComponent
+        SizeModalComponent,
+        PointsModalComponent,
+        PathElementModalComponent,
+        ModelPlaygroundComponent
     ],
     imports: [
         BrowserModule,

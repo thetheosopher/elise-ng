@@ -1,5 +1,5 @@
 ﻿var model = elise.model(320, 320);
-elise.ellipse(70, 140, 50, 90).setStroke('Blue,2').setFill('#50FFFF00').addTo(model);
+elise.ellipse(70, 140, 50, 90).setStroke('Blue,2').setFill('#FFFF0050').addTo(model);
 var e1 = elise.ellipse();
 e1.center = '210,80';
 e1.radiusX = 80;

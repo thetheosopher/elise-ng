@@ -7,7 +7,7 @@ var t1 = elise.text(
     320 - 32
 );
 t1.stroke = 'Blue';
-t1.fill = '#A0C390D4';
+t1.fill = '#C390D4A0';
 t1.typesize = 30;
 t1.typeface = 'Coda Caption';
 t1.alignment = 'center,middle';

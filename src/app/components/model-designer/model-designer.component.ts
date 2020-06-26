@@ -17,7 +17,7 @@ import { ToastrService } from 'ngx-toastr';
 import { UploadService, UploadStateCode, Upload, UploadState } from '../../services/upload.service';
 
 // Elise core classes
-import { BitmapResource, Color, Model, ModelResource, Point, Region, Resource, Size } from 'elise-graphics';
+import { BitmapResource, Color, Model, ModelResource, Point, Region, Resource, Size, PolylineElement, PolygonElement, PathElement } from 'elise-graphics';
 import { FillInfo, LinearGradientFill, PointEventParameters, RadialGradientFill, StrokeInfo, ViewDragArgs } from 'elise-graphics';
 import { ElementBase, ImageElement, ModelElement, TextElement } from 'elise-graphics';
 import { DesignController } from 'elise-graphics';
@@ -36,6 +36,8 @@ import { ImageElementModalComponent, ImageElementModalInfo } from '../image-elem
 import { ModelElementModalComponent, ModelElementModalInfo } from '../model-element-modal/model-element-modal.component';
 import { TextElementModalComponent, TextElementModalInfo } from '../text-element-modal/text-element-modal.component';
 import { SizeModalComponent, SizeModalInfo } from '../size-modal/size-modal.component';
+import { PointsModalComponent, PointsModalInfo } from '../points-modal/points-modal.component';
+import { PathElementModalComponent, PathElementModalInfo } from '../path-element-modal/path-element-modal.component';
 
 @Component({
     selector: 'app-model-designer',
@@ -58,8 +60,6 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     selectedContainerName: string;
     @Output() public selectedFolderPath?: string;
 
-    // currentModal: NgbModalRef;
-
     folderFiles?: ManifestFileDTO[];
     uploads: Upload[] = [];
 
@@ -67,7 +67,6 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
     readonly MODEL_MIME_TYPE = 'application/elise';
 
-    // eliseView: EliseDesignComponent;
     controller: DesignController;
     lastMessage = '-';
     scale = 1;
@@ -96,6 +95,8 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     fillColor: string = '#ffffffff';
     fillOpacity: number = 1;
     fillScale: number = 1;
+    fillOffsetX: number = 0;
+    fillOffsetY: number = 0;
     fillTooltip: string;
     fillBitmapSource: string;
     fillModelSource: string;
@@ -125,7 +126,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     textToolText = 'Text Element Content';
 
     activeTool?: DesignTool;
-    toolOpacity: number = 255;
+    toolOpacity: number = 1;
     toolLockAspect: boolean = true;
 
     _activeToolName: string = 'select';
@@ -151,7 +152,6 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit() {
-        // this.eliseView = this.eliseViewElementRef.nativeElement;
         this.fileUploadInputRefs.changes.subscribe((refs: QueryList<ElementRef>) => {
             if (refs.length > 0) {
                 this.fileUploadInputElement = refs.first.nativeElement;
@@ -231,6 +231,8 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                     else {
                         selectedElement.fillScale = undefined;
                     }
+                    selectedElement.fillOffsetX = this.fillOffsetX;
+                    selectedElement.fillOffsetY = this.fillOffsetY;
                 }
             });
         }
@@ -242,7 +244,9 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             else {
                 this.model.fillScale = undefined;
             }
-        }
+            this.model.fillOffsetX = this.fillOffsetX;
+            this.model.fillOffsetY = this.fillOffsetY;
+}
         if (updateModel || updateSelectedElements) {
             this.controller.draw();
         }
@@ -251,6 +255,8 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     setNoFill(updateSelectedElements: boolean, updateModel: boolean) {
         this.fillType = 'none';
         this.fillTooltip = 'No Fill';
+        this.fillOffsetX = 0;
+        this.fillOffsetY = 0;
         this.setFill(null, null, updateSelectedElements, updateModel);
     }
 
@@ -258,41 +264,49 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         this.fillType = 'color';
         this.fillColor = color;
         this.fillTooltip = color;
+        this.fillOffsetX = 0;
+        this.fillOffsetY = 0;
         this.setFill(color, null, updateSelectedElements, updateModel);
     }
 
-    setImageFill(bitmapResourceKey: string, opacity: number, scale: number, updateSelectedElements: boolean, updateModel: boolean) {
+    setImageFill(fillInfo: FillModalInfo) {
         this.fillType = 'image';
-        this.fillBitmapSource = bitmapResourceKey;
-        this.fillOpacity = opacity;
+        this.fillBitmapSource = fillInfo.selectedBitmapResource.key;
+        this.fillOpacity = fillInfo.opacity / 255;
         this.fillTooltip = 'Image';
-        this.fillScale = scale;
+        this.fillScale = fillInfo.scale / 100;
+        this.fillOffsetX = fillInfo.fillOffsetX;
+        this.fillOffsetY = fillInfo.fillOffsetY;
         let fill: string = this.fillBitmapSource;
-        if (opacity !== 1) {
-            fill = (opacity / 255).toString() + ';' + fill;
+        if (fillInfo.opacity !== 255) {
+            fill = (fillInfo.opacity / 255).toFixed(4) + ';' + fill;
         }
         fill = `image(${fill})`;
-        this.setFill(fill, scale, updateSelectedElements, updateModel);
+        this.setFill(fill, fillInfo.scale / 100, fillInfo.applyToSelected, fillInfo.applyToModel);
     }
 
-    setModelFill(modelResourceKey: string, opacity: number, scale: number, updateSelectedElements: boolean, updateModel: boolean) {
+    setModelFill(fillInfo: FillModalInfo) {
         this.fillType = 'model';
-        this.fillModelSource = modelResourceKey;
-        this.fillOpacity = opacity;
+        this.fillModelSource = fillInfo.selectedModelResource.key;
+        this.fillOpacity = fillInfo.opacity;
         this.fillTooltip = 'Model';
-        this.fillScale = scale;
+        this.fillScale = fillInfo.scale / 100;
+        this.fillOffsetX = fillInfo.fillOffsetX;
+        this.fillOffsetY = fillInfo.fillOffsetY;
         let fill: string = this.fillModelSource;
-        if (opacity !== 1) {
-            fill = (opacity / 255).toString() + ';' + fill;
+        if (fillInfo.opacity !== 255) {
+            fill = (fillInfo.opacity / 255).toFixed(4) + ';' + fill;
         }
         fill = `model(${fill})`;
-        this.setFill(fill, scale, updateSelectedElements, updateModel);
+        this.setFill(fill, fillInfo.scale / 100, fillInfo.applyToSelected, fillInfo.applyToModel);
     }
 
     setLinearGradientFill(fillInfo: FillModalInfo) {
         this.fillType = 'linearGradient';
         this.fillTooltip = 'Linear Gradient';
         this.fillScale = 1;
+        this.fillOffsetX = 0;
+        this.fillOffsetY = 0;
         let fill = new LinearGradientFill(
             `${fillInfo.linearGradientStartX},${fillInfo.linearGradientStartY}`,
             `${fillInfo.linearGradientEndX},${fillInfo.linearGradientEndY}`);
@@ -311,6 +325,8 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         this.fillType = 'radialGradient';
         this.fillTooltip = 'Radial Gradient';
         this.fillScale = 1;
+        this.fillOffsetX = 0;
+        this.fillOffsetY = 0;
         let fill = new RadialGradientFill(
             `${fillInfo.radialGradientCenterX},${fillInfo.radialGradientCenterY}`,
             `${fillInfo.radialGradientFocusX},${fillInfo.radialGradientFocusY}`,
@@ -533,7 +549,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         modalInfo.source = source;
         modalInfo.urlProxy = new ContainerUrlProxy(this.apiService, this.modelContainerID);
         modalInfo.lockAspect = this.toolLockAspect;
-        modalInfo.opacity = this.toolOpacity;
+        modalInfo.opacity = this.toolOpacity * 255;
         const modal = this.modalService.open(ImageElementModalComponent, {
             ariaLabelledBy: 'modal-basic-title',
             size: 'xl',
@@ -548,7 +564,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             if (result.selectedResource.image) {
                 imageElementTool.nativeAspect = result.selectedResource.image.naturalWidth / result.selectedResource.image.naturalHeight;
             }
-            this.toolOpacity = result.opacity;
+            this.toolOpacity = result.opacity / 255;
             this.toolLockAspect = result.lockAspect;
             this.setActiveTool(imageElementTool);
         }, (reason) => {
@@ -623,6 +639,16 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                 this.controller.detach();
                 this.model = null;
             }
+        }
+    }
+
+    onContainerDeleted(containerId: string) {
+        if(containerId === this.selectedContainerID) {
+            if(this.controller) {
+                this.controller.model = null;
+                this.controller.detach();
+            }
+            this.model = null;
         }
     }
 
@@ -1078,9 +1104,11 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             modalInfo.gradientNamedColor2 = namedColor;
         }
 
-        modalInfo.opacity = this.fillOpacity;
+        modalInfo.opacity = this.fillOpacity * 255;
         modalInfo.fillType = this.fillType;
         modalInfo.scale = this.fillScale * 100;
+        modalInfo.fillOffsetX = this.fillOffsetX;
+        modalInfo.fillOffsetY = this.fillOffsetY;
 
         modalInfo.linearGradientStartX = this.fillLinearGradientStartX;
         modalInfo.linearGradientStartY = this.fillLinearGradientStartY;
@@ -1142,10 +1170,10 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                 this.setColorFill(result.color, modalInfo.applyToSelected, modalInfo.applyToModel);
             }
             else if (result.fillType == 'image') {
-                this.setImageFill(result.selectedBitmapResource.key, result.opacity, result.scale / 100, modalInfo.applyToSelected, modalInfo.applyToModel);
+                this.setImageFill(result);
             }
             else if (result.fillType == 'model') {
-                this.setModelFill(result.selectedModelResource.key, result.opacity, result.scale / 100, modalInfo.applyToSelected, modalInfo.applyToModel);
+                this.setModelFill(result);
             }
             else if(result.fillType == 'linearGradient') {
                 this.setLinearGradientFill(result);
@@ -1353,7 +1381,12 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     }
 
     selectElement(element: ElementBase) {
-        this.controller.toggleSelected(element);
+        if(this.controller.isSelected(element)) {
+            this.controller.deselectElement(element);
+        }
+        else {
+            this.controller.selectElement(element);
+        }
     }
 
     onRequestDeleteElement(element: ElementBase) {
@@ -1395,6 +1428,18 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                     this.onTextElementSelected(selectedElement as TextElement);
                     break;
 
+                case 'polyline':
+                    this.onPolylineElementSelected(selectedElement as PolylineElement);
+                    break;
+
+                case 'polygon':
+                    this.onPolygonElementSelected(selectedElement as PolygonElement);
+                    break;
+
+                case 'path':
+                    this.onPathElementSelected(selectedElement as PathElement);
+                    break;
+
                 default:
                     this.singleElementType = undefined;
                     break;
@@ -1429,17 +1474,28 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         if (selectedElement.canFill()) {
             const fillInfo = FillInfo.getFillInfo(selectedElement);
             if (fillInfo.type === 'image') {
-                this.fillType = 'image';
-                this.fillBitmapSource = fillInfo.source;
-                this.fillScale = selectedElement.fillScale ?? 1;
-                this.setImageFill(fillInfo.source, fillInfo.opacity, fillInfo.scale, false, false);
-
+                const modalInfo: FillModalInfo = new FillModalInfo();
+                modalInfo.fillType = 'image';
+                modalInfo.selectedBitmapResource = this.model.resources.find(r => r.key === fillInfo.source);
+                modalInfo.opacity = fillInfo.opacity;
+                modalInfo.scale = fillInfo.scale * 100;
+                modalInfo.fillOffsetX = selectedElement.fillOffsetX;
+                modalInfo.fillOffsetY = selectedElement.fillOffsetY;
+                modalInfo.applyToModel = false;
+                modalInfo.applyToSelected = false;
+                this.setImageFill(modalInfo);
             }
             else if (fillInfo.type === 'model') {
-                this.fillType = 'model';
-                this.fillModelSource = fillInfo.source;
-                this.fillScale = selectedElement.fillScale ?? 1;
-                this.setModelFill(fillInfo.source, fillInfo.opacity, fillInfo.scale, false, false);
+                const modalInfo: FillModalInfo = new FillModalInfo();
+                modalInfo.fillType = 'model';
+                modalInfo.selectedModelResource = this.model.resources.find(r => r.key === fillInfo.source);
+                modalInfo.opacity = fillInfo.opacity;
+                modalInfo.scale = fillInfo.scale * 100;
+                modalInfo.fillOffsetX = selectedElement.fillOffsetX;
+                modalInfo.fillOffsetY = selectedElement.fillOffsetY;
+                modalInfo.applyToModel = false;
+                modalInfo.applyToSelected = false;
+                this.setModelFill(modalInfo);
             }
             else if (fillInfo.type === 'color') {
                 let color = Color.parse(fillInfo.color);
@@ -1688,6 +1744,52 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                 alignment += result.valign;
             }
             textElement.alignment = alignment;
+            this.controller.draw();
+        }, (reason) => {
+        });
+    }
+
+    onPolylineElementSelected(polylineElement: PolylineElement) {
+        this.singleElementType = polylineElement.type;
+    }
+
+    onPolygonElementSelected(polygonElement: PolygonElement) {
+        this.singleElementType = polygonElement.type;
+    }
+
+    showPointsContainerModal() {
+        const pointsElement = this.controller.selectedElements[0] as PolylineElement | PolygonElement;
+        const modalInfo = new PointsModalInfo();
+        modalInfo.pointsString = pointsElement.points;
+        const modal = this.modalService.open(PointsModalComponent, {
+            ariaLabelledBy: 'modal-basic-title',
+            size: 'xl',
+            scrollable: true
+        });
+        modal.componentInstance.modalInfo = modalInfo;
+        modal.result.then((result: PointsModalInfo) => {
+            pointsElement.points = result.pointsString;
+            this.controller.draw();
+        }, (reason) => {
+        });
+    }
+
+    onPathElementSelected(pathElement: PathElement) {
+        this.singleElementType = pathElement.type;
+    }
+
+    showPathElementModal() {
+        const pathElement = this.controller.selectedElements[0] as PathElement;
+        const modalInfo = new PathElementModalInfo();
+        modalInfo.commandString = pathElement.commands;
+        const modal = this.modalService.open(PathElementModalComponent, {
+            ariaLabelledBy: 'modal-basic-title',
+            size: 'xl',
+            scrollable: true
+        });
+        modal.componentInstance.modalInfo = modalInfo;
+        modal.result.then((result: PathElementModalInfo) => {
+            pathElement.commands = result.commandString;
             this.controller.draw();
         }, (reason) => {
         });

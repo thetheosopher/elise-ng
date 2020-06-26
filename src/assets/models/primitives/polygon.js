@@ -5,6 +5,6 @@ p.addPoint(elise.point(214, 252));
 p.addPoint(elise.point(106, 252));
 p.addPoint(elise.point(54, 160));
 p.stroke = 'Black,5';
-p.fill = '#5040A4DF';
+p.fill = '#40A4DF50';
 model.add(p);
 return model;

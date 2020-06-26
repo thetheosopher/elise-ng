@@ -113,6 +113,8 @@ export class FillModalInfo {
     radialGradientRadiusY: number;
 
     opacity: number = 1;
+    fillOffsetX: number = 0;
+    fillOffsetY: number = 0;
     bitmapResources: BitmapResource[];
     selectedBitmapResource: BitmapResource;
     modelResources: ModelResource[];

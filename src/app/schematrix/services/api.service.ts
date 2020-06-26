@@ -19,6 +19,8 @@ export class ApiService {
     localStorageAvailable: boolean;
     login: LoginDTO;
     isLoggedIn: boolean = false;
+    refreshTimer: NodeJS.Timeout;
+    refreshingToken: boolean;
 
     @Output() loginEvent = new EventEmitter<LoginDTO>();
     @Output() logoutEvent = new EventEmitter();
@@ -26,6 +28,7 @@ export class ApiService {
 
     constructor(private http: HttpClient) {
         this.localStorageAvailable = this.storageAvailable();
+        this.checkRefresh = this.checkRefresh.bind(this);
     }
 
     storageAvailable() {
@@ -107,6 +110,7 @@ export class ApiService {
                     localStorage.setItem('login', JSON.stringify(this.login));
                 }
                 this.onLogin();
+                this.startRefreshTimer();
             },
             error: (response) => {
                 this.handleError(response);
@@ -120,6 +124,21 @@ export class ApiService {
             localStorage.removeItem('login');
         }
         this.onLogout();
+        this.stopRefreshTimer();
+    }
+
+    startRefreshTimer() {
+        if(this.refreshTimer) {
+            clearInterval(this.refreshTimer);
+        }
+        this.refreshTimer = setInterval(this.checkRefresh, 15000);
+    }
+
+    stopRefreshTimer() {
+        if(this.refreshTimer) {
+            clearInterval(this.refreshTimer);
+            this.refreshTimer = null;
+        }
     }
 
     checkToken() {
@@ -163,8 +182,101 @@ export class ApiService {
                 localStorage.setItem('login', JSON.stringify(this.login));
                 this.isLoggedIn = true;
                 this.loginEvent.emit(this.login);
+                this.startRefreshTimer();
             },
             error: (response) => {
+                this.stopRefreshTimer();
+                const header = response.headers.get('WWW-Authenticate');
+                if (header && header.indexOf('expired') != 1) {
+                    this.errorEvent.emit('Session has expired.<br/>Please log in again.')
+                    this.logoutEvent.emit();
+                    return;
+                }
+                this.errorEvent.emit('Session is invalid. Please log in.');
+                this.logoutEvent.emit();
+            }
+        });
+    }
+
+    remainingTokenMinutes(tokenExpiration: string) {
+        const tokenDate = new Date(tokenExpiration);
+        const nowDate = new Date();
+        const tokenMilliSeconds = (tokenDate.getTime() - nowDate.getTime());
+        const tokenMinutes = tokenMilliSeconds / 60000;
+        return tokenMinutes;
+    }
+
+    checkRefresh() {
+        if (!this.localStorageAvailable) {
+            return;
+        }
+        else {
+            const loginString = localStorage.getItem('login');
+            if (loginString) {
+                const login: LoginDTO = JSON.parse(localStorage.getItem('login'));
+                const tokenMinutes = this.remainingTokenMinutes(login.TokenExpiration);
+                if(tokenMinutes < 15) {
+                    this.refreshToken();
+                }
+            }
+            else {
+                return;
+            }
+        }
+    }
+
+    refreshToken() {
+
+        if(this.refreshingToken) {
+            return;
+        }
+
+        // If no storage or no existing token
+        if (!this.localStorageAvailable) {
+            return;
+        }
+        else {
+            const loginString = localStorage.getItem('login');
+            if (loginString) {
+                const login: LoginDTO = JSON.parse(localStorage.getItem('login'));
+                const tokenMinutes = this.remainingTokenMinutes(login.TokenExpiration);
+                if(tokenMinutes > 15) {
+                    return;
+                }
+            }
+            else {
+                return;
+            }
+        }
+
+        this.refreshingToken = true;
+        const url = this.baseUrl + '/api/refreshtoken';
+        this.http.get<LoginDTO>(url, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.login.Token
+            },
+            observe: 'response'
+        }).subscribe({
+            next: (response) => {
+                const loginDTO = response.body;
+                this.login.LoginID = loginDTO.LoginID;
+                this.login.Name = loginDTO.Name;
+                this.login.Alias = loginDTO.Alias;
+                this.login.Email = loginDTO.Email;
+                this.login.IsEnabled = loginDTO.IsEnabled;
+                this.login.IsAdmin = loginDTO.IsAdmin;
+                this.login.GrantFlags = loginDTO.GrantFlags;
+                this.login.DenyFlags = loginDTO.DenyFlags;
+                this.login.CreateTime = loginDTO.CreateTime;
+                this.login.TokenExpiration = loginDTO.TokenExpiration;
+                localStorage.setItem('login', JSON.stringify(this.login));
+                this.isLoggedIn = true;
+                this.loginEvent.emit(this.login);
+                this.refreshingToken = false;
+            },
+            error: (response) => {
+                this.refreshingToken = false;
                 const header = response.headers.get('WWW-Authenticate');
                 if (header && header.indexOf('expired') != 1) {
                     this.errorEvent.emit('Session has expired.<br/>Please log in again.')

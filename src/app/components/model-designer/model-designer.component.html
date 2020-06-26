@@ -1,9 +1,12 @@
-<div style='height: calc(100vh - 129px);'>
+<div style='height: calc(100vh - 131px);'>
 
     <div class='toolbar'>
 
+        <h4>Model Designer</h4>
+
         <!-- Container selector -->
-        <app-container-selector (containerSelected)='onContainerSelected($event)' style='display: inline-block;'>
+        <app-container-selector (containerSelected)='onContainerSelected($event)'
+            (containerDeleted)='onContainerDeleted($event)' style='display: inline-block;'>
         </app-container-selector>
 
         <!-- New Folder Button -->
@@ -47,10 +50,12 @@
         </div>
 
         <!-- Upload file input -->
+        <!--
         <form *ngIf='selectedFolderPath != null' class='small' style='display:inline-block;'>
             <input type="file" #fileUploadInput (change)='uploadFiles(fileUploadInput.files)' multiple
                 style="margin-left: 8px; position: relative; top: 4px;" />
         </form>
+        -->
 
         <span *ngIf="isBusy" class="spinner-border spinner-border-sm text-success"
             style="margin-left: 4px; position: relative; top: 2px;"></span>
@@ -59,7 +64,7 @@
 
     <!-- Main horizontal split -->
     <as-split unit='percent' direction='horizontal' gutterSize='5' style='border: 5px solid rgb(231, 231, 231);'>
-        <as-split-area size='30' minSize='10' maxSize='40'>
+        <as-split-area size='20' minSize='10' maxSize='40'>
             <as-split unit='percent' direction='vertical' gutterSize='5'>
                 <as-split-area size='33' minsize='10' maxsize='90'>
                     <app-container-tree (folderPathSelected)="onFolderPathSelected($event)" #containertree>
@@ -67,6 +72,11 @@
                 </as-split-area>
                 <as-split-area size='67' appDnd (fileDropped)="onFileDropped($event)">
                     <app-alert id='container-explorer'></app-alert>
+                    <div class="custom-file" *ngIf='selectedFolderPath != null'>
+                        <input type="file" class="custom-file-input" id="fileUploadInput"
+                            #fileUploadInput (change)='uploadFiles(fileUploadInput.files)' multiple>
+                        <label class="custom-file-label" for="customFile">Upload Files</label>
+                    </div>
                     <app-upload-list [uploads]="uploads" (cancelUpload)="cancelUpload($event)"></app-upload-list>
                     <app-file-list [selectedFolderPath]="selectedFolderPath" [folderFiles]="folderFiles"
                         (selectFile)="selectFile($event)" [showDownload]=false [showDate]=false [allowDelete]=false>
@@ -74,7 +84,7 @@
                 </as-split-area>
             </as-split>
         </as-split-area>
-        <as-split-area size='70'>
+        <as-split-area size='80'>
             <div *ngIf="model != null" >
             <nav ngbNav #nav="ngbNav" class="nav-tabs" [(activeId)]="modelEditorNavId" (navChange)="onNavChange($event)" [destroyOnHide]="false">
                 <ng-container [ngbNavItem]="1">
@@ -122,6 +132,9 @@
                                                 <button *ngIf="singleElementType=='text'" ngbDropdownItem class="btn btn-sm" (click)="showTextElementModal()">Element Properties...</button>
                                                 <button *ngIf="singleElementType=='image'" ngbDropdownItem class="btn btn-sm" (click)="showImageElementModal()">Element Properties...</button>
                                                 <button *ngIf="singleElementType=='model'" ngbDropdownItem class="btn btn-sm" (click)="showModelElementModal()">Element Properties...</button>
+                                                <button *ngIf="singleElementType=='polyline'" ngbDropdownItem class="btn btn-sm" (click)="showPointsContainerModal()">Edit Points...</button>
+                                                <button *ngIf="singleElementType=='polygon'" ngbDropdownItem class="btn btn-sm" (click)="showPointsContainerModal()">Edit Points...</button>
+                                                <button *ngIf="singleElementType=='path'" ngbDropdownItem class="btn btn-sm" (click)="showPathElementModal()">Edit Commands...</button>
 
                                                 <button ngbDropdownItem class="btn btn-sm" [disabled]="!canDuplicateSelected()" (click)="duplicateSelected()">Duplicate</button>
                                                 <div ngbDropdown style="padding-left: 15px;">

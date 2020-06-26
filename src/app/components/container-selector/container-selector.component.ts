@@ -24,6 +24,8 @@ export class ContainerSelectorComponent implements OnInit {
 
     @Output() public containerSelected: EventEmitter<ContainerDTO | null> = new EventEmitter();
 
+    @Output() public containerDeleted: EventEmitter<string> = new EventEmitter();
+
     @Input() public selectedContainer: ContainerDTO = { Name: 'Select Container' };
 
     ngOnInit() {
@@ -118,6 +120,7 @@ export class ContainerSelectorComponent implements OnInit {
     deleteContainer(modalInfo: DeleteContainerModalInfo) {
         this.apiService.deleteContainer(modalInfo.containerID).subscribe({
             next: () => {
+                this.containerDeleted.emit(modalInfo.containerID);
                 this.toasterService.success(modalInfo.name, 'Container Deleted');
                 this.selectedContainer = { Name: 'Select Container' };
                 this.refreshContainers();

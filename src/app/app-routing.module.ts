@@ -10,6 +10,7 @@ import { EliseViewHarnessComponent } from './components/elise-view-harness/elise
 import { EliseSurfaceHarnessComponent } from './components/elise-surface-harness/elise-surface-harness.component';
 import { LoginComponent } from './components/login/login.component';
 import { ModelDesignerComponent } from './components/model-designer/model-designer.component';
+import { ModelPlaygroundComponent } from './components/model-playground/model-playground.component';
 import { PrimitivesComponent } from './components/primitives/primitives.component';
 import { PrimitiveComponent } from './components/primitive/primitive.component';
 import { RandomSketchesComponent } from './components/random-sketches/random-sketches.component';
@@ -49,7 +50,8 @@ const routes: Routes = [
     { path: 'resend-registration-code', component: ResendRegistrationCodeComponent },
     { path: 'send-password-reset-code', component: SendPasswordResetCodeComponent },
     { path: 'tests/container-explorer', component: ContainerExplorerComponent },
-    { path: 'tests/model-designer', component: ModelDesignerComponent }
+    { path: 'tests/model-designer', component: ModelDesignerComponent },
+    { path: 'tests/model-playground', component: ModelPlaygroundComponent }
 ];
 
 @NgModule({

@@ -1,6 +1,8 @@
-<div style='height: calc(100vh - 129px);'>
+<div style='height: calc(100vh - 131px);'>
 
     <div style="padding-left: 5px; padding-top: 5px; border-top: 5px solid rgb(231, 231, 231); border-left: 5px solid rgb(231, 231, 231); border-right: 5px solid rgb(231, 231, 231)">
+
+        <h4>Container Explorer</h4>
 
         <!-- Container selector -->
         <app-container-selector (containerSelected)='onContainerSelected($event)' style='display: inline-block;'>
@@ -24,23 +26,30 @@
         <span class='mx-1' style='position: relative; top: 6px;'><strong>{{selectedFolderPath}}</strong></span>
 
         <!-- Upload file input -->
+        <!--
         <form *ngIf='selectedFolderPath != null' class='small' style='display:inline-block;'>
             <input type="file" #fileUploadInput (change)='uploadFiles(fileUploadInput.files)' multiple
                 style="margin-left: 8px; position: relative; top: 4px;" />
         </form>
-
+        -->
     </div>
 
     <!-- Main horizontal splitter -->
     <as-split unit='percent' direction='horizontal' gutterSize='5' style='border: 5px solid rgb(231, 231, 231);'>
-        <as-split-area size='30' minSize='10' maxSize='40'>
+        <as-split-area size='20' minSize='10' maxSize='40'>
             <!-- Container Tree -->
             <app-container-tree (folderPathSelected)="onFolderPathSelected($event)" #containertree>
             </app-container-tree>
         </as-split-area>
-        <as-split-area size='70' appDnd (fileDropped)="onFileDropped($event)">
+        <as-split-area size='80' appDnd (fileDropped)="onFileDropped($event)">
             <!-- Container Alerts -->
             <app-alert id='container-explorer'></app-alert>
+
+            <div class="custom-file" *ngIf='selectedFolderPath != null'>
+                <input type="file" class="custom-file-input" id="fileUploadInput"
+                    #fileUploadInput (change)='uploadFiles(fileUploadInput.files)' multiple>
+                <label class="custom-file-label" for="customFile">Upload Files</label>
+            </div>
 
             <!-- Active upload list -->
             <app-upload-list [uploads]="uploads" (cancelUpload)="cancelUpload($event)" ></app-upload-list>

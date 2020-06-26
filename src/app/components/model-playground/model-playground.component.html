@@ -1,0 +1,162 @@
+<div style='height: calc(100vh - 131px);'>
+
+    <div class='toolbar'>
+
+        <h4>Model Playground</h4>
+
+        <!-- Container selector -->
+        <app-container-selector (containerSelected)='onContainerSelected($event)'
+            (containerDeleted)='onContainerDeleted($event)' style='display: inline-block;'>
+        </app-container-selector>
+
+        <!-- New Folder Button -->
+        <button class='btn btn-light py-0 px-1' [disabled]='selectedFolderPath == null'
+            (click)="containertree.showNewFolderModal()">
+            <span style='position: relative; top: 4px;' placement="bottom" ngbTooltip="New Folder"
+                class='fas fa-folder-plus fa-2x'></span>
+        </button>
+
+        <!-- Delete Folder Button -->
+        <button class='btn btn-light py-0 px-0' [disabled]='selectedFolderPath == null || selectedFolderPath === "/"'
+            (click)="containertree.showDeleteFolderModal()">
+            <span style='position: relative; top: 4px;' placement="bottom" ngbTooltip="Delete Folder"
+                class='fas fa-folder-minus fa-2x'></span>
+        </button>
+
+        <div class='mx-1' style='position: relative; top: 6px; display: inline-block;'>
+            <!-- Selected folder path label -->
+            <span><strong>{{selectedContainerName}}{{selectedFolderPath}}</strong></span>
+        </div>
+
+        <!-- Upload file input -->
+        <!--
+        <form *ngIf='selectedFolderPath != null' class='small' style='display:inline-block;'>
+            <input type="file" #fileUploadInput (change)='uploadFiles(fileUploadInput.files)' multiple
+                style="margin-left: 8px; position: relative; top: 4px;" />
+        </form>
+        -->
+
+        <span *ngIf="isBusy" class="spinner-border spinner-border-sm text-success"
+            style="margin-left: 4px; position: relative; top: 2px;"></span>
+
+    </div>
+
+    <!-- Main horizontal split -->
+    <as-split unit='percent' direction='horizontal' gutterSize='5' style='border: 5px solid rgb(231, 231, 231);'>
+        <as-split-area size='20' minSize='10' maxSize='40'>
+            <as-split unit='percent' direction='vertical' gutterSize='5'>
+                <as-split-area size='33' minsize='10' maxsize='90'>
+                    <app-container-tree (folderPathSelected)="onFolderPathSelected($event)" #containertree>
+                    </app-container-tree>
+                </as-split-area>
+                <as-split-area size='67' appDnd (fileDropped)="onFileDropped($event)">
+                    <app-alert id='container-explorer'></app-alert>
+                    <div class="custom-file" *ngIf='selectedFolderPath != null'>
+                        <input type="file" class="custom-file-input" id="fileUploadInput"
+                            #fileUploadInput (change)='uploadFiles(fileUploadInput.files)' multiple>
+                        <label class="custom-file-label" for="customFile">Upload Files</label>
+                    </div>
+                    <app-upload-list [uploads]="uploads" (cancelUpload)="cancelUpload($event)"></app-upload-list>
+                    <app-file-list [selectedFolderPath]="selectedFolderPath" [folderFiles]="folderFiles"
+                        (selectFile)="selectFile($event)" [showDownload]=false [showDate]=false [allowDelete]=false>
+                    </app-file-list>
+                </as-split-area>
+            </as-split>
+        </as-split-area>
+        <as-split-area size='80'>
+            <nav ngbNav #nav="ngbNav" class="nav-tabs" [(activeId)]="modelEditorNavId" (navChange)="onNavChange($event)"
+                [destroyOnHide]="true">
+                <ng-container [ngbNavItem]="1">
+                    <a ngbNavLink>Edit</a>
+                    <ng-template ngbNavContent>
+                        <table style="margin-left: 4px;">
+                            <tr style="vertical-align: baseline;">
+                                <td>
+                                    <div ngbDropdown class="d-inline-block">
+                                        <button class="btn btn-sm btn-outline-primary" id="loadMenuDropdown"
+                                            ngbDropdownToggle>Load</button>
+                                        <div ngbDropdownMenu aria-labelledby="loadMenuDropdown">
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('primitives', 'model')">Blank Model</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('primitives', 'line')">Line</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('primitives', 'rectangle')">Rectangle</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('primitives', 'ellipse')">Ellipse</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('primitives', 'polyline')">Polyline</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('primitives', 'polygon')">Polygon</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('primitives', 'path')">Path</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('primitives', 'text')">Text</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('primitives', 'colors')">Colors</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('primitives', 'transforms')">Transforms</button>
+
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('samples', 'star')">Star</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('samples', 'line-animation')">Line Animation</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('samples', 'ellipse-animation')">Ellipse Animation</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('samples', 'gradient-animation')">Gradient Animation</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('samples', 'particle-animation')">Particle Animation</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('samples', 'snow-animation')">Snow Animation</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('samples', 'digital-rain')">Digital Rain</button>
+                                        </div>
+                                        <button class="btn btn-sm btn-outline-primary m-1" (click)="runScript()" id="runScript">Run</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        <div style='margin-top: 0px;'>
+                            <textarea [(ngModel)]="playgroundText" name="playgroundText" id="playgroundText"
+                                spellcheck="false" class="form-control" rows="12"
+                                style="font-family: monospace; height: calc(100vh - 232px);"></textarea>
+                        </div>
+                    </ng-template>
+                </ng-container>
+                <ng-container [ngbNavItem]="2">
+                    <a ngbNavLink>View</a>
+                    <ng-template ngbNavContent>
+                        <!-- Model Viewer -->
+                        <div *ngIf="model != null" style="margin-bottom: 4px;">
+                            <table style="margin-left: 4px;">
+                                <tr style="vertical-align: baseline;">
+                                    <td>
+                                        <select id="scale" [(ngModel)]="scale" ngbTooltip="Zoom"
+                                            class='btn btn-sm btn-outline-primary'>
+                                            <option [ngValue]="0.25">25%</option>
+                                            <option [ngValue]="0.5">50%</option>
+                                            <option [ngValue]="0.75">75%</option>
+                                            <option [ngValue]="1">100%</option>
+                                            <option [ngValue]="1.5">150%</option>
+                                            <option [ngValue]="2">200%</option>
+                                            <option [ngValue]="3">300%</option>
+                                            <option [ngValue]="4">400%</option>
+                                            <option [ngValue]="5">500%</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select id="background" [(ngModel)]="background"
+                                            class='btn btn-sm btn-outline-primary' ngbTooltip="Drawing Surface">
+                                            <option value="grid">Grid</option>
+                                            <option value="white">White</option>
+                                            <option value="black">Black</option>
+                                            <option value="gray">Gray</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <div ngbDropdown class="d-inline-block">
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div>
+                            <div [ngClass]='backgroundClass()'>
+                                <div [class.fileover]='isDragging'>
+                                    <app-elise-view #elise [model]="model" [timerEnabled]="true" [scale]="scale">
+                                    </app-elise-view>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-template>
+                </ng-container>
+            </nav>
+
+            <div [ngbNavOutlet]="nav" class="mt-2"></div>
+        </as-split-area>
+    </as-split>
+</div>

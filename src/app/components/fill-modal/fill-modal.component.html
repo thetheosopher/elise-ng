@@ -201,6 +201,22 @@
                     </div>
                 </div>
             </div>
+            <div class="form-row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="offsetx">Offset X</label>
+                        <input class="form-control" id="offsetx" #offsetx="ngModel" name="offsetx"
+                         type="number" [(ngModel)]="modalInfo.fillOffsetX">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="offsety">Offset Y</label>
+                        <input class="form-control" id="offsety" #offsety="ngModel" name="offsety"
+                         type="number" [(ngModel)]="modalInfo.fillOffsetY">
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Model Fill -->
@@ -237,6 +253,22 @@
                         <input type="range" class="form-control-range" min="1" max="1000"
                             [(ngModel)]="modalInfo.scale" name="modelFillScale"
                             id="modelFillScale">
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="offsetx">Offset X</label>
+                        <input class="form-control" id="offsetx" #offsetx="ngModel" name="offsetx"
+                         type="number" [(ngModel)]="modalInfo.fillOffsetX">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="offsety">Offset Y</label>
+                        <input class="form-control" id="offsety" #offsety="ngModel" name="offsety"
+                         type="number" [(ngModel)]="modalInfo.fillOffsetY">
                     </div>
                 </div>
             </div>

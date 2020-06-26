@@ -4,6 +4,6 @@ var r1 = elise.rectangle();
 r1.location = '20,150';
 r1.size = '200x100';
 r1.stroke = 'Brown,6';
-r1.fill = '#60FFFF00';
+r1.fill = '#FFFF0060';
 model.add(r1);
 return model;
