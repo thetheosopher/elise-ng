@@ -43,7 +43,7 @@ export class StrokeModalComponent implements OnInit {
             if(!colorB) {
                 return false;
             }
-            return colorA.name == colorB.name;
+            return colorA.name === colorB.name;
         }
         catch {
             return false;
@@ -52,7 +52,7 @@ export class StrokeModalComponent implements OnInit {
 }
 
 export class StrokeModalInfo {
-    strokeType: string = 'color';
+    strokeType = 'color';
     width?: number;
     color: string;
     namedColor: NamedColor;

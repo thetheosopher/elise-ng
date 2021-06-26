@@ -4,7 +4,7 @@ import { ApiService } from '../../schematrix/services/api.service';
 import { ManifestDTO } from '../../schematrix/classes/manifest-dto';
 import { ManifestFolderDTO } from '../../schematrix/classes/manifest-folder-dto';
 import { TreeNode as Node } from './tree-node';
-import { TreeComponent, ITreeOptions } from 'angular-tree-component'
+import { TreeComponent, ITreeOptions } from 'angular-tree-component';
 import { ToastrService } from 'ngx-toastr';
 import { NewFolderModalComponent, NewFolderModalInfo } from '../new-folder-modal/new-folder-modal.component';
 import { DeleteFolderModalComponent, DeleteFolderModalInfo } from '../delete-folder-modal/delete-folder-modal.component';
@@ -42,8 +42,8 @@ export class ContainerTreeComponent implements OnInit {
     populateFolderChildren(node: Node, folderParent: ManifestDTO | ManifestFolderDTO) {
         if(folderParent.Folders) {
             node.children = [];
-            for(let folder of folderParent.Folders) {
-                let childNode = {
+            for(const folder of folderParent.Folders) {
+                const childNode = {
                     name: folder.Name,
                     id: node.id + folder.Name + '/'
                 };
@@ -57,11 +57,11 @@ export class ContainerTreeComponent implements OnInit {
     }
 
     manifestToNodes(manifest: ManifestDTO) {
-        let nodes: Node[] = [];
+        const nodes: Node[] = [];
         const rootNode = {
             name: '/',
             id: '/',
-            hasChildren: (manifest.Folders && manifest.Folders.length > 0) ? true: false,
+            hasChildren: (manifest.Folders && manifest.Folders.length > 0) ? true : false,
             isExpanded: false
         };
         nodes.push(rootNode);
@@ -105,7 +105,7 @@ export class ContainerTreeComponent implements OnInit {
                 error: (err) => {
                     this.nodes = [];
                 }
-            })
+            });
         }
     }
 
@@ -150,13 +150,13 @@ export class ContainerTreeComponent implements OnInit {
 
     deleteFolder(folderModalInfo: DeleteFolderModalInfo) {
         let parentPath;
-        if(!folderModalInfo.path || folderModalInfo.path == '/') {
+        if(!folderModalInfo.path || folderModalInfo.path === '/') {
             return;
         }
         else {
-            const parts = this.selectedFolderPath.split('/')
+            const parts = this.selectedFolderPath.split('/');
             parts.splice(parts.length - 2, 1);
-            parentPath = parts.join('/')
+            parentPath = parts.join('/');
         }
         this.apiService.deleteFolder(this.containerID, folderModalInfo.path).subscribe({
             next: () => {

@@ -11,23 +11,14 @@ import { DeleteFileModalComponent, DeleteFileModalInfo } from '../delete-file-mo
 export class FileListComponent implements OnInit {
 
     @Input() public selectedFolderPath: string = null;
-
     @Input() public folderFiles?: ManifestFileDTO[];
-
-    @Input() public allowDelete: boolean = true;
-
-    @Input() public showDownload: boolean = true;
-
-    @Input() public showSize: boolean = true;
-
-    @Input() public showDate: boolean = true;
-
-    @Input() public confirmFileDelete: boolean = true;
-
+    @Input() public allowDelete = true;
+    @Input() public showDownload = true;
+    @Input() public showSize = true;
+    @Input() public showDate = true;
+    @Input() public confirmFileDelete = true;
     @Output() public selectFile: EventEmitter<string> = new EventEmitter();
-
     @Output() public downloadFile: EventEmitter<string> = new EventEmitter();
-
     @Output() public deleteFile: EventEmitter<string> = new EventEmitter();
 
     selectedFile: string;
@@ -65,7 +56,7 @@ export class FileListComponent implements OnInit {
             modal.componentInstance.modalInfo = modalInfo;
             modal.result.then((result: DeleteFileModalInfo) => {
                 this.deleteFile.emit(result.path);
-            })
+            });
         }
         else {
             this.deleteFile.emit(file);

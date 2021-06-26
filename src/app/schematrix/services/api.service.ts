@@ -1,4 +1,4 @@
-import { Injectable, EventEmitter, Output, Directive } from '@angular/core';
+import { Injectable, EventEmitter, Output } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ContainerDTO } from '../classes/container-dto';
 import { ContainerFolderDTO } from '../classes/container-folder-dto';
@@ -9,7 +9,6 @@ import { Observable } from 'rxjs';
 import { ManifestDTO } from '../classes/manifest-dto';
 import { SignedUrlRequestDTO } from '../classes/signed-url-request-dto';
 
-@Directive()
 @Injectable({
     providedIn: 'root'
 })
@@ -18,7 +17,7 @@ export class ApiService {
     baseUrl: string;
     localStorageAvailable: boolean;
     login: LoginDTO;
-    isLoggedIn: boolean = false;
+    isLoggedIn = false;
     refreshTimer: NodeJS.Timeout;
     refreshingToken: boolean;
 
@@ -33,8 +32,8 @@ export class ApiService {
 
     storageAvailable() {
         try {
-            var storage = localStorage;
-            var x = '$_test_$';
+            const storage = localStorage;
+            const x = '$_test_$';
             storage.setItem(x, x);
             storage.removeItem(x);
             return true;
@@ -80,7 +79,7 @@ export class ApiService {
             this.onError(
                 `Error Code ${response.status}, ${response.error}`);
         }
-    };
+    }
 
     authenticate(username: string, password: string) {
         if (!username.trim()) {
@@ -94,11 +93,11 @@ export class ApiService {
 
         // If valid, submit request
         const requestObject = {
-            "Name": username,
-            "Password": password
+            'Name': username,
+            'Password': password
         };
-        var requestString = JSON.stringify(requestObject);
-        var url = this.baseUrl + '/api/authenticate/';
+        const requestString = JSON.stringify(requestObject);
+        const url = this.baseUrl + '/api/authenticate/';
         this.http.post(url, requestString, {
             headers: {
                 'Content-Type': 'application/json'
@@ -115,7 +114,7 @@ export class ApiService {
             error: (response) => {
                 this.handleError(response);
             }
-        })
+        });
     }
 
     logout() {
@@ -187,8 +186,8 @@ export class ApiService {
             error: (response) => {
                 this.stopRefreshTimer();
                 const header = response.headers.get('WWW-Authenticate');
-                if (header && header.indexOf('expired') != 1) {
-                    this.errorEvent.emit('Session has expired.<br/>Please log in again.')
+                if (header && header.indexOf('expired') !== 1) {
+                    this.errorEvent.emit('Session has expired.<br/>Please log in again.');
                     this.logoutEvent.emit();
                     return;
                 }
@@ -278,8 +277,8 @@ export class ApiService {
             error: (response) => {
                 this.refreshingToken = false;
                 const header = response.headers.get('WWW-Authenticate');
-                if (header && header.indexOf('expired') != 1) {
-                    this.errorEvent.emit('Session has expired.<br/>Please log in again.')
+                if (header && header.indexOf('expired') !== 1) {
+                    this.errorEvent.emit('Session has expired.<br/>Please log in again.');
                     this.logoutEvent.emit();
                     return;
                 }
@@ -291,7 +290,7 @@ export class ApiService {
 
     checkNameInUse(name: string) {
         const observable = new Observable<RegistrationInfoDTO>((observer) => {
-            if (name.trim().length == 0) {
+            if (name.trim().length === 0) {
                 observer.complete();
                 return;
             }
@@ -314,7 +313,7 @@ export class ApiService {
 
     checkEmailInUse(email: string) {
         const observable = new Observable<RegistrationInfoDTO>((observer) => {
-            if (email.trim().length == 0) {
+            if (email.trim().length === 0) {
                 observer.complete();
                 return;
             }
@@ -337,15 +336,15 @@ export class ApiService {
 
     register(userRegistrationDTO: UserRegistrationDTO) {
         const observable = new Observable<UserRegistrationDTO>((observer) => {
-            var requestString = JSON.stringify(userRegistrationDTO);
+            const requestString = JSON.stringify(userRegistrationDTO);
             const url = this.baseUrl + '/api/register/';
             this.http.post(url, requestString, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
             }).subscribe({
-                next: (userRegistrationDTO: UserRegistrationDTO) => {
-                    observer.next(userRegistrationDTO);
+                next: (returnedRegistrationDTO: UserRegistrationDTO) => {
+                    observer.next(returnedRegistrationDTO);
                 },
                 error: (response) => {
                     if (response.error && !response.error.type) {
@@ -355,17 +354,17 @@ export class ApiService {
                         observer.error(response.statusCode);
                     }
                 }
-            })
+            });
         });
         return observable;
     }
 
     confirmRegistration(userRegistrationDTO: UserRegistrationDTO) {
         const observable = new Observable<LoginDTO>((observer) => {
-            var minimal = new UserRegistrationDTO;
+            const minimal = new UserRegistrationDTO;
             minimal.Name = userRegistrationDTO.Name;
             minimal.Code = userRegistrationDTO.Code;
-            var requestString = JSON.stringify(minimal);
+            const requestString = JSON.stringify(minimal);
             const url = this.baseUrl + '/api/confirmregistration/';
             this.http.post(url, requestString, {
                 headers: {
@@ -383,22 +382,22 @@ export class ApiService {
                         observer.error(response.statusText);
                     }
                 }
-            })
+            });
         });
         return observable;
     }
 
     resendRegistrationCode(userRegistrationDTO: UserRegistrationDTO) {
         const observable = new Observable<UserRegistrationDTO>((observer) => {
-            var requestString = JSON.stringify(userRegistrationDTO);
+            const requestString = JSON.stringify(userRegistrationDTO);
             const url = this.baseUrl + '/api/resendregistrationmessage/';
             this.http.post(url, requestString, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
             }).subscribe({
-                next: (userRegistrationDTO: UserRegistrationDTO) => {
-                    observer.next(userRegistrationDTO);
+                next: (returnedRegistrationDTO: UserRegistrationDTO) => {
+                    observer.next(returnedRegistrationDTO);
                 },
                 error: (response) => {
                     if (response.error && !response.error.type) {
@@ -408,14 +407,14 @@ export class ApiService {
                         observer.error(response.statusText);
                     }
                 }
-            })
+            });
         });
         return observable;
     }
 
     sendPasswordResetCode(loginDTO: LoginDTO) {
         const observable = new Observable<UserRegistrationDTO>((observer) => {
-            var requestString = JSON.stringify(loginDTO);
+            const requestString = JSON.stringify(loginDTO);
             const url = this.baseUrl + '/api/sendpasswordresetcode/';
             this.http.post(url, requestString, {
                 headers: {
@@ -433,14 +432,14 @@ export class ApiService {
                         observer.error(response.statusText);
                     }
                 }
-            })
+            });
         });
         return observable;
     }
 
     resetPassword(loginDTO: LoginDTO) {
         const observable = new Observable<string>((observer) => {
-            var requestString = JSON.stringify(loginDTO);
+            const requestString = JSON.stringify(loginDTO);
             const url = this.baseUrl + '/api/resetpassword/';
             this.http.post(url, requestString, {
                 headers: {
@@ -458,14 +457,14 @@ export class ApiService {
                         observer.error(response.statusText);
                     }
                 }
-            })
+            });
         });
         return observable;
     }
 
     changePassword(loginDTO: LoginDTO) {
         const observable = new Observable<String>((observer) => {
-            var requestString = JSON.stringify(loginDTO);
+            const requestString = JSON.stringify(loginDTO);
             const url = this.baseUrl + '/api/changepassword/';
             if (!this.login || !this.login.Token) {
                 observer.error(new Error('Not logged in.'));
@@ -491,7 +490,7 @@ export class ApiService {
                         observer.error(response.statusText);
                     }
                 }
-            })
+            });
         });
         return observable;
     }
@@ -526,7 +525,7 @@ export class ApiService {
                 observer.error(new Error('Not logged in.'));
                 return;
             }
-            var requestString = JSON.stringify(containerDTO);
+            const requestString = JSON.stringify(containerDTO);
             const url = this.baseUrl + '/api/container/';
             this.http.post(url, requestString, {
                 headers: {
@@ -534,13 +533,13 @@ export class ApiService {
                     'Authorization': 'Bearer ' + this.login.Token
                 }
             }).subscribe({
-                next: (containerDTO: ContainerDTO) => {
-                    observer.next(containerDTO);
+                next: (returnedContainerDTO: ContainerDTO) => {
+                    observer.next(returnedContainerDTO);
                 },
                 error: (response) => {
                     observer.error('Unable to create container. Please ensure name is unique and contains valid characters.');
                 }
-            })
+            });
         });
         return observable;
     }
@@ -564,12 +563,13 @@ export class ApiService {
                 error: (response) => {
                     observer.error('Unable to delete container.');
                 }
-            })
+            });
         });
         return observable;
     }
 
-    getContainerManifest(containerID: string, full: boolean = false, rootPath: string = '/', includeFiles: boolean = false, includeGetUrls: boolean = false, includePutUrls: boolean = false) {
+    getContainerManifest(containerID: string, full: boolean = false, rootPath: string = '/',
+        includeFiles: boolean = false, includeGetUrls: boolean = false, includePutUrls: boolean = false) {
         const observable = new Observable<ManifestDTO>((observer) => {
             if (!this.login || !this.login.Token) {
                 observer.error(new Error('Not logged in.'));
@@ -617,7 +617,7 @@ export class ApiService {
                 observer.error(new Error('Not logged in.'));
                 return;
             }
-            var requestString = JSON.stringify(urlRequest);
+            const requestString = JSON.stringify(urlRequest);
             const url = this.baseUrl + '/api/container/getsignedurl';
             this.http.post(url, requestString, {
                 headers: {
@@ -631,7 +631,7 @@ export class ApiService {
                 error: (response) => {
                     observer.error('Unable to retrieve signed URL.');
                 }
-            })
+            });
         });
         return observable;
     }
@@ -642,7 +642,7 @@ export class ApiService {
                 observer.error(new Error('Not logged in.'));
                 return;
             }
-            var requestString = JSON.stringify(containerFolderDTO);
+            const requestString = JSON.stringify(containerFolderDTO);
             const url = this.baseUrl + '/api/container/folder/';
             this.http.post(url, requestString, {
                 headers: {
@@ -650,13 +650,13 @@ export class ApiService {
                     'Authorization': 'Bearer ' + this.login.Token
                 }
             }).subscribe({
-                next: (containerFolderDTO: ContainerFolderDTO) => {
-                    observer.next(containerFolderDTO);
+                next: (returnedContainerFolderDTO: ContainerFolderDTO) => {
+                    observer.next(returnedContainerFolderDTO);
                 },
                 error: (response) => {
                     observer.error('Unable to create folder. Please ensure name is unique and contains valid characters.');
                 }
-            })
+            });
         });
         return observable;
     }
@@ -667,7 +667,8 @@ export class ApiService {
                 observer.error(new Error('Not logged in.'));
                 return;
             }
-            const url = this.baseUrl + '/api/container/folder/?ContainerID=' + encodeURIComponent(containerID) + '&path=' + encodeURIComponent(path);
+            const url = this.baseUrl + '/api/container/folder/?ContainerID=' +
+                encodeURIComponent(containerID) + '&path=' + encodeURIComponent(path);
             this.http.delete(url, {
                 headers: {
                     'Content-Type': 'application/json',
@@ -680,7 +681,7 @@ export class ApiService {
                 error: (response) => {
                     observer.error('Unable to delete folder.');
                 }
-            })
+            });
         });
         return observable;
     }

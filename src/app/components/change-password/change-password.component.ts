@@ -10,7 +10,7 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class ChangePasswordComponent implements OnInit {
 
-    processing: boolean = false;
+    processing = false;
     loginDTO: LoginDTO = new LoginDTO();
     newPasswordConfirm: string = null;
 

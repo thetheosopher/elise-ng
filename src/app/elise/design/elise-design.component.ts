@@ -39,7 +39,7 @@ export class EliseDesignComponent implements AfterViewInit, OnDestroy {
     @Output() elementCreated = new EventEmitter<Region>();
     @Output() elementAdded = new EventEmitter<ElementBase>();
     @Output() elementRemoved = new EventEmitter<ElementBase>();
-    @Output() onDelete = new EventEmitter<ControllerEventArgs>();
+    @Output() elementDeleteRequested = new EventEmitter<ControllerEventArgs>();
     @Output() elementMoving = new EventEmitter<ElementLocationArgs>();
     @Output() elementMoved = new EventEmitter<ElementLocationArgs>();
     @Output() elementSizing = new EventEmitter<ElementSizeArgs>();
@@ -147,54 +147,54 @@ export class EliseDesignComponent implements AfterViewInit, OnDestroy {
                     });
                     this.controller.elementAdded.add((c, e) => {
                         this.elementAdded.emit(e);
-                    })
+                    });
                     this.controller.elementRemoved.add((c, e) => {
                         this.elementRemoved.emit(e);
-                    })
+                    });
                     /*
-                    this.controller.onDelete.add((c, e) => {
-                        this.onDelete.emit(e);
+                    this.controller.elementDeleteRequested.add((c, e) => {
+                        this.elementDeleteRequested.emit(e);
                     })
                     */
                     this.controller.elementMoving.add((c, e) => {
                         this.elementMoving.emit(e);
-                    })
+                    });
                     this.controller.elementMoved.add((c, e) => {
                         this.elementMoved.emit(e);
-                    })
+                    });
                     this.controller.elementSizing.add((c, e) => {
                         this.elementSizing.emit(e);
-                    })
+                    });
                     this.controller.elementSized.add((c, e) => {
                         this.elementSized.emit(e);
-                    })
+                    });
                     this.controller.viewDragEnter.add((c, e) => {
                         this.viewDragEnter.emit(e);
-                    })
+                    });
                     this.controller.viewDragOver.add((c, e) => {
                         this.viewDragOver.emit(e);
-                    })
+                    });
                     this.controller.viewDragLeave.add((c, e) => {
                         this.viewDragLeave.emit(e);
-                    })
+                    });
                     this.controller.viewDrop.add((c, e) => {
                         this.viewDrop.emit(e);
-                    })
+                    });
                     this.controller.elementDragEnter.add((c, e) => {
                         this.elementDragEnter.emit(e);
-                    })
+                    });
                     this.controller.elementDragLeave.add((c, e) => {
                         this.elementDragLeave.emit(e);
-                    })
+                    });
                     this.controller.elementDrop.add((c, e) => {
                         this.elementDrop.emit(e);
-                    })
+                    });
                     this.controller.elementsReordered.add((c, e) => {
                         this.elementsReordered.emit(e);
-                    })
+                    });
                     this.controller.isDirtyChanged.add((c, e) => {
                         this.isDirtyChanged.emit(e);
-                    })
+                    });
                     this.controllerSet.emit(this.controller);
                 }
                 else {

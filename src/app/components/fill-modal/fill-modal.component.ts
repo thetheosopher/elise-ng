@@ -59,7 +59,7 @@ export class FillModalComponent implements OnInit {
             if(!colorB) {
                 return false;
             }
-            return colorA.name == colorB.name;
+            return colorA.name === colorB.name;
         }
         catch {
             return false;
@@ -68,7 +68,7 @@ export class FillModalComponent implements OnInit {
 
     compareBitmapResources(resourceA: BitmapResource, resourceB: BitmapResource) {
         try {
-            return resourceA.key == resourceB.key;
+            return resourceA.key === resourceB.key;
         }
         catch {
             return false;
@@ -77,7 +77,7 @@ export class FillModalComponent implements OnInit {
 
     compareModelResources(resourceA: ModelResource, resourceB: ModelResource) {
         try {
-            return resourceA.key == resourceB.key;
+            return resourceA.key === resourceB.key;
         }
         catch {
             return false;
@@ -87,7 +87,7 @@ export class FillModalComponent implements OnInit {
 
 export class FillModalInfo {
     scale?: number;
-    fillType: string = 'color';
+    fillType = 'color';
     applyToModel: boolean;
     applyToSelected: boolean;
     selectedElementCount: number;
@@ -95,10 +95,10 @@ export class FillModalInfo {
     color: string;
     namedColor: NamedColor;
 
-    gradientColor1: string = "#000000ff";
-    gradientNamedColor1: NamedColor = new NamedColor("Black", Color.Black);
-    gradientColor2: string = "#ffffffff";
-    gradientNamedColor2: NamedColor = new NamedColor("White", Color.White);
+    gradientColor1 = '#000000ff';
+    gradientNamedColor1: NamedColor = new NamedColor('Black', Color.Black);
+    gradientColor2 = '#ffffffff';
+    gradientNamedColor2: NamedColor = new NamedColor('White', Color.White);
 
     linearGradientStartX: number;
     linearGradientStartY: number;
@@ -112,9 +112,9 @@ export class FillModalInfo {
     radialGradientRadiusX: number;
     radialGradientRadiusY: number;
 
-    opacity: number = 1;
-    fillOffsetX: number = 0;
-    fillOffsetY: number = 0;
+    opacity = 1;
+    fillOffsetX = 0;
+    fillOffsetY = 0;
     bitmapResources: BitmapResource[];
     selectedBitmapResource: BitmapResource;
     modelResources: ModelResource[];

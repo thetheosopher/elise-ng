@@ -10,8 +10,8 @@ import { LoginDTO } from '../../schematrix/classes/login-dto';
 })
 export class LoginComponent implements OnInit {
 
-    processing: boolean = false;
-    isLoggedIn: boolean = false;
+    processing = false;
+    isLoggedIn = false;
     loginDTO: LoginDTO = new LoginDTO();
 
     constructor(

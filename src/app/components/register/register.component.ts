@@ -10,15 +10,15 @@ import { UserRegistrationDTO } from '../../schematrix/classes/user-registration-
 })
 export class RegisterComponent implements OnInit {
 
-    processing: boolean = false;
-    registrationSubmitted: boolean = false;
+    processing = false;
+    registrationSubmitted = false;
     userRegistrationDTO: UserRegistrationDTO = new UserRegistrationDTO();
     passwordConfirm: string = null;
-    nameInUse: boolean = false;
+    nameInUse = false;
     nameInUseMessage: string = null;
-    emailInUse: boolean = false;
+    emailInUse = false;
     emailInUseMessage: string = null;
-    confirmationComplete: boolean = false;
+    confirmationComplete = false;
 
     constructor(
         private apiService: ApiService,

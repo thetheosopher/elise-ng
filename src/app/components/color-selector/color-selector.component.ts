@@ -11,7 +11,7 @@ export class ColorSelectorComponent implements OnInit {
     constructor() { }
 
     colors: NamedColor[] = Color.NamedColors.filter((c) => c.color.a === 255);
-    isEnabled: boolean = true;
+    isEnabled = true;
 
     @Output() public colorSelected: EventEmitter<NamedColor> = new EventEmitter();
 

@@ -12,7 +12,7 @@ export class ImageElementModalComponent implements OnInit {
 
     constructor(public activeModal: NgbActiveModal) { }
 
-    isEnabled: boolean = true;
+    isEnabled = true;
 
     @Input()
     modalInfo: ImageElementModalInfo;
@@ -33,7 +33,7 @@ export class ImageElementModalComponent implements OnInit {
                 if(success) {
                     this.modalInfo.source = url;
                 }
-            })
+            });
         }
     }
 
@@ -44,7 +44,7 @@ export class ImageElementModalComponent implements OnInit {
 
     compareResources(resourceA: BitmapResource, resourceB: BitmapResource) {
         try {
-            return resourceA.key == resourceB.key;
+            return resourceA.key === resourceB.key;
         }
         catch {
             return false;
@@ -62,6 +62,6 @@ export class ImageElementModalInfo {
     source: string;
     urlProxy: ContainerUrlProxy;
     info: string;
-    opacity: number = 255;
-    lockAspect: boolean = true;
+    opacity = 255;
+    lockAspect = true;
 }

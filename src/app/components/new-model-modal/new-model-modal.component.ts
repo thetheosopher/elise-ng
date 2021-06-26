@@ -23,6 +23,6 @@ export class NewModelModalComponent implements OnInit {
 
 export class NewModelModalInfo {
     name: string;
-    width?: number = 1024;
-    height?: number = 768;
+    width = 1024;
+    height = 768;
 }

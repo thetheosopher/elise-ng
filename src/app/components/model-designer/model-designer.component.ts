@@ -1,4 +1,5 @@
-import { Component, OnInit, ViewChild, ViewChildren, QueryList, Input, Output, ElementRef, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewChildren, QueryList, Input, Output,
+    ElementRef, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { NgModel } from '@angular/forms';
 import { ContainerTreeComponent } from '../../components/container-tree/container-tree.component';
 import { NgbModal, NgbNavChangeEvent } from '@ng-bootstrap/ng-bootstrap';
@@ -17,7 +18,8 @@ import { ToastrService } from 'ngx-toastr';
 import { UploadService, UploadStateCode, Upload, UploadState } from '../../services/upload.service';
 
 // Elise core classes
-import { BitmapResource, Color, Model, ModelResource, Point, Region, Resource, Size, PolylineElement, PolygonElement, PathElement } from 'elise-graphics';
+import { BitmapResource, Color, Model, ModelResource, Point, Region, Resource, Size,
+    PolylineElement, PolygonElement, PathElement } from 'elise-graphics';
 import { FillInfo, LinearGradientFill, PointEventParameters, RadialGradientFill, StrokeInfo, ViewDragArgs } from 'elise-graphics';
 import { ElementBase, ImageElement, ModelElement, TextElement } from 'elise-graphics';
 import { DesignController } from 'elise-graphics';
@@ -76,45 +78,45 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     modelEditorNavId: number;
     mouseOverView = false;
     formattedJson: string;
-    isBusy: boolean = false;
-    isDragging: boolean = false;
-    selectedElementCount: number = 0;
+    isBusy = false;
+    isDragging = false;
+    selectedElementCount = 0;
     lowestSelectedIndex: number;
     highestSelectedIndex: number;
     singleElementType: string;
 
-    strokeType: string = 'color';
+    strokeType = 'color';
     strokeColor: string = ('#000000cc');
-    strokeWidth: number = 2;
+    strokeWidth = 2;
     strokeTooltip: string;
-    applyStrokeToModel: boolean = false;
-    applyStrokeToSelected: boolean = true;
+    applyStrokeToModel = false;
+    applyStrokeToSelected = true;
     activeStroke: string;
 
-    fillType: string = 'color';
-    fillColor: string = '#ffffffff';
-    fillOpacity: number = 1;
-    fillScale: number = 1;
-    fillOffsetX: number = 0;
-    fillOffsetY: number = 0;
+    fillType = 'color';
+    fillColor = '#ffffffff';
+    fillOpacity = 1;
+    fillScale = 1;
+    fillOffsetX = 0;
+    fillOffsetY = 0;
     fillTooltip: string;
     fillBitmapSource: string;
     fillModelSource: string;
-    fillgradientColor1: string = "#000000ff";
-    fillgradientColor2: string = "#ffffffff";
-    fillLinearGradientStartX: number = 0;
-    fillLinearGradientStartY: number = 0;
-    fillLinearGradientEndX: number = 100;
-    fillLinearGradientEndY: number = 100;
-    fillRadialGradientCenterX: number = 50;
-    fillRadialGradientCenterY: number = 50;
-    fillRadialGradientFocusX: number = 50;
-    fillRadialGradientFocusY: number = 50;
-    fillRadialGradientRadiusX: number = 50;
-    fillradialGradientRadiusY: number = 50;
+    fillgradientColor1 = '#000000ff';
+    fillgradientColor2 = '#ffffffff';
+    fillLinearGradientStartX = 0;
+    fillLinearGradientStartY = 0;
+    fillLinearGradientEndX = 100;
+    fillLinearGradientEndY = 100;
+    fillRadialGradientCenterX = 50;
+    fillRadialGradientCenterY = 50;
+    fillRadialGradientFocusX = 50;
+    fillRadialGradientFocusY = 50;
+    fillRadialGradientRadiusX = 50;
+    fillradialGradientRadiusY = 50;
 
-    applyFillToModel: boolean = false;
-    applyFillToSelected: boolean = true;
+    applyFillToModel = false;
+    applyFillToSelected = true;
     activeFill: string | LinearGradientFill | RadialGradientFill;
 
     textToolTypeface = 'Sans-Serif';
@@ -126,10 +128,10 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     textToolText = 'Text Element Content';
 
     activeTool?: DesignTool;
-    toolOpacity: number = 1;
-    toolLockAspect: boolean = true;
+    toolOpacity = 1;
+    toolLockAspect = true;
 
-    _activeToolName: string = 'select';
+    _activeToolName = 'select';
 
     model: Model;
     modelContainerID: string;
@@ -206,7 +208,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         this.strokeColor = color;
         this.strokeWidth = width;
         let stroke = color;
-        if (width != 1) {
+        if (width !== 1) {
             stroke += ',' + width;
         }
         this.strokeTooltip = color;
@@ -307,7 +309,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         this.fillScale = 1;
         this.fillOffsetX = 0;
         this.fillOffsetY = 0;
-        let fill = new LinearGradientFill(
+        const fill = new LinearGradientFill(
             `${fillInfo.linearGradientStartX},${fillInfo.linearGradientStartY}`,
             `${fillInfo.linearGradientEndX},${fillInfo.linearGradientEndY}`);
         fill.addFillStop(fillInfo.gradientColor1, 0);
@@ -327,7 +329,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         this.fillScale = 1;
         this.fillOffsetX = 0;
         this.fillOffsetY = 0;
-        let fill = new RadialGradientFill(
+        const fill = new RadialGradientFill(
             `${fillInfo.radialGradientCenterX},${fillInfo.radialGradientCenterY}`,
             `${fillInfo.radialGradientFocusX},${fillInfo.radialGradientFocusY}`,
             fillInfo.radialGradientRadiusX, fillInfo.radialGradientRadiusY);
@@ -439,14 +441,14 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     }
 
     ensureStroke() {
-        if (!this.activeStroke || this.activeStroke == 'None') {
+        if (!this.activeStroke || this.activeStroke === 'None') {
             this.setColorStroke('#000000ff', 1, false, false);
         }
     }
 
     ensureStrokeOrFill() {
-        if ((!this.activeStroke || this.activeStroke == 'None') &&
-            (!this.activeFill || this.activeFill == 'None')) {
+        if ((!this.activeStroke || this.activeStroke === 'None') &&
+            (!this.activeFill || this.activeFill === 'None')) {
             this.setColorStroke('#000000ff', 1, false, false);
         }
     }
@@ -486,18 +488,18 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                 style += 'bold';
             }
             if (this.textToolIsItalic) {
-                if (style.length != 0) {
+                if (style.length !== 0) {
                     style += ',';
                 }
                 style += 'italic';
             }
             textTool.typestyle = style;
             let alignment = '';
-            if (this.textToolHAlign != 'left') {
+            if (this.textToolHAlign !== 'left') {
                 alignment += this.textToolHAlign;
             }
-            if (this.textToolVAlign != 'top') {
-                if (alignment.length != 0) {
+            if (this.textToolVAlign !== 'top') {
+                if (alignment.length !== 0) {
                     alignment += ',';
                 }
                 alignment += this.textToolVAlign;
@@ -510,9 +512,9 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     }
 
     selectImageTool() {
-        let bitmapResources: BitmapResource[] = [];
+        const bitmapResources: BitmapResource[] = [];
         this.model.resources.forEach((r) => {
-            if (r.type == 'bitmap') {
+            if (r.type === 'bitmap') {
                 bitmapResources.push(r);
             }
         });
@@ -573,9 +575,9 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     }
 
     selectModelTool() {
-        let modelResources: ModelResource[] = [];
+        const modelResources: ModelResource[] = [];
         this.model.resources.forEach((r) => {
-            if (r.type == 'model') {
+            if (r.type === 'model') {
                 modelResources.push(r);
             }
         });
@@ -665,7 +667,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                 if (upload.containerID === this.selectedContainerID && upload.folderPath === this.selectedFolderPath) {
                     this.uploads.push(upload);
                 }
-            })
+            });
         }
     }
 
@@ -754,21 +756,21 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                     next: (result) => {
                         if (result.success) {
                             console.log('Upload callback: Success');
-                            this.toasterService.success(upload.name, 'File Upload Complete')
-                            if (upload.containerID == this.selectedContainerID && upload.folderPath === this.selectedFolderPath) {
+                            this.toasterService.success(upload.name, 'File Upload Complete');
+                            if (upload.containerID === this.selectedContainerID && upload.folderPath === this.selectedFolderPath) {
                                 this.listFolderFiles();
                             }
                         }
                         else {
-                            if (upload.state.code == UploadStateCode.FAILED) {
+                            if (upload.state.code === UploadStateCode.FAILED) {
                                 this.onError(`Upload of ${upload.name} failed.`);
                             }
-                            if (upload.state.code == UploadStateCode.ABORTED) {
+                            if (upload.state.code === UploadStateCode.ABORTED) {
                                 this.onError(`Upload of ${upload.name} was aborted.`);
                             }
                         }
                         const index = this.uploads.indexOf(upload);
-                        if (index != -1) {
+                        if (index !== -1) {
                             this.uploads.splice(index, 1);
                         }
                     }
@@ -822,7 +824,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                 modalInfo.source = signedUrlRequest.Url;
                 modalInfo.path = this.selectedFilePath;
                 modalInfo.containerID = this.selectedContainerID;
-                modalInfo.canEmbed = this.model != null && this.modelContainerID == this.selectedContainerID;
+                modalInfo.canEmbed = this.model != null && this.modelContainerID === this.selectedContainerID;
                 const modal = this.modalService.open(ImageActionModalComponent, {
                     ariaLabelledBy: 'modal-basic-title',
                     size: 'xl',
@@ -891,15 +893,15 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                             const model = Model.parse(modelJson);
                             const proxy = new ContainerUrlProxy(this.apiService, this.selectedContainerID);
                             model.resourceManager.urlProxy = proxy;
-                            model.prepareResources(null, (result) => {
+                            model.prepareResources(null, (prepareResourceResult) => {
                                 this.isBusy = false;
-                                if (result) {
+                                if (prepareResourceResult) {
                                     const modalInfo = new ModelActionModalInfo();
                                     modalInfo.model = model;
                                     modalInfo.path = this.selectedFilePath;
                                     modalInfo.containerID = this.selectedContainerID;
                                     modalInfo.containerName = this.selectedContainerName;
-                                    modalInfo.canEmbed = this.model != null && this.modelContainerID == this.selectedContainerID;
+                                    modalInfo.canEmbed = this.model != null && this.modelContainerID === this.selectedContainerID;
                                     const wr = Math.min((window.innerWidth - 360), 1000) / model.getSize().width;
                                     const hr = (window.innerHeight - 360) / model.getSize().height;
                                     modalInfo.scale = Math.min(wr, hr);
@@ -910,18 +912,18 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                                         scrollable: true
                                     });
                                     modal.componentInstance.modalInfo = modalInfo;
-                                    modal.result.then((result: ModelActionModalInfo) => {
-                                        switch (result.action) {
+                                    modal.result.then((modalResult: ModelActionModalInfo) => {
+                                        switch (modalResult.action) {
                                             case 'edit':
-                                                this.modelActionEdit(result);
+                                                this.modelActionEdit(modalResult);
                                                 break;
 
                                             case 'create-element':
-                                                this.modelActionCreateElement(result);
+                                                this.modelActionCreateElement(modalResult);
                                                 break;
 
                                             case 'add-resource':
-                                                this.modelActionAddResource(result);
+                                                this.modelActionAddResource(modalResult);
                                                 break;
                                         }
                                     }, (error) => {
@@ -941,7 +943,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                         this.isBusy = false;
                         this.onError(error);
                     }
-                })
+                });
             },
             error: (error) => {
                 this.isBusy = false;
@@ -1058,9 +1060,9 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         const modalInfo = new StrokeModalInfo();
         modalInfo.width = this.strokeWidth;
         modalInfo.color = this.strokeColor;
-        let color = Color.parse(this.strokeColor);
+        const color = Color.parse(this.strokeColor);
         if(color.isNamedColor()) {
-            let namedColor = Color.NamedColors.find((c) => c.color.equalsHue(color));
+            const namedColor = Color.NamedColors.find((c) => c.color.equalsHue(color));
             modalInfo.namedColor = namedColor;
         }
         modalInfo.strokeType = this.strokeType;
@@ -1070,7 +1072,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         const modal = this.modalService.open(StrokeModalComponent);
         modal.componentInstance.modalInfo = modalInfo;
         modal.result.then((result: StrokeModalInfo) => {
-            if (result.strokeType == 'color') {
+            if (result.strokeType === 'color') {
                 this.setColorStroke(result.color, result.width, result.applyToSelected, result.applyToModel);
             }
             else {
@@ -1086,21 +1088,21 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         modalInfo.color = this.fillColor;
         let color = Color.parse(this.fillColor);
         if(color.isNamedColor()) {
-            let namedColor = Color.NamedColors.find((c) => c.color.equalsHue(color));
+            const namedColor = Color.NamedColors.find((c) => c.color.equalsHue(color));
             modalInfo.namedColor = namedColor;
         }
 
         modalInfo.gradientColor1 = this.fillgradientColor1;
         color = Color.parse(this.fillgradientColor1);
         if(color.isNamedColor()) {
-            let namedColor = Color.NamedColors.find((c) => c.color.equalsHue(color));
+            const namedColor = Color.NamedColors.find((c) => c.color.equalsHue(color));
             modalInfo.gradientNamedColor1 = namedColor;
         }
 
         modalInfo.gradientColor2 = this.fillgradientColor2;
         color = Color.parse(this.fillgradientColor2);
         if(color.isNamedColor()) {
-            let namedColor = Color.NamedColors.find((c) => c.color.equalsHue(color));
+            const namedColor = Color.NamedColors.find((c) => c.color.equalsHue(color));
             modalInfo.gradientNamedColor2 = namedColor;
         }
 
@@ -1127,10 +1129,10 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         modalInfo.selectedElementCount = this.selectedElementCount;
 
         // Load bitmap resources
-        let bitmapResources: BitmapResource[] = [];
+        const bitmapResources: BitmapResource[] = [];
         let selectedBitmapResource: BitmapResource;
         this.model.resources.forEach((r) => {
-            if (r.type == 'bitmap') {
+            if (r.type === 'bitmap') {
                 bitmapResources.push(r);
                 if (this.fillBitmapSource && r.key === this.fillBitmapSource) {
                     selectedBitmapResource = r;
@@ -1143,10 +1145,10 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         }
 
         // Load model resources
-        let modelResources: ModelResource[] = [];
+        const modelResources: ModelResource[] = [];
         let selectedModelResource: BitmapResource;
         this.model.resources.forEach((r) => {
-            if (r.type == 'model') {
+            if (r.type === 'model') {
                 modelResources.push(r);
                 if (this.fillModelSource && r.key === this.fillModelSource) {
                     selectedModelResource = r;
@@ -1166,19 +1168,19 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         modal.result.then((result: FillModalInfo) => {
             this.applyFillToSelected = result.applyToSelected;
             this.applyFillToModel = result.applyToModel;
-            if (result.fillType == 'color') {
+            if (result.fillType === 'color') {
                 this.setColorFill(result.color, modalInfo.applyToSelected, modalInfo.applyToModel);
             }
-            else if (result.fillType == 'image') {
+            else if (result.fillType === 'image') {
                 this.setImageFill(result);
             }
-            else if (result.fillType == 'model') {
+            else if (result.fillType === 'model') {
                 this.setModelFill(result);
             }
-            else if(result.fillType == 'linearGradient') {
+            else if(result.fillType === 'linearGradient') {
                 this.setLinearGradientFill(result);
             }
-            else if(result.fillType == 'radialGradient') {
+            else if(result.fillType === 'radialGradient') {
                 this.setRadialGradientFill(result);
             }
             else {
@@ -1219,8 +1221,9 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         this.isBusy = true;
         this.apiService.getSignedUrl(urlRequest).subscribe({
             next: (signedUrlRequest) => {
-                const upload = Upload.createDataUpload(newModelPath, this.MODEL_MIME_TYPE, serializedModel.length, signedUrlRequest.Url, serializedModel, null);
-                upload.state = new UploadState(UploadStateCode.QUEUED, 0, "Creating");
+                const upload = Upload.createDataUpload(newModelPath, this.MODEL_MIME_TYPE,
+                    serializedModel.length, signedUrlRequest.Url, serializedModel, null);
+                upload.state = new UploadState(UploadStateCode.QUEUED, 0, 'Creating');
                 upload.containerID = this.selectedContainerID;
                 upload.folderPath = this.selectedFolderPath;
                 upload.removeOnFailure = true;
@@ -1236,15 +1239,15 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                             }
                         }
                         else {
-                            if (upload.state.code == UploadStateCode.FAILED) {
+                            if (upload.state.code === UploadStateCode.FAILED) {
                                 this.onError(upload.name, 'Model Create Error');
                             }
-                            if (upload.state.code == UploadStateCode.ABORTED) {
+                            if (upload.state.code === UploadStateCode.ABORTED) {
                                 this.onError(upload.name, 'Model Create Aborted');
                             }
                         }
                         const index = this.uploads.indexOf(upload);
-                        if (index != -1) {
+                        if (index !== -1) {
                             this.uploads.splice(index, 1);
                         }
                     }
@@ -1273,8 +1276,9 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         this.isBusy = true;
         this.apiService.getSignedUrl(urlRequest).subscribe({
             next: (signedUrlRequest) => {
-                const upload = Upload.createDataUpload(this.modelPath, this.MODEL_MIME_TYPE, serializedModel.length, signedUrlRequest.Url, serializedModel, null);
-                upload.state = new UploadState(UploadStateCode.QUEUED, 0, "Creating");
+                const upload = Upload.createDataUpload(this.modelPath, this.MODEL_MIME_TYPE,
+                    serializedModel.length, signedUrlRequest.Url, serializedModel, null);
+                upload.state = new UploadState(UploadStateCode.QUEUED, 0, 'Creating');
                 upload.containerID = this.modelContainerID;
                 upload.folderPath = this.getPathDirectory(this.modelPath);
                 upload.removeOnFailure = true;
@@ -1284,25 +1288,25 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                         this.isBusy = false;
                         if (result.success) {
                             this.toasterService.success(upload.name, 'Model Saved');
-                            if (upload.containerID == this.selectedContainerID && upload.folderPath === this.selectedFolderPath) {
+                            if (upload.containerID === this.selectedContainerID && upload.folderPath === this.selectedFolderPath) {
                                 this.listFolderFiles();
                             }
                         }
                         else {
-                            if (upload.state.code == UploadStateCode.FAILED) {
+                            if (upload.state.code === UploadStateCode.FAILED) {
                                 this.onError(`Model ${upload.name} could not be saved.`);
                             }
-                            if (upload.state.code == UploadStateCode.ABORTED) {
+                            if (upload.state.code === UploadStateCode.ABORTED) {
                                 this.onError(`Model ${upload.name} save was aborted.`);
                             }
                         }
                         const index = this.uploads.indexOf(upload);
-                        if (index != -1) {
+                        if (index !== -1) {
                             this.uploads.splice(index, 1);
                         }
                     }
                 });
-                if (upload.containerID == this.selectedContainerID && upload.folderPath == this.selectedFolderPath) {
+                if (upload.containerID === this.selectedContainerID && upload.folderPath === this.selectedFolderPath) {
                     this.uploads.push(upload);
                 }
                 this.uploadService.queue(upload);
@@ -1364,7 +1368,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         this.controller = controller;
         if (!this.controller) {
             return;
-        };
+        }
         if (this.activeTool) {
             this.controller.setActiveTool(this.activeTool);
             this.controller.selectionEnabled = false;
@@ -1403,17 +1407,15 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         else {
             this.selectedElementCount = 0;
         }
-        if (this.selectedElementCount == 1) {
+        if (this.selectedElementCount === 1) {
             selectedElement = this.controller.selectedElements[0];
         }
-        else if (this.selectedElementCount == 0) {
+        else if (this.selectedElementCount === 0) {
             selectedElement = this.model;
         }
 
         // If single element selected
-        if (this.selectedElementCount == 1) {
-            const selectedElement = this.controller.selectedElements[0];
-
+        if (this.selectedElementCount === 1) {
             switch (selectedElement.type) {
 
                 case 'image':
@@ -1459,13 +1461,13 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         // Set active stroke to first selected element or model
         if (selectedElement.canStroke()) {
             const strokeInfo = StrokeInfo.getStrokeInfo(selectedElement);
-            if (strokeInfo.strokeType == 'color') {
+            if (strokeInfo.strokeType === 'color') {
                 this.strokeColor = strokeInfo.strokeColor;
                 this.strokeWidth = strokeInfo.strokeWidth;
                 this.activeStroke = selectedElement.stroke;
                 this.setColorStroke(this.strokeColor, this.strokeWidth, false, false);
             }
-            else if (strokeInfo.strokeType == 'none') {
+            else if (strokeInfo.strokeType === 'none') {
                 // this.setNoStroke(false, false);
             }
         }
@@ -1498,8 +1500,8 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                 this.setModelFill(modalInfo);
             }
             else if (fillInfo.type === 'color') {
-                let color = Color.parse(fillInfo.color);
-                if(fillInfo.opacity != 255) {
+                const color = Color.parse(fillInfo.color);
+                if(fillInfo.opacity !== 255) {
                     color.a = Math.floor(fillInfo.opacity);
                 }
                 this.fillColor = color.toHexString();
@@ -1509,10 +1511,10 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             }
             else if(fillInfo.type === 'linear') {
                 this.fillType = 'linearGradient';
-                let start = Point.parse(fillInfo.start);
+                const start = Point.parse(fillInfo.start);
                 this.fillLinearGradientStartX = start.x;
                 this.fillLinearGradientStartY = start.y;
-                let end = Point.parse(fillInfo.end);
+                const end = Point.parse(fillInfo.end);
                 this.fillLinearGradientEndX = end.x;
                 this.fillLinearGradientEndY = end.y;
                 this.fillgradientColor1 = fillInfo.fillStops[0].color;
@@ -1520,10 +1522,10 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             }
             else if(fillInfo.type === 'radial') {
                 this.fillType = 'radialGradient';
-                let center = Point.parse(fillInfo.center);
+                const center = Point.parse(fillInfo.center);
                 this.fillRadialGradientCenterX = center.x;
                 this.fillRadialGradientCenterY = center.y;
-                let focus = Point.parse(fillInfo.focus);
+                const focus = Point.parse(fillInfo.focus);
                 this.fillRadialGradientFocusX = focus.x;
                 this.fillRadialGradientFocusY = focus.y;
                 this.fillRadialGradientRadiusX = fillInfo.radiusX;
@@ -1531,7 +1533,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                 this.fillgradientColor1 = fillInfo.fillStops[0].color;
                 this.fillgradientColor2 = fillInfo.fillStops[1].color;
             }
-            else if (fillInfo.type == 'none') {
+            else if (fillInfo.type === 'none') {
                 // this.setNoFill(false, false);
             }
         }
@@ -1561,10 +1563,10 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         const imageElement = this.controller.selectedElements[0] as ImageElement;
 
         const modalInfo = new ImageElementModalInfo();
-        let bitmapResources: BitmapResource[] = [];
+        const bitmapResources: BitmapResource[] = [];
         let selectedResource: BitmapResource;
         this.model.resources.forEach((r) => {
-            if (r.type == 'bitmap') {
+            if (r.type === 'bitmap') {
                 bitmapResources.push(r);
             }
             if(r.key === imageElement.source) {
@@ -1600,10 +1602,10 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         const modelElement = this.controller.selectedElements[0] as ModelElement;
 
         const modalInfo = new ModelElementModalInfo();
-        let modelResources: ModelResource[] = [];
+        const modelResources: ModelResource[] = [];
         let selectedResource: ModelResource;
         this.model.resources.forEach((r) => {
-            if (r.type == 'model') {
+            if (r.type === 'model') {
                 modelResources.push(r);
             }
             if(r.key === modelElement.source) {
@@ -1636,8 +1638,8 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         this.textToolTypeface = textElement.typeface;
         this.textToolTypesize = textElement.typesize;
         if(textElement.typestyle) {
-            this.textToolIsBold = textElement.typestyle.toLowerCase().indexOf('bold') != -1;
-            this.textToolIsItalic = textElement.typestyle.toLowerCase().indexOf('italic') != -1;
+            this.textToolIsBold = textElement.typestyle.toLowerCase().indexOf('bold') !== -1;
+            this.textToolIsItalic = textElement.typestyle.toLowerCase().indexOf('italic') !== -1;
         }
         else {
             this.textToolIsBold = false;
@@ -1645,19 +1647,19 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         }
         this.textToolText = textElement.text;
         if(textElement.alignment) {
-            if(textElement.alignment.indexOf('center') != -1) {
+            if(textElement.alignment.indexOf('center') !== -1) {
                 this.textToolHAlign = 'center';
             }
-            else if(textElement.alignment.indexOf('right') != -1) {
+            else if(textElement.alignment.indexOf('right') !== -1) {
                 this.textToolHAlign = 'right';
             }
             else {
                 this.textToolHAlign = 'left';
             }
-            if(textElement.alignment.indexOf('middle') != -1) {
+            if(textElement.alignment.indexOf('middle') !== -1) {
                 this.textToolVAlign = 'middle';
             }
-            else if(textElement.alignment.indexOf('bottom') != -1) {
+            else if(textElement.alignment.indexOf('bottom') !== -1) {
                 this.textToolVAlign = 'bottom';
             }
             else {
@@ -1680,27 +1682,27 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         modalInfo.typeface = textElement.typeface;
         modalInfo.typesize = textElement.typesize;
         if(textElement.typestyle) {
-            modalInfo.isBold = textElement.typestyle.toLowerCase().indexOf('bold') != -1;
-            modalInfo.isItalic = textElement.typestyle.toLowerCase().indexOf('italic') != -1;
+            modalInfo.isBold = textElement.typestyle.toLowerCase().indexOf('bold') !== -1;
+            modalInfo.isItalic = textElement.typestyle.toLowerCase().indexOf('italic') !== -1;
         }
         else {
             modalInfo.isBold = false;
             modalInfo.isItalic = false;
         }
         if(textElement.alignment) {
-            if(textElement.alignment.indexOf('center') != -1) {
+            if(textElement.alignment.indexOf('center') !== -1) {
                 modalInfo.halign = 'center';
             }
-            else if(textElement.alignment.indexOf('right') != -1) {
+            else if(textElement.alignment.indexOf('right') !== -1) {
                 modalInfo.halign = 'right';
             }
             else {
                 modalInfo.halign = 'left';
             }
-            if(textElement.alignment.indexOf('middle') != -1) {
+            if(textElement.alignment.indexOf('middle') !== -1) {
                 modalInfo.valign = 'middle';
             }
-            else if(textElement.alignment.indexOf('bottom') != -1) {
+            else if(textElement.alignment.indexOf('bottom') !== -1) {
                 modalInfo.valign = 'bottom';
             }
             else {
@@ -1727,18 +1729,18 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                 style += 'bold';
             }
             if (result.isItalic) {
-                if (style.length != 0) {
+                if (style.length !== 0) {
                     style += ',';
                 }
                 style += 'italic';
             }
             textElement.typestyle = style;
             let alignment = '';
-            if (result.halign != 'left') {
+            if (result.halign !== 'left') {
                 alignment += result.halign;
             }
-            if (result.valign != 'top') {
-                if (alignment.length != 0) {
+            if (result.valign !== 'top') {
+                if (alignment.length !== 0) {
                     alignment += ',';
                 }
                 alignment += result.valign;
@@ -1851,11 +1853,11 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             const index1 = this.controller.model.elements.indexOf(el1);
             const index2 = this.controller.model.elements.indexOf(el2);
             return index1 - index2;
-        })
+        });
     }
 
     getSelectedElementsSorted() {
-        let clonedArray: ElementBase[] = new Array();
+        const clonedArray: ElementBase[] = new Array();
         this.controller.selectedElements.forEach(el => {
             clonedArray.push(el);
         });
@@ -1885,7 +1887,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
     moveSelectedDown() {
         if (this.controller && this.controller.selectedElementCount() > 0) {
-            let selectedElements = this.getSelectedElementsSorted();
+            const selectedElements = this.getSelectedElementsSorted();
             selectedElements.forEach(el => {
                 this.controller.moveElementBackward(el);
             });
@@ -1931,7 +1933,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
     deleteSelected() {
         if (this.controller) {
-            let clonedArray: ElementBase[] = new Array();
+            const clonedArray: ElementBase[] = new Array();
             this.controller.selectedElements.forEach(el => {
                 clonedArray.push(el);
             });
@@ -1957,7 +1959,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                 if (index > -1) {
                     this.model.resources.splice(index, 1);
                 }
-            })
+            });
         }
     }
 
@@ -1968,8 +1970,8 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     alignSelectedLeft() {
         const left = this.controller.selectedElements[0].getLocation().x;
         this.controller.selectedElements.forEach(el => {
-            let location = el.getLocation();
-            if (location.x != left) {
+            const location = el.getLocation();
+            if (location.x !== left) {
                 el.setLocation(new Point(left, location.y));
             }
         });
@@ -1980,9 +1982,9 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         const center = this.controller.selectedElements[0].getLocation().x +
             this.controller.selectedElements[0].getSize().width / 2;
         this.controller.selectedElements.forEach(el => {
-            let location = el.getLocation();
-            let size = el.getSize();
-            if (location.x + size.width / 2 != center) {
+            const location = el.getLocation();
+            const size = el.getSize();
+            if (location.x + size.width / 2 !== center) {
                 el.setLocation(new Point(center - size.width / 2, location.y));
             }
         });
@@ -1993,9 +1995,9 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         const right = this.controller.selectedElements[0].getLocation().x +
             this.controller.selectedElements[0].getSize().width;
         this.controller.selectedElements.forEach(el => {
-            let location = el.getLocation();
-            let size = el.getSize();
-            if (location.x + size.width != right) {
+            const location = el.getLocation();
+            const size = el.getSize();
+            if (location.x + size.width !== right) {
                 el.setLocation(new Point(right - size.width, location.y));
             }
         });
@@ -2005,8 +2007,8 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     alignSelectedTop() {
         const top = this.controller.selectedElements[0].getLocation().y;
         this.controller.selectedElements.forEach(el => {
-            let location = el.getLocation();
-            if (location.y != top) {
+            const location = el.getLocation();
+            if (location.y !== top) {
                 el.setLocation(new Point(location.x, top));
             }
         });
@@ -2017,9 +2019,9 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         const middle = this.controller.selectedElements[0].getLocation().y +
             this.controller.selectedElements[0].getSize().height / 2;
         this.controller.selectedElements.forEach(el => {
-            let location = el.getLocation();
-            let size = el.getSize();
-            if (location.y + size.height / 2 != middle) {
+            const location = el.getLocation();
+            const size = el.getSize();
+            if (location.y + size.height / 2 !== middle) {
                 el.setLocation(new Point(location.x, middle - size.height / 2));
             }
         });
@@ -2030,9 +2032,9 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         const bottom = this.controller.selectedElements[0].getLocation().y +
             this.controller.selectedElements[0].getSize().height;
         this.controller.selectedElements.forEach(el => {
-            let location = el.getLocation();
-            let size = el.getSize();
-            if (location.y + size.height != bottom) {
+            const location = el.getLocation();
+            const size = el.getSize();
+            if (location.y + size.height !== bottom) {
                 el.setLocation(new Point(location.x, bottom - size.height));
             }
         });
@@ -2046,8 +2048,8 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     resizeSelectedWidth() {
         const width = this.controller.selectedElements[0].getSize().width;
         this.controller.selectedElements.forEach(el => {
-            let size = el.getSize();
-            if (size.width != width) {
+            const size = el.getSize();
+            if (size.width !== width) {
                 el.setSize(new Size(width, size.height));
             }
         });
@@ -2057,8 +2059,8 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     resizeSelectedHeight() {
         const height = this.controller.selectedElements[0].getSize().height;
         this.controller.selectedElements.forEach(el => {
-            let size = el.getSize();
-            if (size.height != height) {
+            const size = el.getSize();
+            if (size.height !== height) {
                 el.setSize(new Size(size.width, height));
             }
         });
@@ -2068,8 +2070,8 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     resizeSelectedSize() {
         const size1 = this.controller.selectedElements[0].getSize();
         this.controller.selectedElements.forEach(el => {
-            let size2 = el.getSize();
-            if (size1.width != size2.width || size1.height != size2.height) {
+            const size2 = el.getSize();
+            if (size1.width !== size2.width || size1.height !== size2.height) {
                 el.setSize(size1);
             }
         });

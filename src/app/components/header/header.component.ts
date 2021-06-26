@@ -9,7 +9,7 @@ import { LoginDTO } from '../../schematrix/classes/login-dto';
 })
 export class HeaderComponent implements OnInit {
 
-    isLoggedIn: boolean = false;
+    isLoggedIn = false;
     loginDTO: LoginDTO = null;
 
     constructor(private apiService: ApiService) {

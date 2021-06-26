@@ -1,4 +1,5 @@
-import { Component, OnInit, ViewChild, ViewChildren, QueryList, Input, Output, ElementRef, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewChildren, QueryList, Input, Output,
+    ElementRef, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { NgModel } from '@angular/forms';
 import { ContainerTreeComponent } from '../../components/container-tree/container-tree.component';
 import { NgbModal, NgbNavChangeEvent } from '@ng-bootstrap/ng-bootstrap';
@@ -59,8 +60,8 @@ export class ModelPlaygroundComponent implements OnInit, AfterViewInit {
     modelEditorNavId: number;
     mouseOverView = false;
     formattedJson: string;
-    isBusy: boolean = false;
-    isDragging: boolean = false;
+    isBusy = false;
+    isDragging = false;
 
     model: Model;
     modelContainerID: string;
@@ -116,7 +117,7 @@ export class ModelPlaygroundComponent implements OnInit, AfterViewInit {
         }
     }
 
-    loadModel(type:string, name: string) {
+    loadModel(type: string, name: string) {
         this.modelService.getModel(type, name).subscribe({
             next: (modelData) => {
                 this.playgroundText = modelData;
@@ -196,7 +197,7 @@ export class ModelPlaygroundComponent implements OnInit, AfterViewInit {
                 if (upload.containerID === this.selectedContainerID && upload.folderPath === this.selectedFolderPath) {
                     this.uploads.push(upload);
                 }
-            })
+            });
         }
     }
 
@@ -263,21 +264,21 @@ export class ModelPlaygroundComponent implements OnInit, AfterViewInit {
                     next: (result) => {
                         if (result.success) {
                             console.log('Upload callback: Success');
-                            this.toasterService.success(upload.name, 'File Upload Complete')
-                            if (upload.containerID == this.selectedContainerID && upload.folderPath === this.selectedFolderPath) {
+                            this.toasterService.success(upload.name, 'File Upload Complete');
+                            if (upload.containerID === this.selectedContainerID && upload.folderPath === this.selectedFolderPath) {
                                 this.listFolderFiles();
                             }
                         }
                         else {
-                            if (upload.state.code == UploadStateCode.FAILED) {
+                            if (upload.state.code === UploadStateCode.FAILED) {
                                 this.onError(`Upload of ${upload.name} failed.`);
                             }
-                            if (upload.state.code == UploadStateCode.ABORTED) {
+                            if (upload.state.code === UploadStateCode.ABORTED) {
                                 this.onError(`Upload of ${upload.name} was aborted.`);
                             }
                         }
                         const index = this.uploads.indexOf(upload);
-                        if (index != -1) {
+                        if (index !== -1) {
                             this.uploads.splice(index, 1);
                         }
                     }
@@ -306,7 +307,7 @@ export class ModelPlaygroundComponent implements OnInit, AfterViewInit {
         this.controller = controller;
         if (!this.controller) {
             return;
-        };
+        }
         // this.controller.renderer = new DesignRenderer(this.controller);
     }
 

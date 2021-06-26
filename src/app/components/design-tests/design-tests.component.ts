@@ -31,5 +31,4 @@ export class DesignTestsComponent implements OnInit {
     ngOnInit() {
         this.getTests();
     }
-
 }

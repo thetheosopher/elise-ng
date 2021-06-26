@@ -18,7 +18,7 @@ export class ModelElementModalComponent {
         private http: HttpClient,
         private toasterService: ToastrService) { }
 
-    isEnabled: boolean = true;
+    isEnabled = true;
 
     // @Input()
     modalInfo: ModelElementModalInfo;
@@ -61,9 +61,9 @@ export class ModelElementModalComponent {
                         error: (error) => {
                             this.onError(error);
                         }
-                    })
+                    });
                 }
-            })
+            });
         }
     }
 
@@ -77,7 +77,7 @@ export class ModelElementModalComponent {
 
     compareResources(resourceA: ModelResource, resourceB: ModelResource) {
         try {
-            return resourceA.key == resourceB.key;
+            return resourceA.key === resourceB.key;
         }
         catch {
             return false;
@@ -96,6 +96,6 @@ export class ModelElementModalInfo {
     model: Model;
     info: string;
     scale: number;
-    opacity: number = 255;
-    lockAspect: boolean = true;
+    opacity = 255;
+    lockAspect = true;
 }

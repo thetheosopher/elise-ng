@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ViewChildren, QueryList, Output, ElementRef, AfterViewInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../../schematrix/services/api.service';
-import { UploadService, UploadState, UploadStateCode, Upload, UploadEvent } from '../../services/upload.service';
+import { UploadService, UploadStateCode, Upload, UploadEvent } from '../../services/upload.service';
 import { ContainerDTO } from '../../schematrix/classes/container-dto';
 import { ManifestDTO } from '../../schematrix/classes/manifest-dto';
 import { ManifestFileDTO } from '../../schematrix/classes/manifest-file-dto';
@@ -129,7 +129,7 @@ export class ContainerExplorerComponent implements OnInit, AfterViewInit {
         urlRequest.ContainerID = this.selectedContainerID;
         urlRequest.Path = this.selectedFolderPath + file;
         urlRequest.ContentType = file.type;
-        urlRequest.ContentDisposition = "attachment;filename=" + file;
+        urlRequest.ContentDisposition = 'attachment;filename="' + file + '"';
         urlRequest.Verb = 'get';
         this.apiService.getSignedUrl(urlRequest).subscribe({
             next: (signedUrlRequest) => {
@@ -157,7 +157,7 @@ export class ContainerExplorerComponent implements OnInit, AfterViewInit {
                         }
                         this.toasterService.success(file, 'File Deleted');
                     }
-                })
+                });
             },
             error: (error) => {
                 this.onError(error);
@@ -190,15 +190,15 @@ export class ContainerExplorerComponent implements OnInit, AfterViewInit {
                             }
                         }
                         else {
-                            if (upload.state.code == UploadStateCode.FAILED) {
+                            if (upload.state.code === UploadStateCode.FAILED) {
                                 this.onError(`Upload of ${upload.name} failed.`);
                             }
-                            if (upload.state.code == UploadStateCode.ABORTED) {
+                            if (upload.state.code === UploadStateCode.ABORTED) {
                                 this.onError(`Upload of ${upload.name} was aborted.`);
                             }
                         }
                         const index = this.uploads.indexOf(upload);
-                        if (index != -1) {
+                        if (index !== -1) {
                             this.uploads.splice(index, 1);
                         }
                     }
@@ -220,7 +220,7 @@ export class ContainerExplorerComponent implements OnInit, AfterViewInit {
                 if(upload.containerID === this.selectedContainerID && upload.folderPath === this.selectedFolderPath) {
                     this.uploads.push(upload);
                 }
-            })
+            });
         }
     }
 

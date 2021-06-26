@@ -51,7 +51,7 @@ export class PrimitiveComponent implements OnInit {
             },
             error: (err) => {
                 console.log(err);
-                this.toasterService.error(err, 'Model Name Error')
+                this.toasterService.error(err, 'Model Name Error');
                 this.modelName = '???';
             }
         });

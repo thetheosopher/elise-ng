@@ -18,9 +18,9 @@ export class ContainerSelectorComponent implements OnInit {
         private modalService: NgbModal) { }
 
     containers: ContainerDTO[];
-    isEnabled: boolean = true;
-    isContainerSelected: boolean = false;
-    isLoggedIn: boolean = false;
+    isEnabled = true;
+    isContainerSelected = false;
+    isLoggedIn = false;
 
     @Output() public containerSelected: EventEmitter<ContainerDTO | null> = new EventEmitter();
 
@@ -53,7 +53,7 @@ export class ContainerSelectorComponent implements OnInit {
     refreshContainers() {
         this.apiService.listContainers().subscribe({
             next: (containers) => {
-                if (!containers || containers.length == 0) {
+                if (!containers || containers.length === 0) {
                     this.containers = [
                         {
                             ContainerID: null,
@@ -79,7 +79,7 @@ export class ContainerSelectorComponent implements OnInit {
                     }];
                 this.isEnabled = false;
             }
-        })
+        });
     }
 
     showNewContainerModal() {
@@ -89,14 +89,14 @@ export class ContainerSelectorComponent implements OnInit {
         modal.result.then((result: NewContainerModalInfo) => {
             this.createContainer(result);
         }, (cancelReason) => {
-        })
+        });
     }
 
     createContainer(modalInfo: NewContainerModalInfo) {
         const newContainer = { Name: modalInfo.name };
         this.apiService.createContainer(newContainer).subscribe({
-            next: (newContainer) => {
-                this.selectedContainer = newContainer;
+            next: (returnedContainer) => {
+                this.selectedContainer = returnedContainer;
                 this.refreshContainers();
             },
             error: (error) => {
@@ -114,7 +114,7 @@ export class ContainerSelectorComponent implements OnInit {
         modal.result.then((result: DeleteContainerModalInfo) => {
             this.deleteContainer(result);
         }, (cancelReason) => {
-        })
+        });
     }
 
     deleteContainer(modalInfo: DeleteContainerModalInfo) {
@@ -126,7 +126,7 @@ export class ContainerSelectorComponent implements OnInit {
                 this.refreshContainers();
             },
             error: (error) => {
-                this.toasterService.error(error, 'Delete Container Failed')
+                this.toasterService.error(error, 'Delete Container Failed');
             }
         });
     }

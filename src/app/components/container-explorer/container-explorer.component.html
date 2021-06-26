@@ -36,7 +36,7 @@
 
     <!-- Main horizontal splitter -->
     <as-split unit='percent' direction='horizontal' gutterSize='5' style='border: 5px solid rgb(231, 231, 231);'>
-        <as-split-area size='20' minSize='10' maxSize='40'>
+        <as-split-area size='20' minSize='10' maxSize='40' style="overflow-y: auto;">
             <!-- Container Tree -->
             <app-container-tree (folderPathSelected)="onFolderPathSelected($event)" #containertree>
             </app-container-tree>

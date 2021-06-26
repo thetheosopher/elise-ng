@@ -16,7 +16,7 @@ export class ColorService {
             for (let i = 0; i < Color.NamedColors.length; i++) {
                 const namedColor = Color.NamedColors[i];
                 if (namedColor.color.a === 255) {
-                    this.colors.push(namedColor.color.toHexString())
+                    this.colors.push(namedColor.color.toHexString());
                 }
             }
         }

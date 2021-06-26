@@ -9,10 +9,10 @@ import { UserRegistrationDTO } from '../../schematrix/classes/user-registration-
   styleUrls: ['./resend-registration-code.component.scss']
 })
 export class ResendRegistrationCodeComponent implements OnInit {
-    processing: boolean = false;
-    formSubmitted: boolean = false;
+    processing = false;
+    formSubmitted = false;
     userRegistrationDTO: UserRegistrationDTO = new UserRegistrationDTO();
-    confirmationComplete: boolean = false;
+    confirmationComplete = false;
 
     constructor(
         private apiService: ApiService,

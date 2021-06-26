@@ -9,9 +9,9 @@ import { ToastrService } from 'ngx-toastr';
   styleUrls: ['./confirm-registration.component.scss']
 })
 export class ConfirmRegistrationComponent implements OnInit {
-    processing: boolean = false;
+    processing = false;
     userRegistrationDTO: UserRegistrationDTO = new UserRegistrationDTO();
-    confirmationComplete: boolean = false;
+    confirmationComplete = false;
 
     constructor(
         private apiService: ApiService,

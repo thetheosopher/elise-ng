@@ -9,11 +9,11 @@ import { LoginDTO } from '../../schematrix/classes/login-dto';
     styleUrls: ['./send-password-reset-code.component.scss']
 })
 export class SendPasswordResetCodeComponent implements OnInit {
-    processing: boolean = false;
-    formSubmitted: boolean = false;
+    processing = false;
+    formSubmitted = false;
     loginDTO: LoginDTO = new LoginDTO();
     passwordConfirm: string = null;
-    resetComplete: boolean = false;
+    resetComplete = false;
 
     constructor(
         private apiService: ApiService,
