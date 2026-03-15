@@ -1,7 +1,10 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Color, NamedColor } from 'elise-graphics';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
+    imports: [CommonModule, FormsModule],
     selector: 'app-color-selector',
     templateUrl: './color-selector.component.html',
     styleUrls: ['./color-selector.component.scss']

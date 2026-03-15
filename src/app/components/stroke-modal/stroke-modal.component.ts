@@ -1,8 +1,13 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Color, NamedColor } from 'elise-graphics';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ColorPickerDirective } from 'ngx-color-picker';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
+    imports: [CommonModule, FormsModule, ColorPickerDirective, NgbModule],
     selector: 'app-stroke-modal',
     templateUrl: './stroke-modal.component.html',
     styleUrls: ['./stroke-modal.component.scss']
@@ -29,7 +34,7 @@ export class StrokeModalComponent implements OnInit {
 
     onColorSelected(event) {
         if(this.modalInfo.namedColor) {
-            this.modalInfo.color = this.modalInfo.namedColor.color.toHexString();
+            this.modalInfo.color = (this.modalInfo.namedColor.color as Color).toHexString();
         }
     }
 

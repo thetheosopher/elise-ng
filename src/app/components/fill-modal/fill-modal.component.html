@@ -1,16 +1,16 @@
 <!-- Modal Header -->
 <div class="modal-header">
     <h4 class="modal-title">Fill</h4>
-    <button type="button" class="close" (click)="activeModal.dismiss('X')">&times;</button>
+    <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('X')"></button>
 </div>
 
 <!-- Modal body -->
 <form>
     <div class="modal-body">
-        <div class="form-row">
+        <div class="row">
             <div class="col">
                 <label>Fill Type</label>
-                <select class='custom-select custom-select-sm form-control' name='fillType' [(ngModel)]='modalInfo.fillType'>
+                <select class='form-select form-select-sm form-control' name='fillType' [(ngModel)]='modalInfo.fillType'>
                     <option value='none'>None</option>
                     <option value='color'>Color</option>
                     <option value='linearGradient'>Linear Gradient</option>
@@ -23,7 +23,7 @@
 
         <!-- Color Fill -->
         <div *ngIf="modalInfo.fillType == 'color'">
-            <div class="form-row">
+            <div class="row">
                 <div class="col">
                     <label>Color</label>
                     <span
@@ -41,7 +41,7 @@
                     </div>
                     -->
                     <label>Named Colors</label>
-                    <select class='custom-select custom-select-sm form-control' [(ngModel)]='modalInfo.namedColor'
+                    <select class='form-select form-select-sm form-control' [(ngModel)]='modalInfo.namedColor'
                         [compareWith]='compareColors' (change)='onColorSelected(namedColor)' name='namedColor'>
                         <option *ngFor='let color of colors' [ngValue]='color'>{{color.name}}</option>
                     </select>
@@ -51,11 +51,11 @@
 
         <!-- Linear Gradient Fill -->
         <div *ngIf="modalInfo.fillType == 'linearGradient' || modalInfo.fillType == 'radialGradient'">
-            <div class="form-row">
+            <div class="row">
                 <div class="col">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>Start Color</label>
-                        <select class='custom-select custom-select-sm form-control' [(ngModel)]='modalInfo.gradientNamedColor1'
+                        <select class='form-select form-select-sm form-control' [(ngModel)]='modalInfo.gradientNamedColor1'
                             [compareWith]='compareColors' (change)='onGradient1ColorSelected(gradientNamedColor1)' name='gradientNamedColor1'>
                             <option *ngFor='let color of colors' [ngValue]='color'>{{color.name}}</option>
                         </select>
@@ -68,9 +68,9 @@
                 </div>
 
                 <div class="col">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>End Color</label>
-                        <select class='custom-select custom-select-sm form-control' [(ngModel)]='modalInfo.gradientNamedColor2'
+                        <select class='form-select form-select-sm form-control' [(ngModel)]='modalInfo.gradientNamedColor2'
                             [compareWith]='compareColors' (change)='onGradient2ColorSelected(gradientNamedColor2)' name='gradientNamedColor2'>
                             <option *ngFor='let color of colors' [ngValue]='color'>{{color.name}}</option>
                         </select>
@@ -83,30 +83,30 @@
                 </div>
             </div>
 
-            <div class="form-row" *ngIf="modalInfo.fillType == 'linearGradient'">
+            <div class="row" *ngIf="modalInfo.fillType == 'linearGradient'">
                 <div class="col">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="startX">Start X</label>
                         <input class="form-control" id="startx" #startx="ngModel" name="startx"
                            type="number" [(ngModel)]="modalInfo.linearGradientStartX">
                     </div>
                 </div>
                 <div class="col">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="starty">Start Y</label>
                         <input class="form-control" id="starty" #starty="ngModel" name="starty"
                          type="number" [(ngModel)]="modalInfo.linearGradientStartY">
                     </div>
                 </div>
                 <div class="col">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="endx">End X</label>
                         <input class="form-control" id="endx" #endx="ngModel" name="endx"
                          type="number" [(ngModel)]="modalInfo.linearGradientEndX">
                     </div>
                 </div>
                 <div class="col">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="endy">End Y</label>
                         <input class="form-control" id="endy" #endy="ngModel" name="endy"
                          type="number" [(ngModel)]="modalInfo.linearGradientEndY">
@@ -115,46 +115,46 @@
 
             </div>
 
-            <div class="form-row" *ngIf="modalInfo.fillType == 'radialGradient'">
+            <div class="row" *ngIf="modalInfo.fillType == 'radialGradient'">
                 <div class="col">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="centerx">Center X</label>
                         <input class="form-control" id="centerx" #centerx="ngModel" name="centerx"
                          type="number" [(ngModel)]="modalInfo.radialGradientCenterX">
                     </div>
                 </div>
                 <div class="col">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="centery">Center Y</label>
                         <input class="form-control" id="centery" #centery="ngModel" name="centery"
                          type="number" [(ngModel)]="modalInfo.radialGradientCenterY">
                     </div>
                 </div>
                 <div class="col">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="focusx">Focus X</label>
                         <input class="form-control" id="focusx" #focusx="ngModel" name="focusx"
                          type="number" [(ngModel)]="modalInfo.radialGradientFocusX">
                     </div>
                 </div>
                 <div class="col">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="focusy">Focus Y</label>
                         <input class="form-control" id="focusy" #focusy="ngModel" name="focusy"
                          type="number" [(ngModel)]="modalInfo.radialGradientFocusY">
                     </div>
                 </div>
             </div>
-            <div class="form-row" *ngIf="modalInfo.fillType == 'radialGradient'">
+            <div class="row" *ngIf="modalInfo.fillType == 'radialGradient'">
                 <div class="col">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="radiusx">Radius X</label>
                         <input class="form-control" id="radiusx" #radiusx="ngModel" name="radiusx"
                          type="number" [(ngModel)]="modalInfo.radialGradientRadiusX">
                     </div>
                 </div>
                 <div class="col">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="radiusy">Radius Y</label>
                         <input class="form-control" id="radiusy" #radiusy="ngModel" name="radiusy"
                          type="number" [(ngModel)]="modalInfo.radialGradientRadiusY">
@@ -166,10 +166,10 @@
 
         <!-- Image Fill -->
         <div *ngIf="modalInfo.fillType == 'image'">
-            <div class="form-row" style="margin-top: 8px;">
+            <div class="row" style="margin-top: 8px;">
                 <div class="col">
                     <label>Image Resource</label>
-                    <select class='custom-select custom-select-sm form-control'
+                    <select class='form-select form-select-sm form-control'
                         name='selectedBitmapResource'
                         [(ngModel)]='modalInfo.selectedBitmapResource'
                         [compareWith]='compareBitmapResources'>
@@ -181,9 +181,9 @@
                         </select>
                 </div>
             </div>
-            <div class="form-row" style="margin-top: 8px;">
+            <div class="row" style="margin-top: 8px;">
                 <div class="col">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>Opacity</label>
                         <span style="float: right;"><strong>{{modalInfo.opacity}}</strong></span>
                         <input type="range" class="form-control-range" min="0" max="255"
@@ -192,7 +192,7 @@
                     </div>
                 </div>
                 <div class="col">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>Scale</label>
                         <span style="float: right;"><strong>{{modalInfo.scale / 100}}</strong></span>
                         <input type="range" class="form-control-range" min="1" max="100"
@@ -201,16 +201,16 @@
                     </div>
                 </div>
             </div>
-            <div class="form-row">
+            <div class="row">
                 <div class="col">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="offsetx">Offset X</label>
                         <input class="form-control" id="offsetx" #offsetx="ngModel" name="offsetx"
                          type="number" [(ngModel)]="modalInfo.fillOffsetX">
                     </div>
                 </div>
                 <div class="col">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="offsety">Offset Y</label>
                         <input class="form-control" id="offsety" #offsety="ngModel" name="offsety"
                          type="number" [(ngModel)]="modalInfo.fillOffsetY">
@@ -221,10 +221,10 @@
 
         <!-- Model Fill -->
         <div *ngIf="modalInfo.fillType == 'model'">
-            <div class="form-row" style="margin-top: 8px;">
+            <div class="row" style="margin-top: 8px;">
                 <div class="col">
                     <label>Model Resource</label>
-                    <select class='custom-select custom-select-sm form-control'
+                    <select class='form-select form-select-sm form-control'
                         name='selectedModelResource'
                         [(ngModel)]='modalInfo.selectedModelResource'
                         [compareWith]='compareModelResources'>
@@ -236,9 +236,9 @@
                         </select>
                 </div>
             </div>
-            <div class="form-row" style="margin-top: 8px;">
+            <div class="row" style="margin-top: 8px;">
                 <div class="col">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>Opacity</label>
                         <span style="float: right;"><strong>{{modalInfo.opacity}}</strong></span>
                         <input type="range" class="form-control-range" min="0" max="255"
@@ -247,7 +247,7 @@
                     </div>
                 </div>
                 <div class="col">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label>Scale</label>
                         <span style="float: right;"><strong>{{modalInfo.scale / 100}}</strong></span>
                         <input type="range" class="form-control-range" min="1" max="1000"
@@ -256,16 +256,16 @@
                     </div>
                 </div>
             </div>
-            <div class="form-row">
+            <div class="row">
                 <div class="col">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="offsetx">Offset X</label>
                         <input class="form-control" id="offsetx" #offsetx="ngModel" name="offsetx"
                          type="number" [(ngModel)]="modalInfo.fillOffsetX">
                     </div>
                 </div>
                 <div class="col">
-                    <div class="form-group">
+                    <div class="mb-3">
                         <label for="offsety">Offset Y</label>
                         <input class="form-control" id="offsety" #offsety="ngModel" name="offsety"
                          type="number" [(ngModel)]="modalInfo.fillOffsetY">
@@ -275,7 +275,7 @@
         </div>
 
         <!-- Apply To Model/Selected Options  -->
-        <div class="form-row" style="margin-top: 8px;">
+        <div class="row" style="margin-top: 8px;">
             <div class="form-check form-check-inline col">
                 <input type="checkbox" [(ngModel)]="modalInfo.applyToModel" name="applyToModel"
                     id="applyToModel" class="form-check-input">

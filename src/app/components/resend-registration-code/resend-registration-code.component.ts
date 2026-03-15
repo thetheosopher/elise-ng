@@ -2,8 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../schematrix/services/api.service';
 import { ToastrService } from 'ngx-toastr';
 import { UserRegistrationDTO } from '../../schematrix/classes/user-registration-dto';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 
 @Component({
+    imports: [CommonModule, FormsModule, RouterModule],
   selector: 'app-resend-registration-code',
   templateUrl: './resend-registration-code.component.html',
   styleUrls: ['./resend-registration-code.component.scss']

@@ -1,8 +1,11 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 import { Upload } from '../../services/upload.service';
+import { CommonModule } from '@angular/common';
+import { ProgressComponent } from '../progress/progress.component';
 
 @Component({
+    imports: [CommonModule, ProgressComponent],
     selector: 'app-upload-list',
     templateUrl: './upload-list.component.html',
     styleUrls: ['./upload-list.component.scss']

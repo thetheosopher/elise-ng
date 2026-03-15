@@ -6,8 +6,7 @@ import { EliseDesignComponent } from './design/elise-design.component';
 import { EliseSurfaceComponent } from './surface/elise-surface.component';
 
 @NgModule({
-    declarations: [ EliseViewComponent, EliseDesignComponent, EliseSurfaceComponent ],
-    imports: [ CommonModule ],
+    imports: [ CommonModule, EliseViewComponent, EliseDesignComponent, EliseSurfaceComponent ],
     exports: [ EliseViewComponent, EliseDesignComponent, EliseSurfaceComponent ]
 })
 export class EliseModule {}

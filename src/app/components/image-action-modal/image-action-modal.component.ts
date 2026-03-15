@@ -1,7 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { CommonModule } from '@angular/common';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
+    imports: [CommonModule, NgbModule],
     selector: 'app-image-action-modal',
     templateUrl: './image-action-modal.component.html',
     styleUrls: ['./image-action-modal.component.scss']

@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild, ViewChildren, QueryList, Input, Output,
     ElementRef, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { NgModel } from '@angular/forms';
-import { ContainerTreeComponent } from '../../components/container-tree/container-tree.component';
 import { NgbModal, NgbNavChangeEvent } from '@ng-bootstrap/ng-bootstrap';
 import { ContainerUrlProxy } from '../../schematrix/classes/container-url-proxy';
 
@@ -40,8 +39,20 @@ import { TextElementModalComponent, TextElementModalInfo } from '../text-element
 import { SizeModalComponent, SizeModalInfo } from '../size-modal/size-modal.component';
 import { PointsModalComponent, PointsModalInfo } from '../points-modal/points-modal.component';
 import { PathElementModalComponent, PathElementModalInfo } from '../path-element-modal/path-element-modal.component';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { AngularSplitModule } from 'angular-split';
+import { EliseModule } from '../../elise/elise.module';
+import { ContainerSelectorComponent } from '../container-selector/container-selector.component';
+import { ContainerTreeComponent } from '../container-tree/container-tree.component';
+import { AlertComponent } from '../alert/alert.component';
+import { UploadListComponent } from '../upload-list/upload-list.component';
+import { FileListComponent } from '../file-list/file-list.component';
+import { DndDirective } from '../../directives/dnd.directive';
 
 @Component({
+    imports: [CommonModule, FormsModule, NgbModule, AngularSplitModule, EliseModule, ContainerSelectorComponent, ContainerTreeComponent, AlertComponent, UploadListComponent, FileListComponent, DndDirective],
     selector: 'app-model-designer',
     templateUrl: './model-designer.component.html',
     styleUrls: ['./model-designer.component.scss']
@@ -1062,7 +1073,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         modalInfo.color = this.strokeColor;
         const color = Color.parse(this.strokeColor);
         if(color.isNamedColor()) {
-            const namedColor = Color.NamedColors.find((c) => c.color.equalsHue(color));
+            const namedColor = Color.NamedColors.find((c) => (c.color as Color).equalsHue(color));
             modalInfo.namedColor = namedColor;
         }
         modalInfo.strokeType = this.strokeType;
@@ -1088,21 +1099,21 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         modalInfo.color = this.fillColor;
         let color = Color.parse(this.fillColor);
         if(color.isNamedColor()) {
-            const namedColor = Color.NamedColors.find((c) => c.color.equalsHue(color));
+            const namedColor = Color.NamedColors.find((c) => (c.color as Color).equalsHue(color));
             modalInfo.namedColor = namedColor;
         }
 
         modalInfo.gradientColor1 = this.fillgradientColor1;
         color = Color.parse(this.fillgradientColor1);
         if(color.isNamedColor()) {
-            const namedColor = Color.NamedColors.find((c) => c.color.equalsHue(color));
+            const namedColor = Color.NamedColors.find((c) => (c.color as Color).equalsHue(color));
             modalInfo.gradientNamedColor1 = namedColor;
         }
 
         modalInfo.gradientColor2 = this.fillgradientColor2;
         color = Color.parse(this.fillgradientColor2);
         if(color.isNamedColor()) {
-            const namedColor = Color.NamedColors.find((c) => c.color.equalsHue(color));
+            const namedColor = Color.NamedColors.find((c) => (c.color as Color).equalsHue(color));
             modalInfo.gradientNamedColor2 = namedColor;
         }
 

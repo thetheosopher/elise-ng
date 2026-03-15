@@ -5,8 +5,13 @@ import { ContainerUrlProxy } from '../../schematrix/classes/container-url-proxy'
 import { Model } from 'elise-graphics/lib/core/model';
 import { HttpClient } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { EliseModule } from '../../elise/elise.module';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
+    imports: [CommonModule, FormsModule, EliseModule, NgbModule],
     selector: 'app-model-element-modal',
     templateUrl: './model-element-modal.component.html',
     styleUrls: ['./model-element-modal.component.scss']

@@ -1,7 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ApiService } from '../../schematrix/services/api.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
+    imports: [CommonModule],
     selector: 'app-schematrix-api-tests',
     templateUrl: './schematrix-api-tests.component.html',
     styleUrls: ['./schematrix-api-tests.component.scss']

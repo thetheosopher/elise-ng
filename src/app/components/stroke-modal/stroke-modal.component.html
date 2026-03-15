@@ -1,16 +1,16 @@
 <!-- Modal Header -->
 <div class="modal-header">
     <h4 class="modal-title">Stroke</h4>
-    <button type="button" class="close" (click)="activeModal.dismiss('X')">&times;</button>
+    <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('X')"></button>
 </div>
 
 <!-- Modal body -->
 <form>
     <div class="modal-body">
-        <div class="form-row" style="margin-top: 8px;">
+        <div class="row" style="margin-top: 8px;">
             <div class="col">
                 <label>Stroke Type</label>
-                <select class='custom-select custom-select-sm form-control' name='strokeType'
+                <select class='form-select form-select-sm form-control' name='strokeType'
                     [(ngModel)]='modalInfo.strokeType'>
                     <option value='none'>None</option>
                     <option value='color'>Color</option>
@@ -20,7 +20,7 @@
 
         <!-- Color Stroke -->
         <div *ngIf="modalInfo.strokeType == 'color'">
-            <div class="form-row" style="margin-top: 8px;">
+            <div class="row" style="margin-top: 8px;">
                 <div class="col">
                     <label>Width</label>
                     <span style="float: right;"><strong>{{modalInfo.width}}</strong></span>
@@ -35,7 +35,7 @@
                     </div>
                 </div>
             </div>
-            <div class="form-row" style="margin-top: 8px;">
+            <div class="row" style="margin-top: 8px;">
                 <div class="col">
                     <label>Color</label>
                     <span
@@ -47,7 +47,7 @@
                 </div>
                 <div class="col">
                     <label>Named Colors</label>
-                    <select class='custom-select custom-select-sm form-control' [(ngModel)]='modalInfo.namedColor'
+                    <select class='form-select form-select-sm form-control' [(ngModel)]='modalInfo.namedColor'
                         [compareWith]='compareColors' (change)='onColorSelected(namedColor)' name='namedColor'>
                         <option *ngFor='let color of colors' [ngValue]='color'>{{color.name}}</option>
                     </select>
@@ -62,7 +62,7 @@
         </div>
 
         <!-- Apply To Model/Selected Options  -->
-        <div class="form-row" style="margin-top: 8px;">
+        <div class="row" style="margin-top: 8px;">
             <div class="form-check form-check-inline col">
                 <input type="checkbox" [(ngModel)]="modalInfo.applyToModel" name="applyToModel" id="applyToModel"
                     class="form-check-input">

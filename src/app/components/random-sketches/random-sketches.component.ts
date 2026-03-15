@@ -1,6 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { SketchUrlComponent } from '../sketch-url/sketch-url.component';
 
 @Component({
+    imports: [SketchUrlComponent],
     selector: 'app-random-sketches',
     templateUrl: './random-sketches.component.html',
     styleUrls: [ './random-sketches.component.scss' ]
@@ -8,7 +10,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 export class RandomSketchesComponent implements OnInit, OnDestroy {
     url: string;
 
-    timer: NodeJS.Timer;
+    timer: ReturnType<typeof setTimeout>;
 
     modelNames = [
         'Abstract01',

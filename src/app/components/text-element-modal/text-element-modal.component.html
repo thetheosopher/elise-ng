@@ -2,29 +2,29 @@
 <!-- Modal Header -->
 <div class="modal-header">
     <h4 class="modal-title">Text Element</h4>
-    <button type="button" class="close" (click)="activeModal.dismiss('X')">&times;</button>
+    <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('X')"></button>
 </div>
 
 <!-- Modal body -->
 <div class="modal-body">
     <form>
-        <div class="form-row">
-            <div class="form-group col-md-2">
+        <div class="row">
+            <div class="mb-3 col-md-2">
                 <label for="selectedFont">Font</label>
-                <select class='custom-select custom-select-sm form-control' [(ngModel)]='modalInfo.typeface'
+                <select class='form-select form-select-sm form-control' [(ngModel)]='modalInfo.typeface'
                     id="typeface" name="typeface">
                     <option *ngFor='let font of modalInfo.fonts' [ngValue]='font'>
                         {{font}}
                     </option>
                 </select>
             </div>
-            <div class="form-group col-md-2">
+            <div class="mb-3 col-md-2">
                 <label>Size</label>
                 <span style="float: right;"><strong>{{modalInfo.typesize}}</strong></span>
                 <input type="range" class="form-control-range" min="2" max="256" [(ngModel)]="modalInfo.typesize"
                     name="typesize" id="typesize">
             </div>
-            <div class="form-group col-md-2">
+            <div class="mb-3 col-md-2">
                 <div>
                     <label>Style</label>
                 </div>
@@ -39,7 +39,7 @@
                     <label for="isItalic" class="form-check-label">Italic</label>
                 </div>
             </div>
-            <div class="form-group col-md-2">
+            <div class="mb-3 col-md-2">
                 <div>
                     <label>Horizontal Alignment</label>
                 </div>
@@ -59,7 +59,7 @@
                     <label for="halign-right" class="form-check-label">Right</label>
                 </div>
             </div>
-            <div class="form-group col-md-2">
+            <div class="mb-3 col-md-2">
                 <div>
                     <label>Vertical Alignment</label>
                 </div>
@@ -80,8 +80,8 @@
                 </div>
             </div>
         </div>
-        <div class="form-row">
-            <div class="form-group col-md-12">
+        <div class="row">
+            <div class="mb-3 col-md-12">
                 <label for="text">Text</label>
                 <textarea [(ngModel)]="modalInfo.text" name="text" id="text"
                   class="form-control" [style.font-family]="modalInfo.typeface"

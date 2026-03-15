@@ -5,8 +5,12 @@ import { ContainerDTO } from '../../schematrix/classes/container-dto';
 import { ToastrService } from 'ngx-toastr';
 import { NewContainerModalComponent, NewContainerModalInfo } from '../new-container-modal/new-container-modal.component';
 import { DeleteContainerModalComponent, DeleteContainerModalInfo } from '../delete-container-modal/delete-container-modal.component';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
+    imports: [CommonModule, FormsModule, NgbModule],
     selector: 'app-container-selector',
     templateUrl: './container-selector.component.html',
     styleUrls: ['./container-selector.component.scss']

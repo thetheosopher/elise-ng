@@ -3,8 +3,11 @@ import { Router, NavigationStart } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { Alert, AlertType, AlertService } from '../../services/alert.service';
+import { CommonModule } from '@angular/common';
 
-@Component({ selector: 'app-alert', templateUrl: 'alert.component.html' })
+@Component({
+    imports: [CommonModule],
+    selector: 'app-alert', templateUrl: 'alert.component.html' })
 export class AlertComponent implements OnInit, OnDestroy {
     @Input() id = 'default-alert';
     @Input() fade = true;

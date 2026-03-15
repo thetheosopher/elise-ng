@@ -5,11 +5,20 @@ import { UploadService, UploadStateCode, Upload, UploadEvent } from '../../servi
 import { ContainerDTO } from '../../schematrix/classes/container-dto';
 import { ManifestDTO } from '../../schematrix/classes/manifest-dto';
 import { ManifestFileDTO } from '../../schematrix/classes/manifest-file-dto';
-import { ContainerTreeComponent } from '../../components/container-tree/container-tree.component';
 import { SignedUrlRequestDTO } from '../../schematrix/classes/signed-url-request-dto';
 import { ToastrService } from 'ngx-toastr';
+import { CommonModule } from '@angular/common';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { AngularSplitModule } from 'angular-split';
+import { ContainerSelectorComponent } from '../container-selector/container-selector.component';
+import { ContainerTreeComponent } from '../container-tree/container-tree.component';
+import { AlertComponent } from '../alert/alert.component';
+import { UploadListComponent } from '../upload-list/upload-list.component';
+import { FileListComponent } from '../file-list/file-list.component';
+import { DndDirective } from '../../directives/dnd.directive';
 
 @Component({
+    imports: [CommonModule, NgbModule, AngularSplitModule, ContainerSelectorComponent, ContainerTreeComponent, AlertComponent, UploadListComponent, FileListComponent, DndDirective],
     selector: 'app-container-explorer',
     templateUrl: './container-explorer.component.html',
     styleUrls: ['./container-explorer.component.scss']

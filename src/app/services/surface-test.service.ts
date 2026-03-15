@@ -16,7 +16,6 @@ import { SurfaceRadioStripSelectionArgs } from 'elise-graphics/lib/surface/surfa
 import { RadioStripOrientation } from 'elise-graphics/lib/surface/surface-radio-strip';
 import { SurfacePane } from 'elise-graphics/lib/surface/surface-pane';
 import { loremipsum } from './loremipsum';
-import { Button } from 'protractor';
 
 function multiElementSurface1() {
     const surface = new Surface(480, 360);
@@ -338,7 +337,7 @@ const tests: SurfaceSample[] = [
         description: 'Tests surface opacity.',
         configure: (surfaceViewer) => {
 
-            let timerHandle: NodeJS.Timer;
+            let timerHandle: ReturnType<typeof setInterval>;
             let surfaceOpacity = 1;
             let opacityIncrement = 0.02;
 
@@ -373,7 +372,7 @@ const tests: SurfaceSample[] = [
         description: 'Tests surface x translation.',
         configure: (surfaceViewer) => {
 
-            let timerHandle: NodeJS.Timer;
+            let timerHandle: ReturnType<typeof setInterval>;
             let surfaceX = 0;
             let xIncrement = 2;
 
@@ -408,7 +407,7 @@ const tests: SurfaceSample[] = [
         description: 'Tests surface y translation.',
         configure: (surfaceViewer) => {
 
-            let timerHandle: NodeJS.Timer;
+            let timerHandle: ReturnType<typeof setInterval>;
             let surfaceY = 0;
             let yIncrement = 2;
 

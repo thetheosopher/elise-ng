@@ -1,17 +1,17 @@
 <!-- Modal Header -->
 <div class="modal-header">
     <h4 class="modal-title">New Folder</h4>
-    <button type="button" class="close" (click)="activeModal.dismiss('X')">&times;</button>
+    <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('X')"></button>
 </div>
 
 <!-- Modal body -->
 <form>
     <div class="modal-body">
-        <div class="form-group">
+        <div class="mb-3">
             <label for="folderparent">Parent Folder</label>
             <div id="folderparent"><strong>{{modalInfo.parent}}</strong></div>
         </div>
-        <div class="form-group">
+        <div class="mb-3">
             <label for="foldername">Folder Name</label>
             <input type="text" id="foldername" name="foldername" #foldername="ngModel" class="form-control"
                 required [(ngModel)]="modalInfo.name" ngbAutofocus />

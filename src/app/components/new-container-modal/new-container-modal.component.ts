@@ -1,7 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { FormsModule } from '@angular/forms';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
+    imports: [FormsModule, NgbModule],
     selector: 'app-new-container-modal',
     templateUrl: './new-container-modal.component.html'
 })

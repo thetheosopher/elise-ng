@@ -4,12 +4,13 @@ import { ApiService } from '../../schematrix/services/api.service';
 import { ManifestDTO } from '../../schematrix/classes/manifest-dto';
 import { ManifestFolderDTO } from '../../schematrix/classes/manifest-folder-dto';
 import { TreeNode as Node } from './tree-node';
-import { TreeComponent, ITreeOptions } from 'angular-tree-component';
+import { TreeComponent, TreeModule, ITreeOptions } from '@ali-hm/angular-tree-component';
 import { ToastrService } from 'ngx-toastr';
 import { NewFolderModalComponent, NewFolderModalInfo } from '../new-folder-modal/new-folder-modal.component';
 import { DeleteFolderModalComponent, DeleteFolderModalInfo } from '../delete-folder-modal/delete-folder-modal.component';
 
 @Component({
+    imports: [TreeModule],
     selector: 'app-container-tree',
     templateUrl: './container-tree.component.html',
     styleUrls: ['./container-tree.component.scss']

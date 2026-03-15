@@ -2,8 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { DesignSample } from '../../interfaces/design-sample';
 import { DesignTestService } from '../../services/design-test.service';
 import { ToastrService } from 'ngx-toastr';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 @Component({
+    imports: [CommonModule, RouterModule],
     selector: 'app-design-tests',
     templateUrl: './design-tests.component.html',
     styleUrls: ['./design-tests.component.scss']

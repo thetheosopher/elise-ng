@@ -9,8 +9,11 @@ import { ViewController } from 'elise-graphics/lib/view/view-controller';
 import { ElementBase } from 'elise-graphics/lib/elements/element-base';
 
 import { EliseViewComponent } from '../../elise/view/elise-view.component';
+import { CommonModule } from '@angular/common';
+import { EliseModule } from '../../elise/elise.module';
 
 @Component({
+    imports: [CommonModule, EliseModule],
   selector: 'app-redgreenblue',
   templateUrl: './redgreenblue.component.html',
   styleUrls: ['./redgreenblue.component.scss']

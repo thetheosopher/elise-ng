@@ -1,8 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../schematrix/services/api.service';
 import { LoginDTO } from '../../schematrix/classes/login-dto';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
+    imports: [CommonModule, RouterModule, NgbModule],
     selector: 'app-header',
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.scss']

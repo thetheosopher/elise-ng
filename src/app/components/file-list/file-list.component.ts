@@ -2,8 +2,10 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ManifestFileDTO } from '../../schematrix/classes/manifest-file-dto';
 import { DeleteFileModalComponent, DeleteFileModalInfo } from '../delete-file-modal/delete-file-modal.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
+    imports: [CommonModule],
     selector: 'app-file-list',
     templateUrl: './file-list.component.html',
     styleUrls: ['./file-list.component.scss']

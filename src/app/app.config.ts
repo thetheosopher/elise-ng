@@ -1,6 +1,8 @@
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
-import { LocationStrategy, HashLocationStrategy } from '@angular/common';
+import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { provideRouter, withHashLocation } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { provideToastr } from 'ngx-toastr';
 
 import { ChangePasswordComponent } from './components/change-password/change-password.component';
 import { ConfirmRegistrationComponent } from './components/confirm-registration/confirm-registration.component';
@@ -26,6 +28,7 @@ import { ViewTestsComponent } from './components/view-tests/view-tests.component
 import { SurfaceTestsComponent } from './components/surface-tests/surface-tests.component';
 import { SchematrixApiTestsComponent } from './components/schematrix-api-tests/schematrix-api-tests.component';
 import { SendPasswordResetCodeComponent } from './components/send-password-reset-code/send-password-reset-code.component';
+import { Routes } from '@angular/router';
 
 const routes: Routes = [
     { path: '', redirectTo: '/primitives', pathMatch: 'full' },
@@ -55,9 +58,12 @@ const routes: Routes = [
     { path: 'tests/model-playground', component: ModelPlaygroundComponent }
 ];
 
-@NgModule({
-    imports: [ RouterModule.forRoot(routes) ],
-    exports: [ RouterModule ],
-    providers: [{ provide: LocationStrategy, useClass: HashLocationStrategy }]
-})
-export class AppRoutingModule {}
+export const appConfig: ApplicationConfig = {
+    providers: [
+        provideZoneChangeDetection({ eventCoalescing: true }),
+        provideRouter(routes, withHashLocation()),
+        provideHttpClient(),
+        provideAnimationsAsync(),
+        provideToastr()
+    ]
+};

@@ -1,13 +1,13 @@
 <!-- Modal Header -->
 <div class="modal-header">
     <h4 class="modal-title">New Container</h4>
-    <button type="button" class="close" (click)="activeModal.dismiss('X')">&times;</button>
+    <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('X')"></button>
 </div>
 
 <!-- Modal body -->
 <form>
     <div class="modal-body">
-        <div class="form-group">
+        <div class="mb-3">
             <label for="containername">Container Name</label>
             <input type="text" id="containername" name="containername" #containername="ngModel"
                 class="form-control" required [(ngModel)]="modalInfo.name" ngbAutofocus />

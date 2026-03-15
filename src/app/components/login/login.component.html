@@ -2,7 +2,7 @@
     <div *ngIf="isLoggedIn===false">
         <h3>Log In</h3>
         <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
-            <div class="form-group">
+            <div class="mb-3">
                 <label for="username">User Name or Email</label>
                 <input type="text" id="username" autocomplete="username" name="username" #name="ngModel"
                     class="form-control" required [(ngModel)]="loginDTO.Name" />
@@ -10,7 +10,7 @@
                     User Name is Required
                 </div>
             </div>
-            <div class="form-group">
+            <div class="mb-3">
                 <label for="password">Password</label>
                 <input type="password" autocomplete="current-password" id="password" name="password" #password="ngModel"
                     class="form-control" required [(ngModel)]="loginDTO.Password" />

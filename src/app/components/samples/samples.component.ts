@@ -2,8 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { ModelInfo } from '../../services/model-info';
 import { ModelService } from '../../services/model.service';
 import { ToastrService } from 'ngx-toastr';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 @Component({
+    imports: [CommonModule, RouterModule],
     selector: 'app-samples',
     templateUrl: './samples.component.html',
     styleUrls: [ './samples.component.scss' ]

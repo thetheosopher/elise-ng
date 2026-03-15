@@ -5,11 +5,19 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "chrome",
+            "name": "Angular: Serve + Debug in Chrome",
+            "type": "node-terminal",
             "request": "launch",
-            "name": "Launch Chrome against localhost",
-            "url": "http://localhost:4200",
-            "webRoot": "${workspaceFolder}"
+            "command": "npm start",
+            "env": {
+                "NODE_OPTIONS": "--openssl-legacy-provider"
+            },
+            "serverReadyAction": {
+                "action": "debugWithChrome",
+                "pattern": "localhost:(\\d+)",
+                "uriFormat": "http://localhost:%s",
+                "webRoot": "${workspaceFolder}"
+            }
         }
     ]
 }

@@ -1,6 +1,6 @@
-<div class="form-row">
+<div class="row">
     <div class="col-auto">
-        <select class='custom-select custom-select-sm' [disabled]='!isEnabled'
+        <select class='form-select form-select-sm' [disabled]='!isEnabled'
             [(ngModel)]='selectedContainer' [compareWith]='compareContainers' (change)='onContainerSelected($event)'>
             <option *ngFor='let container of containers' [ngValue]='container'>
                 {{container.Name}}

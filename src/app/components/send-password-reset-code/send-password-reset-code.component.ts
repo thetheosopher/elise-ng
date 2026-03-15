@@ -2,8 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../schematrix/services/api.service';
 import { ToastrService } from 'ngx-toastr';
 import { LoginDTO } from '../../schematrix/classes/login-dto';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 
 @Component({
+    imports: [CommonModule, FormsModule, RouterModule],
     selector: 'app-send-password-reset-code',
     templateUrl: './send-password-reset-code.component.html',
     styleUrls: ['./send-password-reset-code.component.scss']

@@ -1,8 +1,12 @@
 import { Component, OnInit, Input, Output } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Color, ModelResource, BitmapResource, NamedColor } from 'elise-graphics';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ColorPickerDirective } from 'ngx-color-picker';
 
 @Component({
+    imports: [CommonModule, FormsModule, ColorPickerDirective],
     selector: 'app-fill-modal',
     templateUrl: './fill-modal.component.html',
     styleUrls: ['./fill-modal.component.scss']
@@ -30,7 +34,7 @@ export class FillModalComponent implements OnInit {
 
     onColorSelected(event) {
         if(this.modalInfo.namedColor) {
-            this.modalInfo.color = this.modalInfo.namedColor.color.toHexString();
+            this.modalInfo.color = (this.modalInfo.namedColor.color as Color).toHexString();
         }
     }
 
@@ -40,7 +44,7 @@ export class FillModalComponent implements OnInit {
 
     onGradient1ColorSelected(event) {
         if(this.modalInfo.gradientNamedColor1) {
-            this.modalInfo.gradientColor1 = this.modalInfo.gradientNamedColor1.color.toHexString();
+            this.modalInfo.gradientColor1 = (this.modalInfo.gradientNamedColor1.color as Color).toHexString();
         }
     }
 
@@ -50,7 +54,7 @@ export class FillModalComponent implements OnInit {
 
     onGradient2ColorSelected(event) {
         if(this.modalInfo.gradientNamedColor2) {
-            this.modalInfo.gradientColor2 = this.modalInfo.gradientNamedColor2.color.toHexString();
+            this.modalInfo.gradientColor2 = (this.modalInfo.gradientNamedColor2.color as Color).toHexString();
         }
     }
 

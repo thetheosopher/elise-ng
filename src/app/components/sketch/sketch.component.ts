@@ -5,8 +5,11 @@ import { ToastrService } from 'ngx-toastr';
 import { Location } from '@angular/common';
 import { Model } from 'elise-graphics/lib/core/model';
 import { default as elise } from 'elise-graphics/lib/index';
+import { RouterModule } from '@angular/router';
+import { EliseModule } from '../../elise/elise.module';
 
 @Component({
+    imports: [RouterModule, EliseModule],
     selector: 'app-sketch',
     templateUrl: './sketch.component.html',
     styleUrls: [ './sketch.component.scss' ]
@@ -57,10 +60,7 @@ export class SketchComponent implements OnInit {
         this.modelService.getModel(this.modelType, id).subscribe({
             next: (modelData) => {
                 this.modelCode = modelData;
-                const wrapped = `(function(elise) {
-                    ${modelData}
-                })`;
-                const modelFunction = eval(wrapped);
+                const modelFunction = new Function('elise', modelData);
                 const model = modelFunction(elise);
                 model.prepareResources(null, (result) => {
                     if (result) {

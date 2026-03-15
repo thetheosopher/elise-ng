@@ -2,8 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { SurfaceSample } from '../../interfaces/surface-sample';
 import { SurfaceTestService } from '../../services/surface-test.service';
 import { ToastrService } from 'ngx-toastr';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 @Component({
+    imports: [CommonModule, RouterModule],
     selector: 'app-surface-tests',
     templateUrl: './surface-tests.component.html',
     styleUrls: [ './surface-tests.component.scss' ]

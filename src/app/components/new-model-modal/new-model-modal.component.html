@@ -1,13 +1,13 @@
 <!-- Modal Header -->
 <div class="modal-header">
     <h4 class="modal-title">New Model</h4>
-    <button type="button" class="close" (click)="activeModal.dismiss('X')">&times;</button>
+    <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('X')"></button>
 </div>
 
 <!-- Modal body -->
 <form #newmodelform>
     <div class="modal-body">
-        <div class="form-group">
+        <div class="mb-3">
             <label for="modelname">Model Name</label>
             <input type="text" id="modelname" name="modelname" #modelname="ngModel" class="form-control" required
                 [(ngModel)]="modalInfo.name" ngbAutofocus />
@@ -15,7 +15,7 @@
                 Model Name Is Required
             </div>
         </div>
-        <div class="form-row">
+        <div class="row">
             <div class="col">
                 <label for="modelwidth">Width</label>
                 <input type="number" min="1" max="32768" id="modelwidth" name="modelwidth" #modelwidth="ngModel"

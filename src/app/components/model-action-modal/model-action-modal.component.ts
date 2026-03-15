@@ -1,8 +1,12 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Model } from 'elise-graphics/lib/core/model';
+import { CommonModule } from '@angular/common';
+import { EliseModule } from '../../elise/elise.module';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
+    imports: [CommonModule, EliseModule, NgbModule],
     selector: 'app-model-action-modal',
     templateUrl: './model-action-modal.component.html',
     styleUrls: ['./model-action-modal.component.scss']

@@ -11,8 +11,13 @@ import { PointEventParameters } from 'elise-graphics/lib/core/point-event-parame
 import { EliseViewComponent } from '../../elise/view/elise-view.component';
 import { ViewTestService } from '../../services/view-test.service';
 import { ISampleViewer } from '../../interfaces/sample-viewer';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { EliseModule } from '../../elise/elise.module';
 
 @Component({
+    imports: [CommonModule, FormsModule, RouterModule, EliseModule],
     selector: 'app-elise-view-harness',
     templateUrl: './elise-view-harness.component.html',
     styleUrls: [ './elise-view-harness.component.scss' ]

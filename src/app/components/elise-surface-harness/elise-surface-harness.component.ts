@@ -11,8 +11,13 @@ import { TimerParameters } from 'elise-graphics/lib/core/timer-parameters';
 import { EliseSurfaceComponent } from '../../elise/surface/elise-surface.component';
 import { SurfaceTestService } from '../../services/surface-test.service';
 import { ISurfaceViewer } from '../../interfaces/surface-viewer';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { EliseModule } from '../../elise/elise.module';
 
 @Component({
+    imports: [CommonModule, FormsModule, RouterModule, EliseModule],
   selector: 'app-elise-surface-harness',
   templateUrl: './elise-surface-harness.component.html',
   styleUrls: ['./elise-surface-harness.component.scss']

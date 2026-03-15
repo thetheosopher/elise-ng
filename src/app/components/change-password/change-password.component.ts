@@ -2,8 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../schematrix/services/api.service';
 import { LoginDTO } from '../../schematrix/classes/login-dto';
 import { ToastrService } from 'ngx-toastr';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 
 @Component({
+    imports: [CommonModule, FormsModule, RouterModule],
   selector: 'app-change-password',
   templateUrl: './change-password.component.html',
   styleUrls: ['./change-password.component.scss']

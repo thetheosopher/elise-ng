@@ -558,7 +558,7 @@ export class ApiService {
                 }
             }).subscribe({
                 next: () => {
-                    observer.next();
+                    observer.next(undefined);
                 },
                 error: (response) => {
                     observer.error('Unable to delete container.');
@@ -676,7 +676,7 @@ export class ApiService {
                 }
             }).subscribe({
                 next: () => {
-                    observer.next();
+                    observer.next(undefined);
                 },
                 error: (response) => {
                     observer.error('Unable to delete folder.');

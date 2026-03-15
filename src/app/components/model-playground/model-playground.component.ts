@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild, ViewChildren, QueryList, Input, Output,
     ElementRef, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { NgModel } from '@angular/forms';
-import { ContainerTreeComponent } from '../../components/container-tree/container-tree.component';
 import { NgbModal, NgbNavChangeEvent } from '@ng-bootstrap/ng-bootstrap';
 import { ContainerUrlProxy } from '../../schematrix/classes/container-url-proxy';
 
@@ -22,8 +21,20 @@ import { Model, ViewDragArgs } from 'elise-graphics';
 import { ViewController } from 'elise-graphics';
 
 import { default as elise } from 'elise-graphics/lib/index';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { AngularSplitModule } from 'angular-split';
+import { EliseModule } from '../../elise/elise.module';
+import { ContainerSelectorComponent } from '../container-selector/container-selector.component';
+import { ContainerTreeComponent } from '../container-tree/container-tree.component';
+import { AlertComponent } from '../alert/alert.component';
+import { UploadListComponent } from '../upload-list/upload-list.component';
+import { FileListComponent } from '../file-list/file-list.component';
+import { DndDirective } from '../../directives/dnd.directive';
 
 @Component({
+    imports: [CommonModule, FormsModule, NgbModule, AngularSplitModule, EliseModule, ContainerSelectorComponent, ContainerTreeComponent, AlertComponent, UploadListComponent, FileListComponent, DndDirective],
     selector: 'app-model-playground',
     templateUrl: './model-playground.component.html',
     styleUrls: ['./model-playground.component.scss']
@@ -91,10 +102,7 @@ export class ModelPlaygroundComponent implements OnInit, AfterViewInit {
 
     evaluate() {
         try {
-            const wrapped = `(function(elise) {
-                ${this.playgroundText}
-            })`;
-            const modelFunction = eval(wrapped);
+            const modelFunction = new Function('elise', this.playgroundText);
             const model = modelFunction(elise);
             if(this.selectedContainerID) {
                 const proxy = new ContainerUrlProxy(this.apiService, this.selectedContainerID);

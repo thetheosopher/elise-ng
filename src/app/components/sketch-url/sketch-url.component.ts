@@ -3,8 +3,10 @@ import { ModelService } from '../../services/model.service';
 import { ToastrService } from 'ngx-toastr';
 import { Model } from 'elise-graphics/lib/core/model';
 import { Sketcher } from 'elise-graphics/lib/sketcher/sketcher';
+import { EliseModule } from '../../elise/elise.module';
 
 @Component({
+    imports: [EliseModule],
     selector: 'app-sketch-url',
     templateUrl: './sketch-url.component.html',
     styleUrls: [ './sketch-url.component.scss' ]
