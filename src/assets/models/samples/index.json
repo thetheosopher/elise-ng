@@ -1,11 +1,5 @@
 [
     {
-        "name": "Model Grid",
-        "id": "model-grid",
-        "description": "Demonstrates a grid of model elements.",
-        "displayModelJson": false
-    },
-    {
         "name": "Ellipse Animation",
         "id": "ellipse-animation",
         "description": "Demonstrates animation of an array of ellipses.",
@@ -66,9 +60,129 @@
         "displayModelJson": false
     },
     {
-        "name": "Five Pointed Star",
-        "id": "star",
-        "description": "Generates a five pointed start polygon.",
-        "displayModelJson": true
+        "name": "Lava Lamp",
+        "id": "lava-lamp",
+        "description": "Lava lamp simulation with morphing blobs.",
+        "displayModelJson": false
+    },
+    {
+        "name": "Aurora Borealis",
+        "id": "aurora-borealis",
+        "description": "Northern Lights with undulating ribbon polylines over a starfield.",
+        "displayModelJson": false
+    },
+    {
+        "name": "Kaleidoscope",
+        "id": "kaleidoscope",
+        "description": "Symmetrical mandala with rotating, color-cycling ellipses.",
+        "displayModelJson": false
+    },
+    {
+        "name": "Solar System Orrery",
+        "id": "solar-system",
+        "description": "Top-down solar system with orbiting planets and glowing sun.",
+        "displayModelJson": false
+    },
+    {
+        "name": "Jellyfish Tank",
+        "id": "jellyfish-tank",
+        "description": "Translucent jellyfish pulsing and drifting through a dark ocean.",
+        "displayModelJson": false
+    },
+    {
+        "name": "Fireworks Display",
+        "id": "fireworks",
+        "description": "Fireworks bursting over a city skyline with fading spark trails.",
+        "displayModelJson": false
+    },
+    {
+        "name": "Pendulum Wave",
+        "id": "pendulum-wave",
+        "description": "Pendulum wave physics demo with convergence/divergence patterns.",
+        "displayModelJson": false
+    },
+    {
+        "name": "Raindrop Ripples",
+        "id": "raindrop-ripples",
+        "description": "Expanding concentric ripple rings on a dark water surface.",
+        "displayModelJson": false
+    },
+    {
+        "name": "Geometric Morphing",
+        "id": "geometric-morphing",
+        "description": "Shape morphing between regular polygons with gradient fills.",
+        "displayModelJson": false
+    },
+    {
+        "name": "DNA Helix",
+        "id": "dna-helix",
+        "description": "Rotating 3D double helix with color-coded base pairs.",
+        "displayModelJson": false
+    },
+    {
+        "name": "Northern Lights Clock",
+        "id": "aurora-clock",
+        "description": "Functional analog clock with aurora background and color-shifting hands.",
+        "displayModelJson": false
+    },
+    {
+        "name": "Stargate Tunnel",
+        "id": "stargate-tunnel",
+        "description": "Warp tunnel with zooming octagonal rings and streaking stars.",
+        "displayModelJson": false
+    },
+    {
+        "name": "Ocean Waves",
+        "id": "ocean-waves",
+        "description": "Layered ocean waves with sunset sky and foam highlights.",
+        "displayModelJson": false
+    },
+    {
+        "name": "Spirograph",
+        "id": "spirograph",
+        "description": "Three spirograph patterns drawn progressively with glowing pens.",
+        "displayModelJson": false
+    },
+    {
+        "name": "Fireflies",
+        "id": "fireflies",
+        "description": "Glowing fireflies drifting through a moonlit forest clearing.",
+        "displayModelJson": false
+    },
+    {
+        "name": "Galaxy Spiral",
+        "id": "galaxy-spiral",
+        "description": "Rotating spiral galaxy with twinkling stars and glowing core.",
+        "displayModelJson": false
+    },
+    {
+        "name": "Plasma Effect",
+        "id": "plasma-effect",
+        "description": "Classic demoscene plasma with sine-based color cycling.",
+        "displayModelJson": false
+    },
+    {
+        "name": "Newton's Cradle",
+        "id": "newtons-cradle",
+        "description": "Newton's Cradle desk toy with metallic gradient balls.",
+        "displayModelJson": false
+    },
+    {
+        "name": "Tornado",
+        "id": "tornado",
+        "description": "Tornado simulation with swirling debris particles.",
+        "displayModelJson": false
+    },
+    {
+        "name": "Heartbeat Monitor",
+        "id": "heartbeat-monitor",
+        "description": "ECG heartbeat monitor with scanning green trace and BPM readout.",
+        "displayModelJson": false
+    },
+    {
+        "name": "Metaballs",
+        "id": "metaballs",
+        "description": "Bouncing metaball blobs that merge and separate with color blending.",
+        "displayModelJson": false
     }
 ]

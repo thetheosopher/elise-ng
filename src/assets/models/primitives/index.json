@@ -88,5 +88,23 @@
         "id": "transforms",
         "description": "Linear affine transformation for altering the visual appearance of elements.",
         "displayModelJson": true
+    },
+    {
+        "name": "Transforms",
+        "id": "transforms",
+        "description": "Linear affine transformation for altering the visual appearance of elements.",
+        "displayModelJson": true
+    },
+    {
+        "name": "Five Pointed Star",
+        "id": "star",
+        "description": "Generates a five pointed start polygon.",
+        "displayModelJson": true
+    },
+    {
+        "name": "Model Grid",
+        "id": "model-grid",
+        "description": "Demonstrates a grid of model elements.",
+        "displayModelJson": false
     }
-]
+  ]
