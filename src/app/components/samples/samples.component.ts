@@ -19,7 +19,7 @@ export class SamplesComponent implements OnInit {
         private toasterService: ToastrService) {}
 
     getModels() {
-        this.modelService.listModels('samples').subscribe({
+        this.modelService.listModels('animations').subscribe({
             next: (modelArray) => {
                 this.models = modelArray;
             },

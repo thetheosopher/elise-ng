@@ -75,25 +75,57 @@
                                     <div ngbDropdown class="d-inline-block">
                                         <button class="btn btn-sm btn-outline-primary" id="loadMenuDropdown"
                                             ngbDropdownToggle>Load</button>
-                                        <div ngbDropdownMenu aria-labelledby="loadMenuDropdown">
+                                        <div ngbDropdownMenu aria-labelledby="loadMenuDropdown" class="workshop-load-menu">
                                             <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('primitives', 'model')">Blank Model</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('primitives', 'line')">Line</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('primitives', 'rectangle')">Rectangle</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('primitives', 'ellipse')">Ellipse</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('primitives', 'polyline')">Polyline</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('primitives', 'polygon')">Polygon</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('primitives', 'path')">Path</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('primitives', 'text')">Text</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('primitives', 'colors')">Colors</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('primitives', 'transforms')">Transforms</button>
-
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('samples', 'star')">Star</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('samples', 'line-animation')">Line Animation</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('samples', 'ellipse-animation')">Ellipse Animation</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('samples', 'gradient-animation')">Gradient Animation</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('samples', 'particle-animation')">Particle Animation</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('samples', 'snow-animation')">Snow Animation</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('samples', 'digital-rain')">Digital Rain</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'ant-colony-trails')">Ant Colony Trails</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'aurora-borealis')">Aurora Borealis</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'cloth-simulation')">Cloth Simulation</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'conway-life-lab')">Conway Life Lab</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'digital-rain')">Digital Rain Simulation</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'dna-helix')">DNA Helix</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'ellipse-animation')">Ellipse Animation</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'fireflies')">Fireflies</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'fireworks')">Fireworks Display</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'flocking-swarm')">Flocking Swarm</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'fourier-flower')">Fourier Flower</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'fractal-zoom')">Fractal Zoom</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'geometric-morphing')">Geometric Morphing</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'gradient-animation')">Gradient Animation</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'heartbeat-monitor')">Heartbeat Monitor</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'harmonograph')">Harmonograph</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'hypotrochoid-weave')">Hypotrochoid Weave</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'kaleidoscope')">Kaleidoscope</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'lsystems-garden')">L-Systems Garden</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'lava-lamp')">Lava Lamp</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'line-animation')">Line Animation</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'lorenz-attractor')">Lorenz Attractor</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'maurer-rose')">Maurer Rose</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'metaballs')">Metaballs</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'moire-lattice')">Moire Lattice</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'multi-sprite-animation')">Multi Sprite Animation</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'newtons-cradle')">Newton's Cradle</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'aurora-clock')">Northern Lights Clock</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'ocean-waves')">Ocean Waves</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'particle-animation')">Particle Animation</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'pendulum-wave')">Pendulum Wave</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'plasma-effect')">Plasma Effect</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'polar-harmonic-mesh')">Polar Harmonic Mesh</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'radar-traffic')">Radar Traffic</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'raindrop-ripples')">Raindrop Ripples</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'reaction-diffusion')">Reaction-Diffusion</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'rotation-animation')">Rotation Animation</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'rrt-pathfinding')">RRT Pathfinding</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'snow-animation')">Snow Simulation</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'soft-body-blobs')">Soft Body Blobs</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'sine-lissajous-field')">Sine Lissajous Field</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'solar-system')">Solar System Orrery</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'spirograph')">Spirograph</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'sprite-transitions')">Sprite Image Transition</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'sprite-animation')">Sprite Sheet Animation</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'stargate-tunnel')">Stargate Tunnel</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'superformula-bloom')">Superformula Bloom</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'times-table-cardioid')">Times Table Cardioid</button>
+                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'tornado')">Tornado</button>
                                         </div>
                                         <button class="btn btn-sm btn-outline-primary m-1" (click)="runScript()" id="runScript">Run</button>
                                     </div>
@@ -160,3 +192,4 @@
         </as-split-area>
     </as-split>
 </div>
+

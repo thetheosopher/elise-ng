@@ -23,7 +23,7 @@ import { Color } from 'elise-graphics/lib/core/color';
 import { loremipsum } from './loremipsum';
 import { yinyang } from './yinyang';
 
-import elise from 'elise-graphics/lib/index';
+import elise from 'elise-graphics';
 
 function defaultModel(): Model {
     const model = Model.create(320, 320);

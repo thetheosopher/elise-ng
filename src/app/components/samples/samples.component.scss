@@ -1,0 +1,30 @@
+.animations-page {
+	padding: 10px;
+}
+
+.animation-grid {
+	list-style-position: inside;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 6px 18px;
+}
+
+.animation-grid li {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+@media (max-width: 1100px) {
+	.animation-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 700px) {
+	.animation-grid {
+		grid-template-columns: 1fr;
+	}
+}

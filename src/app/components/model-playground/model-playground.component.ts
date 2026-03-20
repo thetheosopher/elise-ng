@@ -20,7 +20,7 @@ import { UploadService, UploadStateCode, Upload } from '../../services/upload.se
 import { Model, ViewDragArgs } from 'elise-graphics';
 import { ViewController } from 'elise-graphics';
 
-import { default as elise } from 'elise-graphics/lib/index';
+import { default as elise } from 'elise-graphics';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -90,7 +90,7 @@ export class ModelPlaygroundComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit() {
-        this.loadModel('samples', 'simple');
+        this.loadModel('animations', 'simple');
     }
 
     runScript() {

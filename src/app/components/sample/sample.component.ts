@@ -6,7 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Location } from '@angular/common';
 
 import { Model } from 'elise-graphics/lib/core/model';
-import { default as elise } from 'elise-graphics/lib/index';
+import { default as elise } from 'elise-graphics';
 import { RouterModule } from '@angular/router';
 import { EliseModule } from '../../elise/elise.module';
 
@@ -23,7 +23,7 @@ export class SampleComponent implements OnInit {
     modelCode: string;
     scale: number;
 
-    modelType = 'samples';
+    modelType = 'animations';
 
     @ViewChild('elise', { read: ElementRef, static: true })
     elise: ElementRef;
