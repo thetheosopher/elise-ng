@@ -20,8 +20,8 @@ import { RandomSketchesComponent } from './components/random-sketches/random-ske
 import { RedGreenBlueComponent } from './components/redgreenblue/redgreenblue.component';
 import { ResendRegistrationCodeComponent } from './components/resend-registration-code/resend-registration-code.component';
 import { RegisterComponent } from './components/register/register.component';
-import { SampleComponent } from './components/sample/sample.component';
-import { SamplesComponent } from './components/samples/samples.component';
+import { AnimationComponent } from './components/animation/animation.component';
+import { AnimationsComponent } from './components/animations/animations.component';
 import { SketchComponent } from './components/sketch/sketch.component';
 import { SketchesComponent } from './components/sketches/sketches.component';
 import { ViewTestsComponent } from './components/view-tests/view-tests.component';
@@ -34,8 +34,8 @@ const routes: Routes = [
     { path: '', redirectTo: '/primitives', pathMatch: 'full' },
     { path: 'primitives', component: PrimitivesComponent },
     { path: 'primitives/:id', component: PrimitiveComponent },
-    { path: 'animations', component: SamplesComponent },
-    { path: 'animations/:id', component: SampleComponent },
+    { path: 'animations', component: AnimationsComponent },
+    { path: 'animations/:id', component: AnimationComponent },
     { path: 'sketches', component: SketchesComponent },
     { path: 'sketches/:id', component: SketchComponent },
     { path: 'tests/design', component: DesignTestsComponent },

@@ -7,11 +7,11 @@ import { RouterModule } from '@angular/router';
 
 @Component({
     imports: [CommonModule, RouterModule],
-    selector: 'app-samples',
-    templateUrl: './samples.component.html',
-    styleUrls: [ './samples.component.scss' ]
+    selector: 'app-animations',
+    templateUrl: './animations.component.html',
+    styleUrls: [ './animations.component.scss' ]
 })
-export class SamplesComponent implements OnInit {
+export class AnimationsComponent implements OnInit {
     models: ModelInfo[];
 
     constructor(

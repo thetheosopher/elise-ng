@@ -12,11 +12,11 @@ import { EliseModule } from '../../elise/elise.module';
 
 @Component({
     imports: [RouterModule, EliseModule],
-    selector: 'app-sample',
-    templateUrl: './sample.component.html',
-    styleUrls: [ './sample.component.scss' ]
+    selector: 'app-animation',
+    templateUrl: './animation.component.html',
+    styleUrls: [ './animation.component.scss' ]
 })
-export class SampleComponent implements OnInit {
+export class AnimationComponent implements OnInit {
     model: Model;
     modelName: string;
     modelDescription: string;
