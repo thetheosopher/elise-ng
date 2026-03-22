@@ -1,6 +1,6 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, DestroyRef, Input, OnInit, inject } from '@angular/core';
 import { Router, NavigationStart } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { Alert, AlertType, AlertService } from '../../services/alert.service';
 import { CommonModule } from '@angular/common';
@@ -8,19 +8,19 @@ import { CommonModule } from '@angular/common';
 @Component({
     imports: [CommonModule],
     selector: 'app-alert', templateUrl: 'alert.component.html' })
-export class AlertComponent implements OnInit, OnDestroy {
+export class AlertComponent implements OnInit {
+    private readonly destroyRef = inject(DestroyRef);
+
     @Input() id = 'default-alert';
     @Input() fade = true;
 
     alerts: Alert[] = [];
-    alertSubscription: Subscription;
-    routeSubscription: Subscription;
 
     constructor(private router: Router, private alertService: AlertService) { }
 
     ngOnInit() {
         // Subscribe to new alert notifications
-        this.alertSubscription = this.alertService.onAlert(this.id)
+        this.alertService.onAlert(this.id).pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(alert => {
                 // Clear alerts when an empty alert is received
                 if (!alert.message) {
@@ -42,17 +42,11 @@ export class AlertComponent implements OnInit, OnDestroy {
            });
 
         // Clear alerts on location change
-        this.routeSubscription = this.router.events.subscribe(event => {
+        this.router.events.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(event => {
             if (event instanceof NavigationStart) {
                 this.alertService.clear(this.id);
             }
         });
-    }
-
-    ngOnDestroy() {
-        // Unsubscribe to avoid memory leaks
-        this.alertSubscription.unsubscribe();
-        this.routeSubscription.unsubscribe();
     }
 
     removeAlert(alert: Alert) {

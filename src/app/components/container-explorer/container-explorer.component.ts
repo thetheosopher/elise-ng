@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ViewChildren, QueryList, Output, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, DestroyRef, OnInit, ViewChild, ViewChildren, QueryList, Output, ElementRef, AfterViewInit, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../../schematrix/services/api.service';
 import { UploadService, UploadStateCode, Upload, UploadEvent } from '../../services/upload.service';
@@ -16,6 +16,8 @@ import { AlertComponent } from '../alert/alert.component';
 import { UploadListComponent } from '../upload-list/upload-list.component';
 import { FileListComponent } from '../file-list/file-list.component';
 import { DndDirective } from '../../directives/dnd.directive';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { take } from 'rxjs';
 
 @Component({
     imports: [CommonModule, NgbModule, AngularSplitModule, ContainerSelectorComponent, ContainerTreeComponent, AlertComponent, UploadListComponent, FileListComponent, DndDirective],
@@ -24,6 +26,8 @@ import { DndDirective } from '../../directives/dnd.directive';
     styleUrls: ['./container-explorer.component.scss']
 })
 export class ContainerExplorerComponent implements OnInit, AfterViewInit {
+
+    private readonly destroyRef = inject(DestroyRef);
 
     @ViewChild(ContainerTreeComponent, { static: true }) containerTree: ContainerTreeComponent;
 
@@ -48,7 +52,7 @@ export class ContainerExplorerComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit() {
-        this.fileUploadInputRefs.changes.subscribe((refs: QueryList<ElementRef>) => {
+        this.fileUploadInputRefs.changes.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((refs: QueryList<ElementRef>) => {
             if(refs.length > 0) {
                 this.fileUploadInputElement = refs.first.nativeElement;
             }
@@ -86,7 +90,7 @@ export class ContainerExplorerComponent implements OnInit, AfterViewInit {
         if (!this.selectedContainerID) {
             return;
         }
-        this.apiService.getContainerManifest(this.selectedContainerID, false, this.selectedFolderPath, true, true, false).subscribe({
+        this.apiService.getContainerManifest(this.selectedContainerID, false, this.selectedFolderPath, true, true, false).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (manifest: ManifestDTO) => {
                 this.folderFiles = [];
                 if (manifest.Files) {
@@ -123,7 +127,7 @@ export class ContainerExplorerComponent implements OnInit, AfterViewInit {
         urlRequest.Path = this.selectedFolderPath + file;
         urlRequest.ContentType = file.type;
         urlRequest.Verb = 'get';
-        this.apiService.getSignedUrl(urlRequest).subscribe({
+        this.apiService.getSignedUrl(urlRequest).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (signedUrlRequest) => {
                 window.open(signedUrlRequest.Url);
             },
@@ -140,7 +144,7 @@ export class ContainerExplorerComponent implements OnInit, AfterViewInit {
         urlRequest.ContentType = file.type;
         urlRequest.ContentDisposition = 'attachment;filename="' + file + '"';
         urlRequest.Verb = 'get';
-        this.apiService.getSignedUrl(urlRequest).subscribe({
+        this.apiService.getSignedUrl(urlRequest).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (signedUrlRequest) => {
                 window.open(signedUrlRequest.Url);
             },
@@ -156,9 +160,9 @@ export class ContainerExplorerComponent implements OnInit, AfterViewInit {
         urlRequest.Path = this.selectedFolderPath + file;
         urlRequest.ContentType = file.type;
         urlRequest.Verb = 'delete';
-        this.apiService.getSignedUrl(urlRequest).subscribe({
+        this.apiService.getSignedUrl(urlRequest).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (signedUrlRequest) => {
-                this.http.delete(signedUrlRequest.Url).subscribe({
+                this.http.delete(signedUrlRequest.Url).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
                     next: () => {
                         const deletedFile = this.folderFiles.find(f => f.Name === file);
                         if(deletedFile) {
@@ -180,7 +184,7 @@ export class ContainerExplorerComponent implements OnInit, AfterViewInit {
         urlRequest.Path = this.selectedFolderPath + file.name;
         urlRequest.ContentType = file.type;
         urlRequest.Verb = 'put';
-        this.apiService.getSignedUrl(urlRequest).subscribe({
+        this.apiService.getSignedUrl(urlRequest).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (signedUrlRequest) => {
                 // Start upload using signed URL
                 const upload = new Upload(file.name, file.type, file.size, signedUrlRequest.Url);
@@ -189,7 +193,7 @@ export class ContainerExplorerComponent implements OnInit, AfterViewInit {
                 upload.file = file;
                 upload.removeOnFailure = true;
                 upload.removeOnSuccess = true;
-                upload.callback.subscribe({
+                upload.callback.pipe(take(1), takeUntilDestroyed(this.destroyRef)).subscribe({
                     next: (result) => {
                         if (result.success) {
                             console.log('Upload callback: Success');

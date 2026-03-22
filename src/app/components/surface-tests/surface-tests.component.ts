@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { SurfaceSample } from '../../interfaces/surface-sample';
 import { SurfaceTestService } from '../../services/surface-test.service';
 import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     imports: [CommonModule, RouterModule],
@@ -12,6 +13,8 @@ import { RouterModule } from '@angular/router';
     styleUrls: [ './surface-tests.component.scss' ]
 })
 export class SurfaceTestsComponent implements OnInit {
+    private readonly destroyRef = inject(DestroyRef);
+
     tests: SurfaceSample[];
 
     constructor(
@@ -19,7 +22,7 @@ export class SurfaceTestsComponent implements OnInit {
         private toasterService: ToastrService) {}
 
     getTests() {
-        this.surfaceTestService.tests().subscribe({
+        this.surfaceTestService.tests().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (testArray) => {
                 this.tests = testArray;
             },

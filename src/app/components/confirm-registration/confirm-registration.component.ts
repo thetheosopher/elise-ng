@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { ApiService } from '../../schematrix/services/api.service';
 import { UserRegistrationDTO } from '../../schematrix/classes/user-registration-dto';
 import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     imports: [CommonModule, FormsModule, RouterModule],
@@ -13,6 +14,8 @@ import { RouterModule } from '@angular/router';
   styleUrls: ['./confirm-registration.component.scss']
 })
 export class ConfirmRegistrationComponent implements OnInit {
+    private readonly destroyRef = inject(DestroyRef);
+
     processing = false;
     userRegistrationDTO: UserRegistrationDTO = new UserRegistrationDTO();
     confirmationComplete = false;
@@ -27,7 +30,7 @@ export class ConfirmRegistrationComponent implements OnInit {
 
     onSubmit() {
         this.processing = true;
-        this.apiService.confirmRegistration(this.userRegistrationDTO).subscribe({
+        this.apiService.confirmRegistration(this.userRegistrationDTO).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (confirmationResult) => {
                 this.processing = false;
                 this.toasterService.success('You may now log in', 'Registration Confirmed');

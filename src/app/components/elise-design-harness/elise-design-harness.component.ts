@@ -14,10 +14,9 @@ import { ISampleDesigner } from '../../interfaces/sample-designer';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { EliseModule } from '../../elise/elise.module';
 
 @Component({
-    imports: [CommonModule, FormsModule, RouterModule, EliseModule],
+    imports: [CommonModule, FormsModule, RouterModule, EliseDesignComponent],
     selector: 'app-elise-design-harness',
     templateUrl: './elise-design-harness.component.html',
     styleUrls: ['./elise-design-harness.component.scss']

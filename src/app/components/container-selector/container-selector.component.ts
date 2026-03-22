@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, Input, Output, EventEmitter, ViewChild } from '@angular/core';
+import { Component, DestroyRef, OnInit, ElementRef, Input, Output, EventEmitter, ViewChild, inject } from '@angular/core';
 import { NgbModal, NgbModalRef, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { ApiService } from '../../schematrix/services/api.service';
 import { ContainerDTO } from '../../schematrix/classes/container-dto';
@@ -8,6 +8,7 @@ import { DeleteContainerModalComponent, DeleteContainerModalInfo } from '../dele
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     imports: [CommonModule, FormsModule, NgbModule],
@@ -16,6 +17,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     styleUrls: ['./container-selector.component.scss']
 })
 export class ContainerSelectorComponent implements OnInit {
+
+    private readonly destroyRef = inject(DestroyRef);
 
     constructor(private apiService: ApiService,
         private toasterService: ToastrService,
@@ -55,7 +58,7 @@ export class ContainerSelectorComponent implements OnInit {
     }
 
     refreshContainers() {
-        this.apiService.listContainers().subscribe({
+        this.apiService.listContainers().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (containers) => {
                 if (!containers || containers.length === 0) {
                     this.containers = [
@@ -98,7 +101,7 @@ export class ContainerSelectorComponent implements OnInit {
 
     createContainer(modalInfo: NewContainerModalInfo) {
         const newContainer = { Name: modalInfo.name };
-        this.apiService.createContainer(newContainer).subscribe({
+        this.apiService.createContainer(newContainer).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (returnedContainer) => {
                 this.selectedContainer = returnedContainer;
                 this.refreshContainers();
@@ -122,7 +125,7 @@ export class ContainerSelectorComponent implements OnInit {
     }
 
     deleteContainer(modalInfo: DeleteContainerModalInfo) {
-        this.apiService.deleteContainer(modalInfo.containerID).subscribe({
+        this.apiService.deleteContainer(modalInfo.containerID).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: () => {
                 this.containerDeleted.emit(modalInfo.containerID);
                 this.toasterService.success(modalInfo.name, 'Container Deleted');

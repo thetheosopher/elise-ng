@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { ModelInfo } from '../../services/model-info';
 import { ModelService } from '../../services/model.service';
 import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     imports: [CommonModule, RouterModule],
@@ -12,6 +13,8 @@ import { RouterModule } from '@angular/router';
     styleUrls: [ './primitives.component.scss' ]
 })
 export class PrimitivesComponent implements OnInit {
+    private readonly destroyRef = inject(DestroyRef);
+
     models: ModelInfo[];
 
     constructor(
@@ -19,7 +22,7 @@ export class PrimitivesComponent implements OnInit {
         private toasterService: ToastrService) {}
 
     getModels() {
-        this.modelService.listModels('primitives').subscribe({
+        this.modelService.listModels('primitives').pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (modelArray) => {
                 this.models = modelArray;
             },

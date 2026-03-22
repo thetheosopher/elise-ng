@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { ApiService } from '../../schematrix/services/api.service';
 import { ToastrService } from 'ngx-toastr';
 import { LoginDTO } from '../../schematrix/classes/login-dto';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     imports: [CommonModule, FormsModule, RouterModule],
@@ -13,6 +14,8 @@ import { RouterModule } from '@angular/router';
     styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
+
+    private readonly destroyRef = inject(DestroyRef);
 
     processing = false;
     isLoggedIn = false;
@@ -28,21 +31,21 @@ export class LoginComponent implements OnInit {
      }
 
     ngOnInit() {
-        this.apiService.loginEvent.subscribe({
+        this.apiService.loginEvent.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (login) => {
                 this.processing = false;
                 this.isLoggedIn = true;
                 this.loginDTO = login;
             }
         });
-        this.apiService.logoutEvent.subscribe({
+        this.apiService.logoutEvent.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: () => {
                 this.processing = false;
                 this.isLoggedIn = false;
                 this.loginDTO = new LoginDTO();
             }
         });
-        this.apiService.errorEvent.subscribe({
+        this.apiService.errorEvent.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (error) => {
                 this.processing = false;
                 this.toasterService.error(error, 'Login Error', {

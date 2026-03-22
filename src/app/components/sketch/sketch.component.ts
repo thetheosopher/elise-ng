@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, DestroyRef, OnInit, ElementRef, ViewChild, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ModelService } from '../../services/model.service';
 import { ToastrService } from 'ngx-toastr';
@@ -6,15 +6,18 @@ import { Location } from '@angular/common';
 import { Model } from 'elise-graphics/lib/core/model';
 import { default as elise } from 'elise-graphics';
 import { RouterModule } from '@angular/router';
-import { EliseModule } from '../../elise/elise.module';
+import { EliseViewComponent } from '../../elise/view/elise-view.component';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-    imports: [RouterModule, EliseModule],
+    imports: [RouterModule, EliseViewComponent],
     selector: 'app-sketch',
     templateUrl: './sketch.component.html',
     styleUrls: [ './sketch.component.scss' ]
 })
 export class SketchComponent implements OnInit {
+    private readonly destroyRef = inject(DestroyRef);
+
     model: Model;
     modelName: string;
     modelDescription: string;
@@ -37,7 +40,7 @@ export class SketchComponent implements OnInit {
     createModel() {
         const id = this.route.snapshot.paramMap.get('id');
         this.modelDescription = id;
-        this.modelService.getModelDescription(this.modelType, id).subscribe({
+        this.modelService.getModelDescription(this.modelType, id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (modelDescription) => {
                 this.modelDescription = modelDescription;
             },
@@ -47,7 +50,7 @@ export class SketchComponent implements OnInit {
                 this.modelDescription = '???';
             }
         });
-        this.modelService.getModelInfo(this.modelType, id).subscribe({
+        this.modelService.getModelInfo(this.modelType, id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (modelInfo) => {
                 this.modelName = modelInfo.name;
             },
@@ -57,7 +60,7 @@ export class SketchComponent implements OnInit {
                 this.modelDescription = '???';
             }
         });
-        this.modelService.getModel(this.modelType, id).subscribe({
+        this.modelService.getModel(this.modelType, id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (modelData) => {
                 this.modelCode = modelData;
                 const modelFunction = new Function('elise', modelData);

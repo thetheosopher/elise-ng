@@ -1,11 +1,11 @@
-import { Injectable, EventEmitter, Output } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ContainerDTO } from '../classes/container-dto';
 import { ContainerFolderDTO } from '../classes/container-folder-dto';
 import { LoginDTO } from '../classes/login-dto';
 import { RegistrationInfoDTO } from '../classes/registration-info-dto';
 import { UserRegistrationDTO } from '../classes/user-registration-dto';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { ManifestDTO } from '../classes/manifest-dto';
 import { SignedUrlRequestDTO } from '../classes/signed-url-request-dto';
 
@@ -21,9 +21,9 @@ export class ApiService {
     refreshTimer: NodeJS.Timeout;
     refreshingToken: boolean;
 
-    @Output() loginEvent = new EventEmitter<LoginDTO>();
-    @Output() logoutEvent = new EventEmitter();
-    @Output() errorEvent = new EventEmitter<string>();
+    loginEvent = new Subject<LoginDTO>();
+    logoutEvent = new Subject<void>();
+    errorEvent = new Subject<string>();
 
     constructor(private http: HttpClient) {
         this.localStorageAvailable = this.storageAvailable();
@@ -50,16 +50,40 @@ export class ApiService {
 
     onLogin() {
         this.isLoggedIn = true;
-        this.loginEvent.emit(this.login);
+        this.loginEvent.next(this.login);
     }
 
     onLogout() {
         this.isLoggedIn = false;
-        this.logoutEvent.emit();
+        this.logoutEvent.next();
     }
 
     onError(message: string) {
-        this.errorEvent.emit(message);
+        this.errorEvent.next(message);
+    }
+
+    private persistLogin() {
+        if (!this.localStorageAvailable || !this.login) {
+            return;
+        }
+
+        const loginForStorage: Partial<LoginDTO> = {
+            LoginID: this.login.LoginID,
+            Name: this.login.Name,
+            Alias: this.login.Alias,
+            Email: this.login.Email,
+            IsEnabled: this.login.IsEnabled,
+            IsAdmin: this.login.IsAdmin,
+            GrantFlags: this.login.GrantFlags,
+            DenyFlags: this.login.DenyFlags,
+            LoginTime: this.login.LoginTime,
+            CreateTime: this.login.CreateTime,
+            UpdateTime: this.login.UpdateTime,
+            TokenExpiration: this.login.TokenExpiration,
+            Token: this.login.Token
+        };
+
+        localStorage.setItem('login', JSON.stringify(loginForStorage));
     }
 
     private handleError(response: HttpErrorResponse) {
@@ -105,9 +129,7 @@ export class ApiService {
         }).subscribe({
             next: (loginDTO: LoginDTO) => {
                 this.login = loginDTO;
-                if (this.localStorageAvailable) {
-                    localStorage.setItem('login', JSON.stringify(this.login));
-                }
+                this.persistLogin();
                 this.onLogin();
                 this.startRefreshTimer();
             },
@@ -150,7 +172,7 @@ export class ApiService {
         else {
             const loginString = localStorage.getItem('login');
             if (loginString) {
-                this.login = JSON.parse(localStorage.getItem('login'));
+                this.login = JSON.parse(loginString);
             }
             else {
                 this.onLogout();
@@ -178,21 +200,21 @@ export class ApiService {
                 this.login.DenyFlags = loginDTO.DenyFlags;
                 this.login.CreateTime = loginDTO.CreateTime;
                 this.login.TokenExpiration = loginDTO.TokenExpiration;
-                localStorage.setItem('login', JSON.stringify(this.login));
+                this.persistLogin();
                 this.isLoggedIn = true;
-                this.loginEvent.emit(this.login);
+                this.loginEvent.next(this.login);
                 this.startRefreshTimer();
             },
             error: (response) => {
                 this.stopRefreshTimer();
                 const header = response.headers.get('WWW-Authenticate');
-                if (header && header.indexOf('expired') !== 1) {
-                    this.errorEvent.emit('Session has expired.<br/>Please log in again.');
-                    this.logoutEvent.emit();
+                if (header && header.indexOf('expired') !== -1) {
+                    this.errorEvent.next('Session has expired.<br/>Please log in again.');
+                    this.logoutEvent.next();
                     return;
                 }
-                this.errorEvent.emit('Session is invalid. Please log in.');
-                this.logoutEvent.emit();
+                this.errorEvent.next('Session is invalid. Please log in.');
+                this.logoutEvent.next();
             }
         });
     }
@@ -269,21 +291,21 @@ export class ApiService {
                 this.login.DenyFlags = loginDTO.DenyFlags;
                 this.login.CreateTime = loginDTO.CreateTime;
                 this.login.TokenExpiration = loginDTO.TokenExpiration;
-                localStorage.setItem('login', JSON.stringify(this.login));
+                this.persistLogin();
                 this.isLoggedIn = true;
-                this.loginEvent.emit(this.login);
+                this.loginEvent.next(this.login);
                 this.refreshingToken = false;
             },
             error: (response) => {
                 this.refreshingToken = false;
                 const header = response.headers.get('WWW-Authenticate');
-                if (header && header.indexOf('expired') !== 1) {
-                    this.errorEvent.emit('Session has expired.<br/>Please log in again.');
-                    this.logoutEvent.emit();
+                if (header && header.indexOf('expired') !== -1) {
+                    this.errorEvent.next('Session has expired.<br/>Please log in again.');
+                    this.logoutEvent.next();
                     return;
                 }
-                this.errorEvent.emit('Session is invalid. Please log in.');
-                this.logoutEvent.emit();
+                this.errorEvent.next('Session is invalid. Please log in.');
+                this.logoutEvent.next();
             }
         });
     }

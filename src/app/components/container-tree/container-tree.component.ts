@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, Input, Output, EventEmitter } from '@angular/core';
+import { Component, DestroyRef, OnInit, ViewChild, Input, Output, EventEmitter, inject } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ApiService } from '../../schematrix/services/api.service';
 import { ManifestDTO } from '../../schematrix/classes/manifest-dto';
@@ -8,6 +8,7 @@ import { TreeComponent, TreeModule, ITreeOptions } from '@ali-hm/angular-tree-co
 import { ToastrService } from 'ngx-toastr';
 import { NewFolderModalComponent, NewFolderModalInfo } from '../new-folder-modal/new-folder-modal.component';
 import { DeleteFolderModalComponent, DeleteFolderModalInfo } from '../delete-folder-modal/delete-folder-modal.component';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     imports: [TreeModule],
@@ -16,6 +17,8 @@ import { DeleteFolderModalComponent, DeleteFolderModalInfo } from '../delete-fol
     styleUrls: ['./container-tree.component.scss']
 })
 export class ContainerTreeComponent implements OnInit {
+
+    private readonly destroyRef = inject(DestroyRef);
 
     constructor(
         private apiService: ApiService,
@@ -89,7 +92,7 @@ export class ContainerTreeComponent implements OnInit {
         this.folderPathSelected.emit(null);
         this.nodes = [];
         if(this.containerID) {
-            this.apiService.getContainerManifest(this.containerID, true).subscribe({
+            this.apiService.getContainerManifest(this.containerID, true).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
                 next: (manifest: ManifestDTO) => {
                     this.nodes = this.manifestToNodes(manifest);
                     // setTimeout(() => { this.expandAll() }, 10);
@@ -127,7 +130,7 @@ export class ContainerTreeComponent implements OnInit {
             ContainerID: this.containerID,
             Path: folderModalInfo.parent + folderModalInfo.name
         };
-        this.apiService.createFolder(newFolderDTO).subscribe({
+        this.apiService.createFolder(newFolderDTO).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (newFolder) => {
                 this.refresh(newFolderDTO.Path + '/');
                 this.toasterService.success(folderModalInfo.name, 'Folder Created');
@@ -159,7 +162,7 @@ export class ContainerTreeComponent implements OnInit {
             parts.splice(parts.length - 2, 1);
             parentPath = parts.join('/');
         }
-        this.apiService.deleteFolder(this.containerID, folderModalInfo.path).subscribe({
+        this.apiService.deleteFolder(this.containerID, folderModalInfo.path).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: () => {
                 this.refresh(parentPath);
                 this.toasterService.success(folderModalInfo.path, 'Folder Deleted');

@@ -1,5 +1,5 @@
-import { Component, OnInit, ViewChild, ViewChildren, QueryList, Input, Output,
-    ElementRef, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Component, DestroyRef, OnInit, ViewChild, ViewChildren, QueryList, Input, Output,
+    ElementRef, AfterViewInit, ChangeDetectorRef, inject } from '@angular/core';
 import { NgModel } from '@angular/forms';
 import { NgbModal, NgbNavChangeEvent } from '@ng-bootstrap/ng-bootstrap';
 import { ContainerUrlProxy } from '../../schematrix/classes/container-url-proxy';
@@ -43,21 +43,25 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AngularSplitModule } from 'angular-split';
-import { EliseModule } from '../../elise/elise.module';
+import { EliseDesignComponent } from '../../elise/design/elise-design.component';
 import { ContainerSelectorComponent } from '../container-selector/container-selector.component';
 import { ContainerTreeComponent } from '../container-tree/container-tree.component';
 import { AlertComponent } from '../alert/alert.component';
 import { UploadListComponent } from '../upload-list/upload-list.component';
 import { FileListComponent } from '../file-list/file-list.component';
 import { DndDirective } from '../../directives/dnd.directive';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { take } from 'rxjs';
 
 @Component({
-    imports: [CommonModule, FormsModule, NgbModule, AngularSplitModule, EliseModule, ContainerSelectorComponent, ContainerTreeComponent, AlertComponent, UploadListComponent, FileListComponent, DndDirective],
+    imports: [CommonModule, FormsModule, NgbModule, AngularSplitModule, EliseDesignComponent, ContainerSelectorComponent, ContainerTreeComponent, AlertComponent, UploadListComponent, FileListComponent, DndDirective],
     selector: 'app-model-designer',
     templateUrl: './model-designer.component.html',
     styleUrls: ['./model-designer.component.scss']
 })
 export class ModelDesignerComponent implements OnInit, AfterViewInit {
+
+    private readonly destroyRef = inject(DestroyRef);
 
     @ViewChild(ContainerTreeComponent, { static: true })
     containerTree: ContainerTreeComponent;
@@ -165,7 +169,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit() {
-        this.fileUploadInputRefs.changes.subscribe((refs: QueryList<ElementRef>) => {
+        this.fileUploadInputRefs.changes.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((refs: QueryList<ElementRef>) => {
             if (refs.length > 0) {
                 this.fileUploadInputElement = refs.first.nativeElement;
             }
@@ -544,7 +548,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             urlRequest.ContainerID = this.selectedContainerID;
             urlRequest.Path = bitmapResource.uri;
             urlRequest.Verb = 'get';
-            this.apiService.getSignedUrl(urlRequest).subscribe({
+            this.apiService.getSignedUrl(urlRequest).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
                 next: (signedUrlRequest) => {
                     this.showImageToolModal(bitmapResource, bitmapResources, signedUrlRequest.Url);
                 },
@@ -687,7 +691,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         if (!this.selectedContainerID) {
             return;
         }
-        this.apiService.getContainerManifest(this.selectedContainerID, false, this.selectedFolderPath, true, true, false).subscribe({
+        this.apiService.getContainerManifest(this.selectedContainerID, false, this.selectedFolderPath, true, true, false).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (manifest: ManifestDTO) => {
                 this.folderFiles = [];
                 if (manifest.Files) {
@@ -754,7 +758,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         urlRequest.Path = this.selectedFolderPath + file.name;
         urlRequest.ContentType = file.type;
         urlRequest.Verb = 'put';
-        this.apiService.getSignedUrl(urlRequest).subscribe({
+        this.apiService.getSignedUrl(urlRequest).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (signedUrlRequest) => {
                 // Start upload using signed URL
                 const upload = new Upload(file.name, file.type, file.size, signedUrlRequest.Url);
@@ -763,7 +767,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                 upload.file = file;
                 upload.removeOnFailure = true;
                 upload.removeOnSuccess = true;
-                upload.callback.subscribe({
+                upload.callback.pipe(take(1), takeUntilDestroyed(this.destroyRef)).subscribe({
                     next: (result) => {
                         if (result.success) {
                             console.log('Upload callback: Success');
@@ -829,7 +833,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         urlRequest.ContainerID = this.selectedContainerID;
         urlRequest.Path = this.selectedFilePath;
         urlRequest.Verb = 'get';
-        this.apiService.getSignedUrl(urlRequest).subscribe({
+        this.apiService.getSignedUrl(urlRequest).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (signedUrlRequest) => {
                 const modalInfo = new ImageActionModalInfo();
                 modalInfo.source = signedUrlRequest.Url;
@@ -896,9 +900,9 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         urlRequest.Path = this.selectedFilePath;
         urlRequest.Verb = 'get';
         this.isBusy = true;
-        this.apiService.getSignedUrl(urlRequest).subscribe({
+        this.apiService.getSignedUrl(urlRequest).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (signedUrlRequest) => {
-                this.http.get(signedUrlRequest.Url, { responseType: 'text' }).subscribe({
+                this.http.get(signedUrlRequest.Url, { responseType: 'text' }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
                     next: (modelJson: string) => {
                         try {
                             const model = Model.parse(modelJson);
@@ -1230,7 +1234,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         urlRequest.ContentType = this.MODEL_MIME_TYPE;
         urlRequest.Verb = 'put';
         this.isBusy = true;
-        this.apiService.getSignedUrl(urlRequest).subscribe({
+        this.apiService.getSignedUrl(urlRequest).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (signedUrlRequest) => {
                 const upload = Upload.createDataUpload(newModelPath, this.MODEL_MIME_TYPE,
                     serializedModel.length, signedUrlRequest.Url, serializedModel, null);
@@ -1239,7 +1243,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                 upload.folderPath = this.selectedFolderPath;
                 upload.removeOnFailure = true;
                 upload.removeOnSuccess = true;
-                upload.callback.subscribe({
+                upload.callback.pipe(take(1), takeUntilDestroyed(this.destroyRef)).subscribe({
                     next: (result) => {
                         this.isBusy = false;
                         if (result.success) {
@@ -1285,7 +1289,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         urlRequest.ContentType = this.MODEL_MIME_TYPE;
         urlRequest.Verb = 'put';
         this.isBusy = true;
-        this.apiService.getSignedUrl(urlRequest).subscribe({
+        this.apiService.getSignedUrl(urlRequest).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (signedUrlRequest) => {
                 const upload = Upload.createDataUpload(this.modelPath, this.MODEL_MIME_TYPE,
                     serializedModel.length, signedUrlRequest.Url, serializedModel, null);
@@ -1294,7 +1298,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                 upload.folderPath = this.getPathDirectory(this.modelPath);
                 upload.removeOnFailure = true;
                 upload.removeOnSuccess = true;
-                upload.callback.subscribe({
+                upload.callback.pipe(take(1), takeUntilDestroyed(this.destroyRef)).subscribe({
                     next: (result) => {
                         this.isBusy = false;
                         if (result.success) {

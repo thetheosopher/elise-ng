@@ -14,10 +14,9 @@ import { ISurfaceViewer } from '../../interfaces/surface-viewer';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { EliseModule } from '../../elise/elise.module';
 
 @Component({
-    imports: [CommonModule, FormsModule, RouterModule, EliseModule],
+    imports: [CommonModule, FormsModule, RouterModule, EliseSurfaceComponent],
   selector: 'app-elise-surface-harness',
   templateUrl: './elise-surface-harness.component.html',
   styleUrls: ['./elise-surface-harness.component.scss']

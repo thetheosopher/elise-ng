@@ -1,6 +1,7 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, DestroyRef, OnInit, ViewChild, inject } from '@angular/core';
 import { ApiService } from '../../schematrix/services/api.service';
 import { CommonModule } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     imports: [CommonModule],
@@ -9,6 +10,8 @@ import { CommonModule } from '@angular/common';
     styleUrls: ['./schematrix-api-tests.component.scss']
 })
 export class SchematrixApiTestsComponent implements OnInit {
+
+    private readonly destroyRef = inject(DestroyRef);
 
     constructor(private apiService: ApiService) { }
 
@@ -19,7 +22,7 @@ export class SchematrixApiTestsComponent implements OnInit {
     checkHealth() {
         this.statusClass = 'text-primary';
         this.apiHealthStatus = 'Checking status...';
-        this.apiService.checkHealth().subscribe({
+        this.apiService.checkHealth().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (apiStatus) => {
                 this.apiHealthStatus = apiStatus;
                 this.statusClass = 'text-primary';

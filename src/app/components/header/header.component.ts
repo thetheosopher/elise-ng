@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { ApiService } from '../../schematrix/services/api.service';
 import { LoginDTO } from '../../schematrix/classes/login-dto';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     imports: [CommonModule, RouterModule, NgbModule],
@@ -13,6 +14,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 })
 export class HeaderComponent implements OnInit {
 
+    private readonly destroyRef = inject(DestroyRef);
+
     isLoggedIn = false;
     loginDTO: LoginDTO = null;
 
@@ -21,13 +24,13 @@ export class HeaderComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.apiService.loginEvent.subscribe({
+        this.apiService.loginEvent.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (login) => {
                 this.isLoggedIn = true;
                 this.loginDTO = login;
             }
         });
-        this.apiService.logoutEvent.subscribe({
+        this.apiService.logoutEvent.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: () => {
                 this.isLoggedIn = false;
                 this.loginDTO = null;

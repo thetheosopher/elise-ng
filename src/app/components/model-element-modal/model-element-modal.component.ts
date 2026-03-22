@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, DestroyRef, Input, inject } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ModelResource } from 'elise-graphics/lib/resource/model-resource';
 import { ContainerUrlProxy } from '../../schematrix/classes/container-url-proxy';
@@ -7,16 +7,19 @@ import { HttpClient } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { EliseModule } from '../../elise/elise.module';
+import { EliseViewComponent } from '../../elise/view/elise-view.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-    imports: [CommonModule, FormsModule, EliseModule, NgbModule],
+    imports: [CommonModule, FormsModule, EliseViewComponent, NgbModule],
     selector: 'app-model-element-modal',
     templateUrl: './model-element-modal.component.html',
     styleUrls: ['./model-element-modal.component.scss']
 })
 export class ModelElementModalComponent {
+
+    private readonly destroyRef = inject(DestroyRef);
 
     constructor(
         public activeModal: NgbActiveModal,
@@ -44,7 +47,7 @@ export class ModelElementModalComponent {
         else {
             this.modalInfo.urlProxy.getUrl(resource.uri, (success, url) => {
                 if(success) {
-                    this.http.get(url, { responseType: 'text' }).subscribe({
+                    this.http.get(url, { responseType: 'text' }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
                         next: (modelJson: string) => {
                             try {
                                 const model = Model.parse(modelJson);

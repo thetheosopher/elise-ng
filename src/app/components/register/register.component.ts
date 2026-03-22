@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { ApiService } from '../../schematrix/services/api.service';
 import { ToastrService } from 'ngx-toastr';
 import { UserRegistrationDTO } from '../../schematrix/classes/user-registration-dto';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     imports: [CommonModule, FormsModule, RouterModule],
@@ -13,6 +14,8 @@ import { RouterModule } from '@angular/router';
     styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent implements OnInit {
+
+    private readonly destroyRef = inject(DestroyRef);
 
     processing = false;
     registrationSubmitted = false;
@@ -34,7 +37,7 @@ export class RegisterComponent implements OnInit {
 
     onSubmit() {
         this.processing = true;
-        this.apiService.register(this.userRegistrationDTO).subscribe({
+        this.apiService.register(this.userRegistrationDTO).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (registerResult) => {
                 this.processing = false;
                 this.registrationSubmitted = true;
@@ -50,7 +53,7 @@ export class RegisterComponent implements OnInit {
 
     onSubmitConfirmation() {
         this.processing = true;
-        this.apiService.confirmRegistration(this.userRegistrationDTO).subscribe({
+        this.apiService.confirmRegistration(this.userRegistrationDTO).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (confirmationResult) => {
                 this.processing = false;
                 this.toasterService.success('You may now log in.', 'Registration Confirmed');
@@ -70,7 +73,7 @@ export class RegisterComponent implements OnInit {
 
     checkNameInUse(name: string) {
         if(name && name.trim().length > 0) {
-            this.apiService.checkNameInUse(name).subscribe({
+            this.apiService.checkNameInUse(name).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
                 next: (registrationInfoDTO) => {
                     if(registrationInfoDTO.LoginCount > 0) {
                         this.nameInUse = true;
@@ -104,7 +107,7 @@ export class RegisterComponent implements OnInit {
 
     checkEmailInUse(email: string) {
         if(email && email.trim().length > 0) {
-            this.apiService.checkEmailInUse(email).subscribe({
+            this.apiService.checkEmailInUse(email).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
                 next: (registrationInfoDTO) => {
                     if(registrationInfoDTO.LoginCount > 0) {
                         this.emailInUse = true;

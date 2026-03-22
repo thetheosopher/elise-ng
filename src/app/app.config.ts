@@ -1,6 +1,6 @@
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter, withHashLocation } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideToastr } from 'ngx-toastr';
 
@@ -29,6 +29,9 @@ import { SurfaceTestsComponent } from './components/surface-tests/surface-tests.
 import { SchematrixApiTestsComponent } from './components/schematrix-api-tests/schematrix-api-tests.component';
 import { SendPasswordResetCodeComponent } from './components/send-password-reset-code/send-password-reset-code.component';
 import { Routes } from '@angular/router';
+import { authGuard } from './guards/auth.guard';
+import { NotFoundComponent } from './components/not-found/not-found.component';
+import { authInterceptor } from './interceptors/auth.interceptor';
 
 const routes: Routes = [
     { path: '', redirectTo: '/primitives', pathMatch: 'full' },
@@ -46,23 +49,25 @@ const routes: Routes = [
     { path: 'tests/surface/:id', component: EliseSurfaceHarnessComponent },
     { path: 'redgreenblue', component: RedGreenBlueComponent },
     { path: 'random-sketches', component: RandomSketchesComponent },
-    { path: 'api-tests', component: SchematrixApiTestsComponent },
+    { path: 'api-tests', component: SchematrixApiTestsComponent, canActivate: [authGuard] },
     { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent },
     { path: 'change-password', component: ChangePasswordComponent },
     { path: 'confirm-registration', component: ConfirmRegistrationComponent },
     { path: 'resend-registration-code', component: ResendRegistrationCodeComponent },
     { path: 'send-password-reset-code', component: SendPasswordResetCodeComponent },
-    { path: 'tests/container-explorer', component: ContainerExplorerComponent },
-    { path: 'tests/model-designer', component: ModelDesignerComponent },
-    { path: 'tests/model-playground', component: ModelPlaygroundComponent }
+    { path: 'tests/container-explorer', component: ContainerExplorerComponent, canActivate: [authGuard] },
+    { path: 'tests/model-designer', component: ModelDesignerComponent, canActivate: [authGuard] },
+    { path: 'tests/model-playground', component: ModelPlaygroundComponent, canActivate: [authGuard] },
+    { path: 'not-found', component: NotFoundComponent },
+    { path: '**', component: NotFoundComponent }
 ];
 
 export const appConfig: ApplicationConfig = {
     providers: [
         provideZoneChangeDetection({ eventCoalescing: true }),
         provideRouter(routes, withHashLocation()),
-        provideHttpClient(),
+        provideHttpClient(withInterceptors([authInterceptor])),
         provideAnimationsAsync(),
         provideToastr()
     ]

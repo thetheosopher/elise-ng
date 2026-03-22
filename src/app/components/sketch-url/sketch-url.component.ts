@@ -1,17 +1,20 @@
-import { Component, OnInit, ElementRef, ViewChild, Input, EventEmitter, Output } from '@angular/core';
+import { Component, DestroyRef, OnInit, ElementRef, ViewChild, Input, EventEmitter, Output, inject } from '@angular/core';
 import { ModelService } from '../../services/model.service';
 import { ToastrService } from 'ngx-toastr';
 import { Model } from 'elise-graphics/lib/core/model';
 import { Sketcher } from 'elise-graphics/lib/sketcher/sketcher';
-import { EliseModule } from '../../elise/elise.module';
+import { EliseViewComponent } from '../../elise/view/elise-view.component';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-    imports: [EliseModule],
+    imports: [EliseViewComponent],
     selector: 'app-sketch-url',
     templateUrl: './sketch-url.component.html',
     styleUrls: [ './sketch-url.component.scss' ]
 })
 export class SketchUrlComponent implements OnInit {
+
+    private readonly destroyRef = inject(DestroyRef);
 
     constructor(
         private modelService: ModelService,
@@ -167,7 +170,7 @@ export class SketchUrlComponent implements OnInit {
 
     onChange() {
         if (this.url) {
-            this.modelService.getRemoteModel(this.url).subscribe({
+            this.modelService.getRemoteModel(this.url).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
                 next: (modelData) => {
                     const remoteModel = Model.parse(modelData);
                     const drawModel = Model.create(remoteModel.getSize().width, remoteModel.getSize().height);

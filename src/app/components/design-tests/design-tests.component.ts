@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { DesignSample } from '../../interfaces/design-sample';
 import { DesignTestService } from '../../services/design-test.service';
 import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     imports: [CommonModule, RouterModule],
@@ -12,6 +13,8 @@ import { RouterModule } from '@angular/router';
     styleUrls: ['./design-tests.component.scss']
 })
 export class DesignTestsComponent implements OnInit {
+    private readonly destroyRef = inject(DestroyRef);
+
     tests: DesignSample[];
 
     constructor(
@@ -19,7 +22,7 @@ export class DesignTestsComponent implements OnInit {
         private toasterService: ToastrService) { }
 
     getTests() {
-        this._designTestService.tests().subscribe({
+        this._designTestService.tests().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (testArray) => {
                 this.tests = testArray;
             },
