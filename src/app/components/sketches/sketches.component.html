@@ -1,7 +1,7 @@
 <div style='padding: 10px;'>
     <h3>Sketches</h3>
     <ul>
-        <li *ngFor='let model of models'>
+        <li *ngFor='let model of models; trackBy: trackByModelId'>
             <span><a routerLink='/sketches/{{model.id}}'>{{model.name}}</a></span>
         </li>
     </ul>

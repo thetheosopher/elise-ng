@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ManifestFileDTO } from '../../schematrix/classes/manifest-file-dto';
 import { DeleteFileModalComponent, DeleteFileModalInfo } from '../delete-file-modal/delete-file-modal.component';
@@ -10,7 +10,7 @@ import { CommonModule } from '@angular/common';
     templateUrl: './file-list.component.html',
     styleUrls: ['./file-list.component.scss']
 })
-export class FileListComponent implements OnInit {
+export class FileListComponent {
 
     @Input() public selectedFolderPath: string = null;
     @Input() public folderFiles?: ManifestFileDTO[];
@@ -27,9 +27,6 @@ export class FileListComponent implements OnInit {
 
     constructor(private modalService: NgbModal) { }
 
-    ngOnInit() {
-    }
-
     formatBytes(bytes, decimals) {
         if (bytes === 0) {
             return '0 Bytes';
@@ -41,7 +38,7 @@ export class FileListComponent implements OnInit {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
     }
 
-    onSelectFile(file) {
+    onSelectFile(event: Event, file: string) {
         event.preventDefault();
         this.selectFile.emit(file);
     }
@@ -63,5 +60,9 @@ export class FileListComponent implements OnInit {
         else {
             this.deleteFile.emit(file);
         }
+    }
+
+    trackByFileName(_index: number, file: ManifestFileDTO): string {
+        return file.Name;
     }
 }

@@ -37,4 +37,8 @@ export class SketchesComponent implements OnInit {
     ngOnInit() {
         this.getModels();
     }
+
+    trackByModelId(_index: number, model: ModelInfo): string {
+        return model.id;
+    }
 }

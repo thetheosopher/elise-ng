@@ -106,5 +106,11 @@
         "id": "model-grid",
         "description": "Demonstrates a grid of model elements.",
         "displayModelJson": false
+    },
+    {
+        "name": "SVG Import",
+        "id": "svg-import",
+        "description": "Parses an inline SVG scene into Elise elements, including gradients, transforms, text, and clip paths.",
+        "displayModelJson": false
     }
   ]

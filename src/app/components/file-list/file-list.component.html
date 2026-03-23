@@ -3,10 +3,10 @@
         No Files
     </div>
     <div class='files-list' *ngIf='folderFiles != null && folderFiles.length > 0'>
-        <div class="single-file" *ngFor='let file of folderFiles'>
+        <div class="single-file" *ngFor='let file of folderFiles; trackBy: trackByFileName'>
             <div class="info">
                 <div class="name">
-                    <a href="#" (click)="onSelectFile(file.Name)">{{file.Name}}</a>
+                    <a href="#" (click)="onSelectFile($event, file.Name)">{{file.Name}}</a>
                 </div>
                 <p class="size" *ngIf="showSize">
                     {{ formatBytes(file?.Size) }}

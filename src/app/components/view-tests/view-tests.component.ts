@@ -38,4 +38,8 @@ export class ViewTestsComponent implements OnInit {
       this.getTests();
   }
 
+    trackByTestId(_index: number, test: ViewSample): string {
+            return test.id;
+    }
+
 }

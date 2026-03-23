@@ -6,7 +6,7 @@
                 <label for="username">User Name</label>
                 <input type="text" id="username" name="username" #username="ngModel" class="form-control" required
                     [(ngModel)]="userRegistrationDTO.Name" (keyup.enter)="checkNameInUse(username.value)"
-                    (blur)="checkNameInUse(username.value)" (input)="clearNameInUse()"
+                    (blur)="checkNameInUse(username.value)" (input)="checkNameInUse(username.value)"
                     [class.is-in-use]="nameInUse" />
                 <div *ngIf="nameInUse" class="alert alert-danger">
                     {{nameInUseMessage}}
@@ -19,7 +19,7 @@
                 <label for="email">Email Address</label>
                 <input type="text" id="email" name="email" #email="ngModel" class="form-control" required
                     [(ngModel)]="userRegistrationDTO.Email" (keyup.enter)="checkEmailInUse(email.value)"
-                    (blur)="checkEmailInUse(email.value)" (input)="clearEmailInUse()"
+                    (blur)="checkEmailInUse(email.value)" (input)="checkEmailInUse(email.value)"
                     [class.is-in-use]="emailInUse" />
                 <div [hidden]="!emailInUse" class="alert alert-danger">
                     {{emailInUseMessage}}

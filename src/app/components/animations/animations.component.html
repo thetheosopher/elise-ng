@@ -1,7 +1,7 @@
 <div class='animations-page'>
     <h3>Animations</h3>
     <ul class='animation-grid'>
-        <li *ngFor='let model of models'>
+        <li *ngFor='let model of models; trackBy: trackByModelId'>
             <span><a routerLink='/animations/{{model.id}}'>{{model.name}}</a></span>
         </li>
     </ul>

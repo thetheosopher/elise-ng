@@ -1,5 +1,5 @@
 <div class='files-list' *ngIf='uploads != null && uploads.length > 0'>
-    <div class="single-file" *ngFor='let upload of uploads'>
+    <div class="single-file" *ngFor='let upload of uploads; trackBy: trackByUploadId'>
         <div class="info">
             <div class="name">
                 {{ upload.name }}

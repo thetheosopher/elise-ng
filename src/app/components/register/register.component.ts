@@ -6,6 +6,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Subject, of } from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 
 @Component({
     imports: [CommonModule, FormsModule, RouterModule],
@@ -27,12 +29,96 @@ export class RegisterComponent implements OnInit {
     emailInUseMessage: string = null;
     confirmationComplete = false;
 
+    private readonly nameCheckRequests = new Subject<string>();
+    private readonly emailCheckRequests = new Subject<string>();
+
     constructor(
         private apiService: ApiService,
         private toasterService: ToastrService) {
     }
 
     ngOnInit() {
+        this.nameCheckRequests.pipe(
+            debounceTime(300),
+            distinctUntilChanged(),
+            switchMap((name) => {
+                const normalized = (name ?? '').trim();
+                if (!normalized) {
+                    return of({ state: 'clear' as const });
+                }
+                return this.apiService.checkNameInUse(normalized).pipe(
+                    map((registrationInfoDTO) => ({ state: 'data' as const, registrationInfoDTO })),
+                    catchError(() => of({ state: 'error' as const }))
+                );
+            }),
+            takeUntilDestroyed(this.destroyRef)
+        ).subscribe((result) => {
+            if (result.state === 'clear') {
+                this.nameInUse = false;
+                this.nameInUseMessage = null;
+                return;
+            }
+
+            if (result.state === 'error') {
+                this.nameInUse = true;
+                this.nameInUseMessage = 'Error checking if name is in use.';
+                return;
+            }
+
+            if (result.registrationInfoDTO.LoginCount > 0) {
+                this.nameInUse = true;
+                this.nameInUseMessage = 'User name already in use by registered user.';
+            }
+            else if (result.registrationInfoDTO.RegistrationCount > 0) {
+                this.nameInUse = true;
+                this.nameInUseMessage = 'User name already in use by pending user.';
+            }
+            else {
+                this.nameInUse = false;
+                this.nameInUseMessage = null;
+            }
+        });
+
+        this.emailCheckRequests.pipe(
+            debounceTime(300),
+            distinctUntilChanged(),
+            switchMap((email) => {
+                const normalized = (email ?? '').trim();
+                if (!normalized) {
+                    return of({ state: 'clear' as const });
+                }
+                return this.apiService.checkEmailInUse(normalized).pipe(
+                    map((registrationInfoDTO) => ({ state: 'data' as const, registrationInfoDTO })),
+                    catchError(() => of({ state: 'error' as const }))
+                );
+            }),
+            takeUntilDestroyed(this.destroyRef)
+        ).subscribe((result) => {
+            if (result.state === 'clear') {
+                this.emailInUse = false;
+                this.emailInUseMessage = null;
+                return;
+            }
+
+            if (result.state === 'error') {
+                this.emailInUse = true;
+                this.emailInUseMessage = 'Error checking if email is in use.';
+                return;
+            }
+
+            if (result.registrationInfoDTO.LoginCount > 0) {
+                this.emailInUse = true;
+                this.emailInUseMessage = 'Email already in use by registered user.';
+            }
+            else if (result.registrationInfoDTO.RegistrationCount > 0) {
+                this.emailInUse = true;
+                this.emailInUseMessage = 'Email already in use by pending user.';
+            }
+            else {
+                this.emailInUse = false;
+                this.emailInUseMessage = null;
+            }
+        });
     }
 
     onSubmit() {
@@ -72,32 +158,7 @@ export class RegisterComponent implements OnInit {
     }
 
     checkNameInUse(name: string) {
-        if(name && name.trim().length > 0) {
-            this.apiService.checkNameInUse(name).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-                next: (registrationInfoDTO) => {
-                    if(registrationInfoDTO.LoginCount > 0) {
-                        this.nameInUse = true;
-                        this.nameInUseMessage = 'User name already in use by registered user.';
-                    }
-                    else if(registrationInfoDTO.RegistrationCount > 0) {
-                        this.nameInUse = true;
-                        this.nameInUseMessage = 'User name already in use by pending user.';
-                    }
-                    else {
-                        this.nameInUse = false;
-                        this.nameInUseMessage = null;
-                    }
-                },
-                error: (er) => {
-                    this.nameInUse = true;
-                    this.nameInUseMessage = 'Error checking if name is in use.';
-                }
-            });
-        }
-        else {
-            this.nameInUse = false;
-            this.nameInUseMessage = null;
-        }
+        this.nameCheckRequests.next(name ?? '');
     }
 
     clearEmailInUse() {
@@ -106,31 +167,6 @@ export class RegisterComponent implements OnInit {
     }
 
     checkEmailInUse(email: string) {
-        if(email && email.trim().length > 0) {
-            this.apiService.checkEmailInUse(email).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-                next: (registrationInfoDTO) => {
-                    if(registrationInfoDTO.LoginCount > 0) {
-                        this.emailInUse = true;
-                        this.emailInUseMessage = 'Email already in use by registered user.';
-                    }
-                    else if(registrationInfoDTO.RegistrationCount > 0) {
-                        this.emailInUse = true;
-                        this.emailInUseMessage = 'Email already in use by pending user.';
-                    }
-                    else {
-                        this.emailInUse = false;
-                        this.emailInUseMessage = null;
-                    }
-                },
-                error: (er) => {
-                    this.emailInUse = true;
-                    this.emailInUseMessage = 'Error checking if email is in use.';
-                }
-            });
-        }
-        else {
-            this.emailInUse = false;
-            this.emailInUseMessage = null;
-        }
+        this.emailCheckRequests.next(email ?? '');
     }
 }

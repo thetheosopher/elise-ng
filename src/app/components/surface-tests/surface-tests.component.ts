@@ -37,4 +37,8 @@ export class SurfaceTestsComponent implements OnInit {
     ngOnInit() {
         this.getTests();
     }
+
+    trackByTestId(_index: number, test: SurfaceSample): string {
+        return test.id;
+    }
 }

@@ -37,4 +37,8 @@ export class DesignTestsComponent implements OnInit {
     ngOnInit() {
         this.getTests();
     }
+
+    trackByTestId(_index: number, test: DesignSample): string {
+        return test.id;
+    }
 }

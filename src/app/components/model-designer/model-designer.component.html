@@ -37,6 +37,13 @@
                 class='fas fa-file-upload fa-2x'></span>
         </button>
 
+        <button class='btn btn-light py-0 px-2' [disabled]='model == null'
+            (click)="svgImportInput.click()">
+            <span style='position: relative; top: 1px;' ngbTooltip="Import Local SVG">Import SVG</span>
+        </button>
+        <input #svgImportInput type="file" accept=".svg,image/svg+xml" style="display: none"
+            (change)="importLocalSvg(svgImportInput.files, svgImportInput)">
+
         <div class='mx-1' style='position: relative; top: 6px; display: inline-block;'>
 
             <div *ngIf="modelPath; else noModelPath">
@@ -254,7 +261,8 @@
                                         (controllerSet)="controllerSet($event)"
                                         (selectionChanged)="selectionChanged($event)"
                                         (elementCreated)="elementCreated($event)"
-                                        (viewDragEnter)="viewDragEnter($event)" (viewDragLeave)="viewDragLeave($event)">
+                                        (viewDragEnter)="viewDragEnter($event)" (viewDragLeave)="viewDragLeave($event)"
+                                        (viewDrop)="viewDrop($event)">
                                     </app-elise-design>
                                 </div>
                             </div>

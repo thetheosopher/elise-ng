@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 import { Upload } from '../../services/upload.service';
 import { CommonModule } from '@angular/common';
@@ -10,16 +10,13 @@ import { ProgressComponent } from '../progress/progress.component';
     templateUrl: './upload-list.component.html',
     styleUrls: ['./upload-list.component.scss']
 })
-export class UploadListComponent implements OnInit {
+export class UploadListComponent {
 
     @Input() uploads: Upload[] = [];
 
     @Output() public cancelUpload: EventEmitter<Upload> = new EventEmitter();
 
     constructor() { }
-
-    ngOnInit() {
-    }
 
     onCancelUpload(upload: Upload) {
         this.cancelUpload.emit(upload);
@@ -34,5 +31,9 @@ export class UploadListComponent implements OnInit {
         const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    }
+
+    trackByUploadId(_index: number, upload: Upload): number {
+        return upload.id;
     }
 }

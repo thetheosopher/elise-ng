@@ -1,6 +1,6 @@
 <!-- Modal Header -->
 <div class="modal-header">
-    <h4 class="modal-title">Model Action</h4>
+    <h4 class="modal-title">{{title}}</h4>
     <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('X')"></button>
 </div>
 
@@ -12,12 +12,26 @@
         </app-elise-view>
         <h5 class="m-2">{{modalInfo.info}}</h5>
     </div>
-    <button class='btn btn-primary py-2 px-2 mx-2' (click)="actionEdit()">
-        <span>Edit Model</span>
+    <div *ngIf="showImportMode" class="mb-3 text-start">
+        <div><strong>Import Mode</strong></div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="importMode" id="svgImportEmbed"
+                [(ngModel)]="modalInfo.importMode" value="embed">
+            <label class="form-check-label" for="svgImportEmbed">Embed as a model element</label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="importMode" id="svgImportDecompose"
+                [(ngModel)]="modalInfo.importMode" value="decompose">
+            <label class="form-check-label" for="svgImportDecompose">Decompose into discrete elements</label>
+        </div>
+        <small class="text-muted">Complex SVG features may import more faithfully when embedded.</small>
+    </div>
+    <button class='btn btn-primary py-2 px-2 mx-2' (click)="actionEdit()" *ngIf="modalInfo.canEdit">
+        <span>{{editLabel}}</span>
     </button>
     <button class='btn btn-primary py-2 px-2 mx-2' (click)="actionCreateElement()"
         *ngIf="modalInfo.canEmbed">
-        <span>Embed Model</span>
+        <span>{{createLabel}}</span>
     </button>
     <button class='btn btn-primary py-2 px-2 mx-2' (click)="actionAddResource()"
         *ngIf="modalInfo.canEmbed">

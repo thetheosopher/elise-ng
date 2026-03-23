@@ -22,6 +22,7 @@ import { BitmapResource, Color, Model, ModelResource, Point, Region, Resource, S
 import { FillInfo, LinearGradientFill, PointEventParameters, RadialGradientFill, StrokeInfo, ViewDragArgs } from 'elise-graphics';
 import { ElementBase, ImageElement, ModelElement, TextElement } from 'elise-graphics';
 import { DesignController } from 'elise-graphics';
+import { SVGImporter } from 'elise-graphics';
 
 // Design tools
 import { DesignTool, EllipseTool, ImageElementTool, LineTool, ModelElementTool,
@@ -83,6 +84,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     selectedFilePath: string;
 
     readonly MODEL_MIME_TYPE = 'application/elise';
+    readonly SVG_MIME_TYPE = 'image/svg+xml';
 
     controller: DesignController;
     lastMessage = '-';
@@ -95,6 +97,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     formattedJson: string;
     isBusy = false;
     isDragging = false;
+    pendingImportPoint?: Point;
     selectedElementCount = 0;
     lowestSelectedIndex: number;
     highestSelectedIndex: number;
@@ -752,6 +755,43 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         this.fileUploadInputElement.value = null;
     }
 
+    importLocalSvg(files: FileList | null, input: HTMLInputElement) {
+        this.importLocalSvgAtPoint(files, input, undefined);
+    }
+
+    importLocalSvgAtPoint(files: FileList | null, input: HTMLInputElement | null, point?: Point) {
+        if (!files || files.length === 0) {
+            return;
+        }
+        const file = files[0];
+        if (this.getExtension(file.name).toLowerCase() !== '.svg') {
+            if (input) {
+                input.value = null;
+            }
+            this.toasterService.warning('Only SVG files can be dropped directly into the model editor.');
+            return;
+        }
+        const reader = new FileReader();
+        this.isBusy = true;
+        this.pendingImportPoint = point;
+        reader.onload = () => {
+            const svgText = typeof reader.result === 'string' ? reader.result : '';
+            this.openSvgActionModal(svgText, file.name, null, true);
+            if (input) {
+                input.value = null;
+            }
+        };
+        reader.onerror = () => {
+            this.isBusy = false;
+            this.pendingImportPoint = undefined;
+            if (input) {
+                input.value = null;
+            }
+            this.onError(`Unable to read ${file.name}.`);
+        };
+        reader.readAsText(file);
+    }
+
     uploadFile(file: File) {
         const urlRequest = new SignedUrlRequestDTO();
         urlRequest.ContainerID = this.selectedContainerID;
@@ -815,6 +855,12 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             case '.mdl':
                 {
                     this.loadModelActionModal();
+                }
+                break;
+
+            case '.svg':
+                {
+                    this.loadSvgActionModal();
                 }
                 break;
 
@@ -911,38 +957,15 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                             model.prepareResources(null, (prepareResourceResult) => {
                                 this.isBusy = false;
                                 if (prepareResourceResult) {
-                                    const modalInfo = new ModelActionModalInfo();
-                                    modalInfo.model = model;
-                                    modalInfo.path = this.selectedFilePath;
-                                    modalInfo.containerID = this.selectedContainerID;
-                                    modalInfo.containerName = this.selectedContainerName;
+                                    const modalInfo = this.createModelActionModalInfo(
+                                        model,
+                                        this.selectedFilePath,
+                                        this.selectedContainerID,
+                                        this.selectedContainerName,
+                                        'model');
+                                    modalInfo.canEdit = true;
                                     modalInfo.canEmbed = this.model != null && this.modelContainerID === this.selectedContainerID;
-                                    const wr = Math.min((window.innerWidth - 360), 1000) / model.getSize().width;
-                                    const hr = (window.innerHeight - 360) / model.getSize().height;
-                                    modalInfo.scale = Math.min(wr, hr);
-                                    modalInfo.info = model.getSize().width + 'x' + model.getSize().height;
-                                    const modal = this.modalService.open(ModelActionModalComponent, {
-                                        ariaLabelledBy: 'modal-basic-title',
-                                        size: 'xl',
-                                        scrollable: true
-                                    });
-                                    modal.componentInstance.modalInfo = modalInfo;
-                                    modal.result.then((modalResult: ModelActionModalInfo) => {
-                                        switch (modalResult.action) {
-                                            case 'edit':
-                                                this.modelActionEdit(modalResult);
-                                                break;
-
-                                            case 'create-element':
-                                                this.modelActionCreateElement(modalResult);
-                                                break;
-
-                                            case 'add-resource':
-                                                this.modelActionAddResource(modalResult);
-                                                break;
-                                        }
-                                    }, (error) => {
-                                    });
+                                    this.openModelActionModal(modalInfo);
                                 }
                                 else {
                                     this.onError('Error loading preview model resources.');
@@ -967,6 +990,77 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         });
     }
 
+    loadSvgActionModal() {
+        const urlRequest = new SignedUrlRequestDTO();
+        urlRequest.ContainerID = this.selectedContainerID;
+        urlRequest.Path = this.selectedFilePath;
+        urlRequest.Verb = 'get';
+        this.isBusy = true;
+        this.apiService.getSignedUrl(urlRequest).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+            next: (signedUrlRequest) => {
+                this.http.get(signedUrlRequest.Url, { responseType: 'text' }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+                    next: (svgText: string) => {
+                        this.openSvgActionModal(svgText, this.selectedFilePath, this.selectedContainerID, true);
+                    },
+                    error: (error) => {
+                        this.isBusy = false;
+                        this.onError(error);
+                    }
+                });
+            },
+            error: (error) => {
+                this.isBusy = false;
+                this.onError(error);
+            }
+        });
+    }
+
+    openSvgActionModal(svgText: string, path: string, containerID: string | null, canPrepareResources: boolean) {
+        try {
+            const model = SVGImporter.parse(svgText);
+            if (containerID) {
+                this.normalizeImportedSvgResourceUris(model, this.getPathDirectory(path));
+                model.resourceManager.urlProxy = new ContainerUrlProxy(this.apiService, containerID);
+                model.resourceManager.localResourcePath = this.getPathDirectory(path);
+            }
+            if (canPrepareResources && this.canPrepareImportedResources(model)) {
+                model.prepareResources(null, (prepareResourceResult) => {
+                    this.isBusy = false;
+                    if (prepareResourceResult) {
+                        this.showSvgActionModal(model, path, containerID);
+                    }
+                    else {
+                        this.onError('Error loading SVG preview resources.');
+                    }
+                });
+                return;
+            }
+            if (!containerID && this.model) {
+                this.toasterService.warning('Local SVG import does not resolve sibling image files. Relative image references may be skipped.');
+            }
+            this.isBusy = false;
+            this.showSvgActionModal(model, path, containerID);
+        }
+        catch (error) {
+            this.isBusy = false;
+            this.onError(error);
+        }
+    }
+
+    showSvgActionModal(model: Model, path: string, containerID: string | null) {
+        const modalInfo = this.createModelActionModalInfo(
+            model,
+            path,
+            containerID,
+            this.selectedContainerName,
+            'svg');
+        modalInfo.canEdit = false;
+        modalInfo.canEmbed = this.model != null;
+        modalInfo.canDecompose = this.model != null;
+        modalInfo.importMode = 'embed';
+        this.openModelActionModal(modalInfo);
+    }
+
     modelActionEdit(modalInfo: ModelActionModalInfo) {
         this.modelContainerID = modalInfo.containerID;
         this.modelContainerName = modalInfo.containerName;
@@ -982,6 +1076,15 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     }
 
     modelActionCreateElement(modalInfo: ModelActionModalInfo) {
+        if (modalInfo.sourceType === 'svg') {
+            if (modalInfo.importMode === 'decompose') {
+                this.svgActionDecompose(modalInfo);
+            }
+            else {
+                this.svgActionCreateElement(modalInfo);
+            }
+            return;
+        }
         const modelResource = new ModelResource();
         modelResource.uri = modalInfo.path;
         modelResource.model = modalInfo.model;
@@ -995,11 +1098,174 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     }
 
     modelActionAddResource(modalInfo: ModelActionModalInfo) {
+        if (modalInfo.sourceType === 'svg') {
+            this.svgActionAddResource(modalInfo);
+            return;
+        }
         const modelResource = new ModelResource();
         modelResource.uri = modalInfo.path;
         modelResource.model = modalInfo.model;
         modelResource.key = this.getResourceKey(modalInfo.path);
         this.model.resourceManager.add(modelResource);
+    }
+
+    svgActionCreateElement(modalInfo: ModelActionModalInfo) {
+        const modelResource = this.addEmbeddedModelResource(modalInfo.path, modalInfo.model);
+        const modelSize = modalInfo.model.getSize();
+        const importPoint = this.pendingImportPoint ?? Point.create(0, 0);
+        const modelElement = ModelElement.create(modelResource, importPoint.x, importPoint.y, modelSize.width, modelSize.height);
+        modelElement.setInteractive(true);
+        modelElement.aspectLocked = true;
+        this.controller.addElement(modelElement);
+        this.pendingImportPoint = undefined;
+    }
+
+    svgActionAddResource(modalInfo: ModelActionModalInfo) {
+        this.addEmbeddedModelResource(modalInfo.path, modalInfo.model);
+        this.pendingImportPoint = undefined;
+    }
+
+    svgActionDecompose(modalInfo: ModelActionModalInfo) {
+        const importedElements = this.importModelElements(modalInfo.model, this.pendingImportPoint);
+        if (importedElements.length === 0) {
+            this.pendingImportPoint = undefined;
+            this.toasterService.warning('The SVG did not produce any importable elements.');
+            return;
+        }
+        this.controller.selectedElements = importedElements;
+        this.controller.draw();
+        this.selectionChanged(importedElements.length);
+        this.pendingImportPoint = undefined;
+    }
+
+    createModelActionModalInfo(
+        model: Model,
+        path: string,
+        containerID: string | null,
+        containerName: string,
+        sourceType: 'model' | 'svg') {
+        const modalInfo = new ModelActionModalInfo();
+        modalInfo.model = model;
+        modalInfo.path = path;
+        modalInfo.containerID = containerID;
+        modalInfo.containerName = containerName;
+        modalInfo.sourceType = sourceType;
+        const modelSize = model.getSize();
+        const wr = Math.min((window.innerWidth - 360), 1000) / modelSize.width;
+        const hr = (window.innerHeight - 360) / modelSize.height;
+        modalInfo.scale = Math.min(wr, hr);
+        modalInfo.info = modelSize.width + 'x' + modelSize.height;
+        return modalInfo;
+    }
+
+    openModelActionModal(modalInfo: ModelActionModalInfo) {
+        const modal = this.modalService.open(ModelActionModalComponent, {
+            ariaLabelledBy: 'modal-basic-title',
+            size: 'xl',
+            scrollable: true
+        });
+        modal.componentInstance.modalInfo = modalInfo;
+        modal.result.then((modalResult: ModelActionModalInfo) => {
+            switch (modalResult.action) {
+                case 'edit':
+                    this.modelActionEdit(modalResult);
+                    break;
+
+                case 'create-element':
+                    this.modelActionCreateElement(modalResult);
+                    break;
+
+                case 'add-resource':
+                    this.modelActionAddResource(modalResult);
+                    break;
+            }
+        }, (_error) => {
+        });
+    }
+
+    addEmbeddedModelResource(path: string, model: Model) {
+        const modelResource = ModelResource.create(this.getResourceKey(path), model);
+        this.model.resourceManager.add(modelResource);
+        return modelResource;
+    }
+
+    importModelElements(sourceModel: Model, point?: Point) {
+        const resourceKeyMap = new Map<string, string>();
+        sourceModel.resources.forEach((resource) => {
+            const importedResource = this.cloneImportedResource(resource, resourceKeyMap);
+            this.model.resourceManager.add(importedResource);
+        });
+
+        const importedElements: ElementBase[] = [];
+        const origin = point ?? Point.create(0, 0);
+        sourceModel.elements.forEach((sourceElement) => {
+            const clonedElement = sourceElement.clone();
+            this.remapElementResourceKeys(clonedElement, resourceKeyMap);
+            clonedElement.translate(origin.x, origin.y);
+            clonedElement.setInteractive(true);
+            this.model.add(clonedElement);
+            importedElements.push(clonedElement);
+        });
+        return importedElements;
+    }
+
+    cloneImportedResource(resource: Resource, resourceKeyMap: Map<string, string>) {
+        const clonedResource = resource.clone();
+        if (clonedResource.key) {
+            const mappedKey = this.getAvailableResourceKey(clonedResource.key, clonedResource.locale);
+            resourceKeyMap.set(clonedResource.key, mappedKey);
+            clonedResource.key = mappedKey;
+        }
+        return clonedResource;
+    }
+
+    remapElementResourceKeys(element: ElementBase, resourceKeyMap: Map<string, string>) {
+        const elementWithSource = element as ElementBase & { source?: string };
+        if (elementWithSource.source) {
+            elementWithSource.source = this.mapImportedResourceKey(elementWithSource.source, resourceKeyMap);
+        }
+        if (typeof element.fill === 'string') {
+            element.fill = this.remapFillResourceKey(element.fill, resourceKeyMap);
+        }
+    }
+
+    mapImportedResourceKey(key: string, resourceKeyMap: Map<string, string>) {
+        return resourceKeyMap.get(key) ?? key;
+    }
+
+    remapFillResourceKey(fill: string, resourceKeyMap: Map<string, string>) {
+        const loweredFill = fill.toLowerCase();
+        if (!loweredFill.startsWith('image(') && !loweredFill.startsWith('model(')) {
+            return fill;
+        }
+        const prefix = fill.substring(0, 6);
+        const body = fill.substring(6, fill.length - 1);
+        const parts = body.split(';');
+        const key = parts.length === 2 ? parts[1] : parts[0];
+        const mappedKey = this.mapImportedResourceKey(key, resourceKeyMap);
+        if (parts.length === 2) {
+            return `${prefix}${parts[0]};${mappedKey})`;
+        }
+        return `${prefix}${mappedKey})`;
+    }
+
+    canPrepareImportedResources(model: Model) {
+        return model.resources.every((resource) => !resource.uri || !this.isRelativeResourceUri(resource.uri));
+    }
+
+    normalizeImportedSvgResourceUris(model: Model, basePath: string) {
+        model.resources.forEach((resource) => {
+            if (resource.uri && this.isRelativeResourceUri(resource.uri)) {
+                resource.uri = basePath + resource.uri;
+            }
+        });
+    }
+
+    isRelativeResourceUri(uri: string) {
+        const loweredUri = uri.toLowerCase();
+        return !uri.startsWith('/') && !uri.startsWith(':') &&
+            !loweredUri.startsWith('http://') && !loweredUri.startsWith('https://') &&
+            !loweredUri.startsWith('data:') && !loweredUri.startsWith('blob:');
     }
 
     setModel(model: Model, modelContainerID: string, modelContainerName: string, modelPath: string) {
@@ -1034,15 +1300,19 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
     getResourceKey(path: string) {
         const fileName = this.getFileNameWithoutExtension(this.getPathFileName(path));
-        let fileNameTest = fileName;
+        return this.getAvailableResourceKey(fileName);
+    }
+
+    getAvailableResourceKey(baseKey: string, locale?: string) {
+        let fileNameTest = baseKey;
         let index = 0;
         do {
-            const resource = this.model.resourceManager.findBestResource(fileNameTest, null);
+            const resource = this.model.resourceManager.findBestResource(fileNameTest, locale);
             if (!resource) {
                 break;
             }
             index++;
-            fileNameTest = fileName + '.' + index;
+            fileNameTest = baseKey + '.' + index;
         } while (true);
         return fileNameTest;
     }
@@ -1838,6 +2108,15 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
     viewDragLeave(args: ViewDragArgs) {
         this.isDragging = false;
+    }
+
+    viewDrop(args: ViewDragArgs) {
+        this.isDragging = false;
+        const files = args.event?.dataTransfer?.files;
+        if (!this.model || !files || files.length === 0) {
+            return;
+        }
+        this.importLocalSvgAtPoint(files, null, args.location);
     }
 
     log(message: string) {
