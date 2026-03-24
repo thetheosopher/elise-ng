@@ -1193,17 +1193,17 @@ src/
 | 2.5 | Add item count badges to listing page headers | S | At-a-glance information | ✅ Done |
 | 2.6 | Add filter/search input to Animations listing | S | Discoverability for 50+ items | ✅ Done |
 
-### Phase 3 — Editor & Tooling Polish (Medium Effort)
+### Phase 3 — Editor & Tooling Polish (Medium Effort) ✅ COMPLETED
 
-| # | Task | Effort | Impact |
-|---|------|--------|--------|
-| 3.1 | Restructure toolbars with flexbox groups and dividers | M | Cleaner, more professional editor look |
-| 3.2 | Lighten split panel borders (5px → 1px, style gutter) | S | Modern, lighter feel |
-| 3.3 | Move title left and add status bar section | S | Standard toolbar layout |
-| 3.4 | Modernize file upload areas (drop zone pattern) | M | Better UX and visual polish |
-| 3.5 | Add file type icons in file list | S | Visual information density |
-| 3.6 | Categorize Model Playground Load menu | M | Better organization for 50+ items |
-| 3.7 | Style playground textarea (dark, monospace) | S | Quick code editor upgrade |
+| # | Task | Effort | Impact | Status |
+|---|------|--------|--------|--------|
+| 3.1 | Restructure toolbars with flexbox groups and dividers | M | Cleaner, more professional editor look | ✅ Done |
+| 3.2 | Lighten split panel borders (5px → 1px, style gutter) | S | Modern, lighter feel | ✅ Done |
+| 3.3 | Move title left and add status bar section | S | Standard toolbar layout | ✅ Done |
+| 3.4 | Modernize file upload areas (drop zone pattern) | M | Better UX and visual polish | ✅ Done |
+| 3.5 | Add file type icons in file list | S | Visual information density | ✅ Done |
+| 3.6 | Categorize Model Playground Load menu | M | Better organization for 50+ items | ✅ Done |
+| 3.7 | Style playground textarea (dark, monospace) | S | Quick code editor upgrade | ✅ Done |
 
 ### Phase 4 — Authentication & Shell (Medium Effort)
 

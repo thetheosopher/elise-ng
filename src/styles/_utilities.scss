@@ -27,3 +27,155 @@
 .page-content {
     padding: 1.5rem 2rem;
 }
+
+// Shared toolbar styles (model-designer, model-playground, container-explorer)
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: $toolbar-padding;
+    background: $toolbar-bg;
+    border-bottom: 1px solid $panel-border;
+    flex-wrap: wrap;
+    min-height: $toolbar-height;
+}
+
+.toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.toolbar-divider {
+    width: 1px;
+    height: 24px;
+    background: $elise-gray-300;
+    margin: 0 0.375rem;
+    flex-shrink: 0;
+}
+
+.toolbar-spacer {
+    flex: 1;
+}
+
+.toolbar-title {
+    font-weight: 600;
+    font-size: 1rem;
+    margin: 0;
+    padding: 0;
+    white-space: nowrap;
+}
+
+.toolbar-status {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+// Shared split panel styles (lighter borders + styled gutter)
+.editor-panel {
+    height: calc(100vh - 131px);
+}
+
+as-split.editor-split {
+    border: 1px solid $panel-border;
+    border-radius: $radius-sm;
+}
+
+.as-split-gutter {
+    background-color: $elise-gray-100 !important;
+    transition: background-color 0.15s;
+
+    &:hover {
+        background-color: $elise-gray-200 !important;
+    }
+}
+
+// Upload drop zone
+.upload-zone {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border: 2px dashed $elise-gray-300;
+    border-radius: $radius-sm;
+    cursor: pointer;
+    transition: border-color 0.15s, background-color 0.15s;
+    margin-bottom: 0.5rem;
+
+    &:hover {
+        border-color: $elise-primary;
+        background-color: rgba($elise-primary, 0.03);
+    }
+
+    input[type="file"] {
+        width: 0;
+        height: 0;
+        overflow: hidden;
+        opacity: 0;
+        position: absolute;
+    }
+}
+
+.upload-zone-label {
+    font-size: 0.8rem;
+    color: $elise-gray-500;
+}
+
+.upload-zone-icon {
+    color: $elise-gray-500;
+    font-size: 1.1rem;
+}
+
+// File type icon alignment
+.file-icon {
+    width: 1.25em;
+    text-align: center;
+    margin-right: 0.375rem;
+    color: $elise-gray-500;
+}
+
+// Editor toolbar (flexbox replacement for table-based layout)
+.editor-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.375rem;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+}
+
+// Stroke/fill color swatch
+.color-swatch {
+    height: 24px;
+    width: 32px;
+    border: 1px solid $elise-gray-200;
+    border-radius: 2px;
+    overflow: hidden;
+    background-image: url(/assets/images/grid.png);
+    background-size: 8px 8px;
+}
+
+// Playground code editor
+.playground-editor {
+    font-family: $font-mono;
+    font-size: 13px;
+    line-height: 1.5;
+    border: 1px solid $elise-gray-200;
+    border-radius: $radius-sm;
+    padding: 0.75rem;
+    background: $elise-gray-900;
+    color: #e2e8f0;
+    resize: none;
+    tab-size: 4;
+
+    &:focus {
+        outline: none;
+        border-color: $elise-primary;
+        box-shadow: 0 0 0 2px rgba($elise-primary, 0.15);
+    }
+}

@@ -1,40 +1,44 @@
-<div style='height: calc(100vh - 131px);'>
+<div class='editor-panel'>
 
     <div class='toolbar'>
 
-        <h4>Model Playground</h4>
+        <h5 class='toolbar-title'>Model Playground</h5>
+
+        <div class='toolbar-divider'></div>
 
         <!-- Container selector -->
-        <app-container-selector (containerSelected)='onContainerSelected($event)'
-            (containerDeleted)='onContainerDeleted($event)' style='display: inline-block;'>
-        </app-container-selector>
+        <div class='toolbar-group'>
+            <app-container-selector (containerSelected)='onContainerSelected($event)'
+                (containerDeleted)='onContainerDeleted($event)'>
+            </app-container-selector>
 
-        <!-- New Folder Button -->
-        <button class='btn btn-light py-0 px-1' [disabled]='selectedFolderPath == null'
-            (click)="containertree.showNewFolderModal()" aria-label="New Folder">
-            <span style='position: relative; top: 4px;' placement="bottom" ngbTooltip="New Folder"
-                class='fas fa-folder-plus fa-2x'></span>
-        </button>
+            <!-- New Folder Button -->
+            <button class='btn btn-light btn-sm' [disabled]='selectedFolderPath == null'
+                (click)="containertree.showNewFolderModal()" aria-label="New Folder">
+                <span placement="bottom" ngbTooltip="New Folder"
+                    class='fas fa-folder-plus fa-lg'></span>
+            </button>
 
-        <!-- Delete Folder Button -->
-        <button class='btn btn-light py-0 px-0' [disabled]='selectedFolderPath == null || selectedFolderPath === "/"'
-            (click)="containertree.showDeleteFolderModal()" aria-label="Delete Folder">
-            <span style='position: relative; top: 4px;' placement="bottom" ngbTooltip="Delete Folder"
-                class='fas fa-folder-minus fa-2x'></span>
-        </button>
-
-        <div class='mx-1' style='position: relative; top: 6px; display: inline-block;'>
-            <!-- Selected folder path label -->
-            <span><strong>{{selectedContainerName}}{{selectedFolderPath}}</strong></span>
+            <!-- Delete Folder Button -->
+            <button class='btn btn-light btn-sm' [disabled]='selectedFolderPath == null || selectedFolderPath === "/"'
+                (click)="containertree.showDeleteFolderModal()" aria-label="Delete Folder">
+                <span placement="bottom" ngbTooltip="Delete Folder"
+                    class='fas fa-folder-minus fa-lg'></span>
+            </button>
         </div>
 
-        <span *ngIf="isBusy" class="spinner-border spinner-border-sm text-success"
-            style="margin-left: 4px; position: relative; top: 2px;"></span>
+        <div class='toolbar-spacer'></div>
+
+        <!-- Status bar -->
+        <div class='toolbar-status'>
+            <span class="text-muted"><strong>{{selectedContainerName}}{{selectedFolderPath}}</strong></span>
+            <span *ngIf="isBusy" class="spinner-border spinner-border-sm text-primary ms-2"></span>
+        </div>
 
     </div>
 
     <!-- Main horizontal split -->
-    <as-split unit='percent' direction='horizontal' gutterSize='5' style='border: 5px solid rgb(231, 231, 231);'>
+    <as-split unit='percent' direction='horizontal' gutterSize='5' class='editor-split'>
         <as-split-area size='20' minSize='10' maxSize='40'>
             <as-split unit='percent' direction='vertical' gutterSize='5'>
                 <as-split-area size='33' minsize='10' maxsize='90'>
@@ -43,8 +47,10 @@
                 </as-split-area>
                 <as-split-area size='67' appDnd (fileDropped)="onFileDropped($event)">
                     <app-alert id='container-explorer'></app-alert>
-                    <div *ngIf='selectedFolderPath != null' class="mb-2">
-                        <input type="file" class="form-control form-control-sm" id="fileUploadInput"
+                    <div *ngIf='selectedFolderPath != null' class="upload-zone" (click)="fileUploadInput.click()">
+                        <span class="fas fa-cloud-upload-alt upload-zone-icon"></span>
+                        <span class="upload-zone-label">Drop files or click to upload</span>
+                        <input type="file" id="fileUploadInput"
                             #fileUploadInput (change)='uploadFiles(fileUploadInput.files)' multiple>
                     </div>
                     <app-upload-list [uploads]="uploads" (cancelUpload)="cancelUpload($event)"></app-upload-list>
@@ -60,73 +66,80 @@
                 <ng-container [ngbNavItem]="1">
                     <a ngbNavLink>Edit</a>
                     <ng-template ngbNavContent>
-                        <table style="margin-left: 4px;">
-                            <tr style="vertical-align: baseline;">
-                                <td>
-                                    <div ngbDropdown class="d-inline-block">
-                                        <button class="btn btn-sm btn-outline-primary" id="loadMenuDropdown"
-                                            ngbDropdownToggle>Load</button>
-                                        <div ngbDropdownMenu aria-labelledby="loadMenuDropdown" class="workshop-load-menu">
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('primitives', 'model')">Blank Model</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'ant-colony-trails')">Ant Colony Trails</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'aurora-borealis')">Aurora Borealis</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'cloth-simulation')">Cloth Simulation</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'conway-life-lab')">Conway Life Lab</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'digital-rain')">Digital Rain Simulation</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'dna-helix')">DNA Helix</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'ellipse-animation')">Ellipse Animation</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'fireflies')">Fireflies</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'fireworks')">Fireworks Display</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'flocking-swarm')">Flocking Swarm</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'fourier-flower')">Fourier Flower</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'fractal-zoom')">Fractal Zoom</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'geometric-morphing')">Geometric Morphing</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'gradient-animation')">Gradient Animation</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'heartbeat-monitor')">Heartbeat Monitor</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'harmonograph')">Harmonograph</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'hypotrochoid-weave')">Hypotrochoid Weave</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'kaleidoscope')">Kaleidoscope</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'lsystems-garden')">L-Systems Garden</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'lava-lamp')">Lava Lamp</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'line-animation')">Line Animation</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'lorenz-attractor')">Lorenz Attractor</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'maurer-rose')">Maurer Rose</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'metaballs')">Metaballs</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'moire-lattice')">Moire Lattice</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'multi-sprite-animation')">Multi Sprite Animation</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'newtons-cradle')">Newton's Cradle</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'aurora-clock')">Northern Lights Clock</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'ocean-waves')">Ocean Waves</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'particle-animation')">Particle Animation</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'pendulum-wave')">Pendulum Wave</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'plasma-effect')">Plasma Effect</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'polar-harmonic-mesh')">Polar Harmonic Mesh</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'radar-traffic')">Radar Traffic</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'raindrop-ripples')">Raindrop Ripples</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'reaction-diffusion')">Reaction-Diffusion</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'rotation-animation')">Rotation Animation</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'rrt-pathfinding')">RRT Pathfinding</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'snow-animation')">Snow Simulation</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'soft-body-blobs')">Soft Body Blobs</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'sine-lissajous-field')">Sine Lissajous Field</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'solar-system')">Solar System Orrery</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'spirograph')">Spirograph</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'sprite-transitions')">Sprite Image Transition</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'sprite-animation')">Sprite Sheet Animation</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'stargate-tunnel')">Stargate Tunnel</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'superformula-bloom')">Superformula Bloom</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'times-table-cardioid')">Times Table Cardioid</button>
-                                            <button ngbDropdownItem class="btn btn-sm" (click)="loadModel('animations', 'tornado')">Tornado</button>
-                                        </div>
-                                        <button class="btn btn-sm btn-outline-primary m-1" (click)="runScript()" id="runScript">Run</button>
+                        <div class="editor-toolbar">
+                            <div class='toolbar-group'>
+                                <div ngbDropdown class="d-inline-block">
+                                    <button class="btn btn-sm btn-outline-primary" id="loadMenuDropdown"
+                                        ngbDropdownToggle>Load</button>
+                                    <div ngbDropdownMenu aria-labelledby="loadMenuDropdown" class="workshop-load-menu">
+                                        <h6 class="dropdown-header">Basic</h6>
+                                        <button ngbDropdownItem (click)="loadModel('primitives', 'model')">Blank Model</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'ellipse-animation')">Ellipse Animation</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'gradient-animation')">Gradient Animation</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'line-animation')">Line Animation</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'rotation-animation')">Rotation Animation</button>
+                                        <h6 class="dropdown-header">Generative Art</h6>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'fourier-flower')">Fourier Flower</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'harmonograph')">Harmonograph</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'hypotrochoid-weave')">Hypotrochoid Weave</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'kaleidoscope')">Kaleidoscope</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'maurer-rose')">Maurer Rose</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'moire-lattice')">Moire Lattice</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'polar-harmonic-mesh')">Polar Harmonic Mesh</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'sine-lissajous-field')">Sine Lissajous Field</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'spirograph')">Spirograph</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'superformula-bloom')">Superformula Bloom</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'times-table-cardioid')">Times Table Cardioid</button>
+                                        <h6 class="dropdown-header">Nature &amp; Physics</h6>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'ant-colony-trails')">Ant Colony Trails</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'fireflies')">Fireflies</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'flocking-swarm')">Flocking Swarm</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'newtons-cradle')">Newton's Cradle</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'ocean-waves')">Ocean Waves</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'pendulum-wave')">Pendulum Wave</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'raindrop-ripples')">Raindrop Ripples</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'snow-animation')">Snow Simulation</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'tornado')">Tornado</button>
+                                        <h6 class="dropdown-header">Simulation</h6>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'cloth-simulation')">Cloth Simulation</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'conway-life-lab')">Conway Life Lab</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'metaballs')">Metaballs</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'particle-animation')">Particle Animation</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'reaction-diffusion')">Reaction-Diffusion</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'soft-body-blobs')">Soft Body Blobs</button>
+                                        <h6 class="dropdown-header">Visual Effects</h6>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'aurora-borealis')">Aurora Borealis</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'digital-rain')">Digital Rain Simulation</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'fireworks')">Fireworks Display</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'fractal-zoom')">Fractal Zoom</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'geometric-morphing')">Geometric Morphing</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'lava-lamp')">Lava Lamp</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'plasma-effect')">Plasma Effect</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'stargate-tunnel')">Stargate Tunnel</button>
+                                        <h6 class="dropdown-header">Data &amp; Technical</h6>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'aurora-clock')">Northern Lights Clock</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'dna-helix')">DNA Helix</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'heartbeat-monitor')">Heartbeat Monitor</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'lorenz-attractor')">Lorenz Attractor</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'lsystems-garden')">L-Systems Garden</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'radar-traffic')">Radar Traffic</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'rrt-pathfinding')">RRT Pathfinding</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'solar-system')">Solar System Orrery</button>
+                                        <h6 class="dropdown-header">Sprite &amp; Image</h6>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'multi-sprite-animation')">Multi Sprite Animation</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'sprite-transitions')">Sprite Image Transition</button>
+                                        <button ngbDropdownItem (click)="loadModel('animations', 'sprite-animation')">Sprite Sheet Animation</button>
                                     </div>
-                                </td>
-                            </tr>
-                        </table>
-                        <div style='margin-top: 0px;'>
+                                </div>
+                                <button class="btn btn-sm btn-success" (click)="runScript()" id="runScript">
+                                    <span class="fas fa-play me-1"></span>Run
+                                </button>
+                            </div>
+                        </div>
+                        <div>
                             <textarea [(ngModel)]="playgroundText" name="playgroundText" id="playgroundText"
-                                spellcheck="false" class="form-control" rows="12"
-                                style="font-family: monospace; height: calc(100vh - 232px);"></textarea>
+                                spellcheck="false" class="playground-editor"
+                                style="width: 100%; height: calc(100vh - 232px);"></textarea>
                         </div>
                     </ng-template>
                 </ng-container>
@@ -134,38 +147,28 @@
                     <a ngbNavLink>View</a>
                     <ng-template ngbNavContent>
                         <!-- Model Viewer -->
-                        <div *ngIf="model != null" style="margin-bottom: 4px;">
-                            <table style="margin-left: 4px;">
-                                <tr style="vertical-align: baseline;">
-                                    <td>
-                                        <select id="scale" [(ngModel)]="scale" ngbTooltip="Zoom"
-                                            class='btn btn-sm btn-outline-primary'>
-                                            <option [ngValue]="0.25">25%</option>
-                                            <option [ngValue]="0.5">50%</option>
-                                            <option [ngValue]="0.75">75%</option>
-                                            <option [ngValue]="1">100%</option>
-                                            <option [ngValue]="1.5">150%</option>
-                                            <option [ngValue]="2">200%</option>
-                                            <option [ngValue]="3">300%</option>
-                                            <option [ngValue]="4">400%</option>
-                                            <option [ngValue]="5">500%</option>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <select id="background" [(ngModel)]="background"
-                                            class='btn btn-sm btn-outline-primary' ngbTooltip="Drawing Surface">
-                                            <option value="grid">Grid</option>
-                                            <option value="white">White</option>
-                                            <option value="black">Black</option>
-                                            <option value="gray">Gray</option>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <div ngbDropdown class="d-inline-block">
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
+                        <div *ngIf="model != null" class="editor-toolbar">
+                            <div class='toolbar-group'>
+                                <select id="scale" [(ngModel)]="scale" ngbTooltip="Zoom"
+                                    class='btn btn-sm btn-outline-primary'>
+                                    <option [ngValue]="0.25">25%</option>
+                                    <option [ngValue]="0.5">50%</option>
+                                    <option [ngValue]="0.75">75%</option>
+                                    <option [ngValue]="1">100%</option>
+                                    <option [ngValue]="1.5">150%</option>
+                                    <option [ngValue]="2">200%</option>
+                                    <option [ngValue]="3">300%</option>
+                                    <option [ngValue]="4">400%</option>
+                                    <option [ngValue]="5">500%</option>
+                                </select>
+                                <select id="background" [(ngModel)]="background"
+                                    class='btn btn-sm btn-outline-primary' ngbTooltip="Drawing Surface">
+                                    <option value="grid">Grid</option>
+                                    <option value="white">White</option>
+                                    <option value="black">Black</option>
+                                    <option value="gray">Gray</option>
+                                </select>
+                            </div>
                         </div>
                         <div>
                             <div [ngClass]='backgroundClass()'>

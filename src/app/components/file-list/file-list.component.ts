@@ -65,4 +65,18 @@ export class FileListComponent {
     trackByFileName(_index: number, file: ManifestFileDTO): string {
         return file.Name;
     }
+
+    getFileIconClass(fileName: string): string {
+        const ext = (fileName || '').split('.').pop()?.toLowerCase();
+        switch (ext) {
+            case 'json': return 'fa-file-code';
+            case 'svg': return 'fa-file-image';
+            case 'png': case 'jpg': case 'jpeg': case 'gif': case 'webp': case 'bmp': return 'fa-file-image';
+            case 'js': case 'ts': case 'html': case 'css': case 'scss': return 'fa-file-code';
+            case 'pdf': return 'fa-file-pdf';
+            case 'zip': case 'gz': case 'tar': case 'rar': return 'fa-file-archive';
+            case 'txt': case 'md': return 'fa-file-alt';
+            default: return 'fa-file';
+        }
+    }
 }

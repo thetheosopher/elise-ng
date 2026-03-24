@@ -6,6 +6,7 @@
         <div class="single-file" *ngFor='let file of folderFiles; trackBy: trackByFileName'>
             <div class="info">
                 <div class="name">
+                    <span class="file-icon fas" [ngClass]="getFileIconClass(file.Name)"></span>
                     <a href="#" (click)="onSelectFile($event, file.Name)">{{file.Name}}</a>
                 </div>
                 <p class="size" *ngIf="showSize">
