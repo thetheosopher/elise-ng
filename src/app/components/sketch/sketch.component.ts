@@ -2,15 +2,16 @@ import { Component, DestroyRef, OnInit, ElementRef, ViewChild, inject } from '@a
 import { ActivatedRoute } from '@angular/router';
 import { ModelService } from '../../services/model.service';
 import { ToastrService } from 'ngx-toastr';
-import { Location } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { Model } from 'elise-graphics/lib/core/model';
 import { default as elise } from 'elise-graphics';
+import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { EliseViewComponent } from '../../elise/view/elise-view.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-    imports: [RouterModule, EliseViewComponent],
+    imports: [CommonModule, FormsModule, RouterModule, EliseViewComponent],
     selector: 'app-sketch',
     templateUrl: './sketch.component.html',
     styleUrls: [ './sketch.component.scss' ]
@@ -23,6 +24,7 @@ export class SketchComponent implements OnInit {
     modelDescription: string;
     modelCode: string;
     scale: number;
+    background = 'grid';
 
     modelType = 'sketches';
 

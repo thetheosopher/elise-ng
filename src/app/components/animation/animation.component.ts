@@ -3,16 +3,17 @@ import { ActivatedRoute } from '@angular/router';
 
 import { ModelService } from '../../services/model.service';
 import { ToastrService } from 'ngx-toastr';
-import { Location } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 
 import { Model } from 'elise-graphics/lib/core/model';
 import { default as elise } from 'elise-graphics';
+import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { EliseViewComponent } from '../../elise/view/elise-view.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-    imports: [RouterModule, EliseViewComponent],
+    imports: [CommonModule, FormsModule, RouterModule, EliseViewComponent],
     selector: 'app-animation',
     templateUrl: './animation.component.html',
     styleUrls: [ './animation.component.scss' ]
@@ -25,6 +26,7 @@ export class AnimationComponent implements OnInit {
     modelDescription: string;
     modelCode: string;
     scale: number;
+    background = 'grid';
 
     modelType = 'animations';
 
@@ -37,6 +39,19 @@ export class AnimationComponent implements OnInit {
         private location: Location,
         private toasterService: ToastrService) {
         this.scale = 1.0;
+    }
+
+    private loadModelFromCode(modelData: string) {
+        const modelFunction = new Function('elise', modelData);
+        const model = modelFunction(elise);
+        model.prepareResources(null, (result) => {
+            if (result) {
+                this.model = model;
+            }
+            else {
+                this.toasterService.error('Error loading model resources');
+            }
+        });
     }
 
     createModel() {
@@ -65,16 +80,7 @@ export class AnimationComponent implements OnInit {
         this.modelService.getModel(this.modelType, id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (modelData) => {
                 this.modelCode = modelData;
-                const modelFunction = new Function('elise', modelData);
-                const model = modelFunction(elise);
-                model.prepareResources(null, (result) => {
-                    if (result) {
-                        this.model = model;
-                    }
-                    else {
-                        this.toasterService.error('Error loading model resources');
-                    }
-                });
+                this.loadModelFromCode(modelData);
             },
             error: (er) => {
                 console.log(er);

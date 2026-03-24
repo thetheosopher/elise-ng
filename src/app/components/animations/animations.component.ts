@@ -3,11 +3,12 @@ import { ModelInfo } from '../../services/model-info';
 import { ModelService } from '../../services/model.service';
 import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-    imports: [CommonModule, RouterModule],
+    imports: [CommonModule, FormsModule, RouterModule],
     selector: 'app-animations',
     templateUrl: './animations.component.html',
     styleUrls: [ './animations.component.scss' ]
@@ -16,6 +17,14 @@ export class AnimationsComponent implements OnInit {
     private readonly destroyRef = inject(DestroyRef);
 
     models: ModelInfo[];
+    filterText = '';
+
+    get filteredModels(): ModelInfo[] {
+        if (!this.models) { return []; }
+        if (!this.filterText) { return this.models; }
+        const term = this.filterText.toLowerCase();
+        return this.models.filter(m => m.name.toLowerCase().includes(term));
+    }
 
     constructor(
         private modelService: ModelService,

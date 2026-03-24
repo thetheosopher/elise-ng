@@ -49,7 +49,12 @@ export class EliseViewComponent implements AfterViewInit, OnDestroy {
     @Input()
     set scale(scale: number) {
         this._scale = scale;
-        this.onChange();
+        if (this.controller) {
+            this.controller.setScale(scale);
+        }
+        else {
+            this.onChange();
+        }
     }
 
     get scale(): number {

@@ -1,8 +1,14 @@
-<div class='animations-page'>
-    <h3>Animations</h3>
-    <ul class='animation-grid'>
-        <li *ngFor='let model of models; trackBy: trackByModelId'>
-            <span><a routerLink='/animations/{{model.id}}'>{{model.name}}</a></span>
-        </li>
-    </ul>
+<div class="page-content">
+    <div class="page-header">
+        <h2>Animations <span class="badge bg-secondary" *ngIf="models">{{filteredModels.length}}</span></h2>
+        <p class="text-muted">Animated 2D scenes demonstrating timers, transitions, and interactive behaviors.</p>
+    </div>
+    <input type="text" class="form-control mb-3" placeholder="Filter animations..."
+           [(ngModel)]="filterText" style="max-width: 320px;">
+    <div class="sample-grid">
+        <a *ngFor="let model of filteredModels; trackBy: trackByModelId"
+           class="sample-card" [routerLink]="['/animations', model.id]">
+            <span class="sample-card-title">{{model.name}}</span>
+        </a>
+    </div>
 </div>

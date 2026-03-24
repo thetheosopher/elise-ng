@@ -1182,16 +1182,16 @@ src/
 | 1.6 | Add `aria-label` to all icon-only buttons | S | Quick accessibility win | ✅ Done |
 | 1.7 | Add `routerLinkActive` to nav links | S | Fixes navigation feedback | ✅ Done |
 
-### Phase 2 — Sample Pages (Medium Effort, High Visual Impact)
+### Phase 2 — Sample Pages (Medium Effort, High Visual Impact) ✅ COMPLETED
 
-| # | Task | Effort | Impact |
-|---|------|--------|--------|
-| 2.1 | Convert all listing pages to card grid layout | M | Transforms the visual first impression |
-| 2.2 | Add `page-content` wrapper class with consistent padding | S | Visual consistency across pages |
-| 2.3 | Add breadcrumb navigation to detail pages | S | Better wayfinding |
-| 2.4 | Add zoom/background controls to sample detail canvases | S | Feature parity with test harnesses |
-| 2.5 | Add item count badges to listing page headers | S | At-a-glance information |
-| 2.6 | Add filter/search input to Animations listing | S | Discoverability for 50+ items |
+| # | Task | Effort | Impact | Status |
+|---|------|--------|--------|--------|
+| 2.1 | Convert all listing pages to card grid layout | M | Transforms the visual first impression | ✅ Done |
+| 2.2 | Add `page-content` wrapper class with consistent padding | S | Visual consistency across pages | ✅ Done |
+| 2.3 | Add breadcrumb navigation to detail pages | S | Better wayfinding | ✅ Done |
+| 2.4 | Add zoom/background controls to sample detail canvases | S | Feature parity with test harnesses | ✅ Done |
+| 2.5 | Add item count badges to listing page headers | S | At-a-glance information | ✅ Done |
+| 2.6 | Add filter/search input to Animations listing | S | Discoverability for 50+ items | ✅ Done |
 
 ### Phase 3 — Editor & Tooling Polish (Medium Effort)
 

@@ -1,7 +1,29 @@
-<div style='padding: 10px;'>
-    <h3><a routerLink='/animations'>Animations</a>&nbsp;/&nbsp;{{modelName}}</h3>
-    <div [innerHtml]="modelDescription"></div>
-    <div class="border" style="display: inline-block;">
+<div class="page-content">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a routerLink="/animations">Animations</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{modelName}}</li>
+        </ol>
+    </nav>
+    <h2>{{modelName}}</h2>
+    <p class="text-muted" *ngIf="modelDescription" [innerHtml]="modelDescription"></p>
+    <div class="d-flex align-items-center gap-2 mb-2">
+        <select [(ngModel)]="scale" class="form-select form-select-sm" style="width: auto;">
+            <option [ngValue]="0.5">50%</option>
+            <option [ngValue]="0.75">75%</option>
+            <option [ngValue]="1">100%</option>
+            <option [ngValue]="1.5">150%</option>
+            <option [ngValue]="2">200%</option>
+            <option [ngValue]="3">300%</option>
+        </select>
+        <select [(ngModel)]="background" class="form-select form-select-sm" style="width: auto;">
+            <option value="grid">Grid</option>
+            <option value="white">White</option>
+            <option value="black">Black</option>
+            <option value="gray">Gray</option>
+        </select>
+    </div>
+    <div class="border" style="display: inline-block;" [ngClass]="background">
         <app-elise-view #elise [model]="model" [scale]="scale"></app-elise-view>
     </div>
     <pre>{{modelCode}}</pre>

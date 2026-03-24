@@ -1,0 +1,43 @@
+@use 'variables' as *;
+
+.sample-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+}
+
+.sample-card {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid $elise-gray-200;
+    border-radius: $radius-md;
+    padding: 0.75rem 1rem;
+    text-decoration: none;
+    color: inherit;
+    transition: box-shadow 0.15s, border-color 0.15s;
+
+    &:hover {
+        border-color: $elise-primary;
+        box-shadow: $shadow-md;
+        text-decoration: none;
+        color: inherit;
+    }
+}
+
+.sample-card-title {
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.page-header {
+    margin-bottom: 1rem;
+
+    h2 {
+        margin-bottom: 0.25rem;
+    }
+
+    .badge {
+        vertical-align: middle;
+        font-size: 0.75rem;
+    }
+}

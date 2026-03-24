@@ -1,8 +1,12 @@
-<div style='padding: 10px;'>
-    <h3>Design Tests</h3>
-    <ul>
-        <li *ngFor='let test of tests; trackBy: trackByTestId'>
-            <span><a routerLink='/tests/design/{{test.id}}'>{{test.title}}</a></span>
-        </li>
-    </ul>
+<div class="page-content">
+    <div class="page-header">
+        <h2>Design Tests <span class="badge bg-secondary" *ngIf="tests">{{tests.length}}</span></h2>
+        <p class="text-muted">Interactive design harness tests for the Elise design controller.</p>
+    </div>
+    <div class="sample-grid">
+        <a *ngFor="let test of tests; trackBy: trackByTestId"
+           class="sample-card" [routerLink]="['/tests/design', test.id]">
+            <span class="sample-card-title">{{test.title}}</span>
+        </a>
+    </div>
 </div>

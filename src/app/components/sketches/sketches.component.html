@@ -1,8 +1,12 @@
-<div style='padding: 10px;'>
-    <h3>Sketches</h3>
-    <ul>
-        <li *ngFor='let model of models; trackBy: trackByModelId'>
-            <span><a routerLink='/sketches/{{model.id}}'>{{model.name}}</a></span>
-        </li>
-    </ul>
+<div class="page-content">
+    <div class="page-header">
+        <h2>Sketches <span class="badge bg-secondary" *ngIf="models">{{models.length}}</span></h2>
+        <p class="text-muted">Hand-drawn style renderings created from traced photograph data.</p>
+    </div>
+    <div class="sample-grid">
+        <a *ngFor="let model of models; trackBy: trackByModelId"
+           class="sample-card" [routerLink]="['/sketches', model.id]">
+            <span class="sample-card-title">{{model.name}}</span>
+        </a>
+    </div>
 </div>
