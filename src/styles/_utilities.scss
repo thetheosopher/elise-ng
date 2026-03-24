@@ -1,0 +1,29 @@
+// Shared utility classes — extracted from duplicated component styles
+@use 'variables' as *;
+
+// Canvas background classes (previously duplicated across 12+ components)
+.grid {
+    background-image: url(/assets/images/grid.png);
+}
+
+.black {
+    background-color: black;
+}
+
+.white {
+    background-color: white;
+}
+
+.gray {
+    background-color: gray;
+}
+
+// File drop indicator (previously in model-designer, model-playground, container-explorer)
+.fileover {
+    border: 3px dashed $elise-success;
+}
+
+// Page content wrapper
+.page-content {
+    padding: 1.5rem 2rem;
+}

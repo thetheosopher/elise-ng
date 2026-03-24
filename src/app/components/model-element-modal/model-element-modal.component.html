@@ -24,7 +24,7 @@
             <div class="mb-3 col-md-3">
                 <label>Opacity</label>
                 <span style="float: right;"><strong>{{modalInfo.opacity}}</strong></span>
-                <input type="range" class="form-control-range" min="0" max="255" [(ngModel)]="modalInfo.opacity"
+                <input type="range" class="form-range" min="0" max="255" [(ngModel)]="modalInfo.opacity"
                     name="opacity" id="opacity">
             </div>
             <div class="mb-3 col-md-3">
@@ -49,5 +49,5 @@
 <!-- Modal footer -->
 <div class="modal-footer">
     <button type="button" class="btn btn-primary" (click)="commit()">OK</button>
-    <button type="button" class="btn btn-danger" (click)="activeModal.dismiss('Cancel')" ngbAutofocus>Cancel</button>
+    <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss('Cancel')" ngbAutofocus>Cancel</button>
 </div>

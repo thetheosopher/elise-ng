@@ -21,7 +21,7 @@
             <div class="mb-3 col-md-2">
                 <label>Size</label>
                 <span style="float: right;"><strong>{{modalInfo.typesize}}</strong></span>
-                <input type="range" class="form-control-range" min="2" max="256" [(ngModel)]="modalInfo.typesize"
+                <input type="range" class="form-range" min="2" max="256" [(ngModel)]="modalInfo.typesize"
                     name="typesize" id="typesize">
             </div>
             <div class="mb-3 col-md-2">
@@ -98,5 +98,5 @@
 <!-- Modal footer -->
 <div class="modal-footer">
     <button type="button" class="btn btn-primary" (click)="commit()">OK</button>
-    <button type="button" class="btn btn-danger" (click)="activeModal.dismiss('Cancel')" ngbAutofocus>Cancel</button>
+    <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss('Cancel')" ngbAutofocus>Cancel</button>
 </div>

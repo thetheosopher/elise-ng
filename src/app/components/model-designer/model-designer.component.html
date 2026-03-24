@@ -11,35 +11,36 @@
 
         <!-- New Folder Button -->
         <button class='btn btn-light py-0 px-1' [disabled]='selectedFolderPath == null'
-            (click)="containertree.showNewFolderModal()">
+            (click)="containertree.showNewFolderModal()" aria-label="New Folder">
             <span style='position: relative; top: 4px;' placement="bottom" ngbTooltip="New Folder"
                 class='fas fa-folder-plus fa-2x'></span>
         </button>
 
         <!-- Delete Folder Button -->
         <button class='btn btn-light py-0 px-0' [disabled]='selectedFolderPath == null || selectedFolderPath === "/"'
-            (click)="containertree.showDeleteFolderModal()">
+            (click)="containertree.showDeleteFolderModal()" aria-label="Delete Folder">
             <span style='position: relative; top: 4px;' placement="bottom" ngbTooltip="Delete Folder"
                 class='fas fa-folder-minus fa-2x'></span>
         </button>
 
         <!-- New Model Button -->
         <button class='btn btn-light py-0 px-1' [disabled]='selectedFolderPath == null'
-            (click)="showNewModelModal()">
+            (click)="showNewModelModal()" aria-label="New Model">
             <span style='position: relative; top: 4px;' placement="bottom" ngbTooltip="New Model"
                 class='fas fa-file fa-2x'></span>
         </button>
 
         <!-- Save Model Button -->
         <button class='btn btn-light py-0 px-1' [disabled]='modelPath == null || model == null'
-                (click)="saveModel()">
+                (click)="saveModel()" aria-label="Save Model">
             <span style='position: relative; top: 4px;' placement="bottom" ngbTooltip="Save Model"
                 class='fas fa-file-upload fa-2x'></span>
         </button>
 
-        <button class='btn btn-light py-0 px-2' [disabled]='model == null'
-            (click)="svgImportInput.click()">
-            <span style='position: relative; top: 1px;' ngbTooltip="Import Local SVG">Import SVG</span>
+        <button class='btn btn-light py-0 px-1' [disabled]='model == null'
+            (click)="svgImportInput.click()" aria-label="Import Local SVG">
+            <span style='position: relative; top: 4px;' placement="bottom" ngbTooltip="Import Local SVG"
+                class='fas fa-file-import fa-2x'></span>
         </button>
         <input #svgImportInput type="file" accept=".svg,image/svg+xml" style="display: none"
             (change)="importLocalSvg(svgImportInput.files, svgImportInput)">
@@ -56,14 +57,6 @@
             </ng-template>
         </div>
 
-        <!-- Upload file input -->
-        <!--
-        <form *ngIf='selectedFolderPath != null' class='small' style='display:inline-block;'>
-            <input type="file" #fileUploadInput (change)='uploadFiles(fileUploadInput.files)' multiple
-                style="margin-left: 8px; position: relative; top: 4px;" />
-        </form>
-        -->
-
         <span *ngIf="isBusy" class="spinner-border spinner-border-sm text-success"
             style="margin-left: 4px; position: relative; top: 2px;"></span>
 
@@ -79,10 +72,9 @@
                 </as-split-area>
                 <as-split-area size='67' appDnd (fileDropped)="onFileDropped($event)">
                     <app-alert id='container-explorer'></app-alert>
-                    <div class="custom-file" *ngIf='selectedFolderPath != null'>
-                        <input type="file" class="custom-file-input" id="fileUploadInput"
+                    <div *ngIf='selectedFolderPath != null' class="mb-2">
+                        <input type="file" class="form-control form-control-sm" id="fileUploadInput"
                             #fileUploadInput (change)='uploadFiles(fileUploadInput.files)' multiple>
-                        <label class="custom-file-label" for="customFile">Upload Files</label>
                     </div>
                     <app-upload-list [uploads]="uploads" (cancelUpload)="cancelUpload($event)"></app-upload-list>
                     <app-file-list [selectedFolderPath]="selectedFolderPath" [folderFiles]="folderFiles"
@@ -102,7 +94,6 @@
                             <table style="margin-left: 4px;">
                                 <tr style="vertical-align: baseline;">
                                     <td>
-                                        <!-- <label for="scale" style="margin-right: 4px;"><strong>Scale</strong></label> -->
                                         <select id="scale" [(ngModel)]="scale" ngbTooltip="Zoom"
                                             class='btn btn-sm btn-outline-primary'>
                                             <option [ngValue]="0.25">25%</option>
@@ -177,22 +168,6 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <!--
-                                    <td>
-                                        <div ngbDropdown class="d-inline-block">
-                                            <button class="btn btn-sm btn-outline-primary" id="editMenuDropdown" ngbDropdownToggle>Edit</button>
-                                            <div ngbDropdownMenu aria-labelledby="editMenuDropdown">
-                                              <button ngbDropdownItem [disabled]="!canDuplicateSelected()" (click)="duplicateSelected()">Duplicate</button>
-                                              <button ngbDropdownItem [disabled]="!canMoveSelectedUp()" (click)="moveSelectedUp()">Move Up</button>
-                                              <button ngbDropdownItem [disabled]="!canMoveSelectedDown()" (click)="moveSelectedDown()">Move Down</button>
-                                              <button ngbDropdownItem [disabled]="!canMoveSelectedToTop()" (click)="moveSelectedToTop()">Move To Top</button>
-                                              <button ngbDropdownItem [disabled]="!canMoveSelectedToBottom()" (click)="moveSelectedToBottom()">Move To Bottom</button>
-                                              <button ngbDropdownItem (click)="removeUnusedResources()">Remove Unused Resources</button>
-                                              <button ngbDropdownItem [disabled]="!canDeleteSelected()" (click)="deleteSelected()">Delete</button>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    -->
                                     <td>
                                         <select id="activeToolName" [ngModel]="activeToolName"
                                             #ngActiveTool="ngModel"
@@ -224,24 +199,6 @@
                                         <button class='btn btn-sm btn-outline-primary' (click)="showFillModal()"
                                             ngbTooltip="Set Fill">Fill</button>
                                     </td>
-                                    <!--
-                                    <td>
-                                        <input type="checkbox" [checked]="selectionEnabled"
-                                            (change)="selectionEnabled = !selectionEnabled" style="margin-left: 8px;">
-                                        <label style="margin-left: 4px; margin-right: 16px;"><strong>Select
-                                                Mode</strong></label>
-                                    </td>
-                                    -->
-                                    <!--
-                                    <td *ngIf="mouseOverView" style="min-width: 60px;">
-                                        <label for="xpos"><strong>X:</strong></label>&nbsp;
-                                        <span id="xpos">{{viewMouseX}}</span>
-                                    </td>
-                                    <td *ngIf="mouseOverView" style="min-width: 60px;">
-                                        <label for="ypos"><strong>Y:</strong></label>&nbsp;
-                                        <span id="ypos">{{viewMouseY}}</span>
-                                    </td>
-                                    -->
                                 </tr>
                             </table>
                         </div>
@@ -266,12 +223,6 @@
                                     </app-elise-design>
                                 </div>
                             </div>
-                            <!--
-                            <div>
-                                <label for='last-message'>Last Event</label>
-                                <div id='last-message'>{{lastMessage}}</div>
-                            </div>
-                            -->
                         </div>
                     </ng-template>
                 </ng-container>

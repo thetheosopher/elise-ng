@@ -11,14 +11,14 @@
 
         <!-- New Folder Button -->
         <button class='btn btn-light py-0 px-1' [disabled]='selectedFolderPath == null'
-            (click)="containertree.showNewFolderModal()">
+            (click)="containertree.showNewFolderModal()" aria-label="New Folder">
             <span style='position: relative; top: 4px;' placement="bottom" ngbTooltip="New Folder"
                 class='fas fa-folder-plus fa-2x'></span>
         </button>
 
         <!-- Delete Folder Button -->
         <button class='btn btn-light py-0 px-0' [disabled]='selectedFolderPath == null || selectedFolderPath === "/"'
-            (click)="containertree.showDeleteFolderModal()">
+            (click)="containertree.showDeleteFolderModal()" aria-label="Delete Folder">
             <span style='position: relative; top: 4px;' placement="bottom" ngbTooltip="Delete Folder"
                 class='fas fa-folder-minus fa-2x'></span>
         </button>
@@ -27,14 +27,6 @@
             <!-- Selected folder path label -->
             <span><strong>{{selectedContainerName}}{{selectedFolderPath}}</strong></span>
         </div>
-
-        <!-- Upload file input -->
-        <!--
-        <form *ngIf='selectedFolderPath != null' class='small' style='display:inline-block;'>
-            <input type="file" #fileUploadInput (change)='uploadFiles(fileUploadInput.files)' multiple
-                style="margin-left: 8px; position: relative; top: 4px;" />
-        </form>
-        -->
 
         <span *ngIf="isBusy" class="spinner-border spinner-border-sm text-success"
             style="margin-left: 4px; position: relative; top: 2px;"></span>
@@ -51,10 +43,9 @@
                 </as-split-area>
                 <as-split-area size='67' appDnd (fileDropped)="onFileDropped($event)">
                     <app-alert id='container-explorer'></app-alert>
-                    <div class="custom-file" *ngIf='selectedFolderPath != null'>
-                        <input type="file" class="custom-file-input" id="fileUploadInput"
+                    <div *ngIf='selectedFolderPath != null' class="mb-2">
+                        <input type="file" class="form-control form-control-sm" id="fileUploadInput"
                             #fileUploadInput (change)='uploadFiles(fileUploadInput.files)' multiple>
-                        <label class="custom-file-label" for="customFile">Upload Files</label>
                     </div>
                     <app-upload-list [uploads]="uploads" (cancelUpload)="cancelUpload($event)"></app-upload-list>
                     <app-file-list [selectedFolderPath]="selectedFolderPath" [folderFiles]="folderFiles"

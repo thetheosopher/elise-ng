@@ -8,10 +8,12 @@
         </select>
     </div>
     <div class="col-auto btn-group">
-        <button class="btn btn-light py-0 px-0 mx-1" (click)="showNewContainerModal()" [disabled]="!isLoggedIn">
+        <button class="btn btn-light py-0 px-0 mx-1" (click)="showNewContainerModal()" [disabled]="!isLoggedIn"
+            aria-label="Create Container">
             <span placement="bottom" ngbTooltip="Create Container" class="fas fa-database fa-2x"></span>
         </button>
-        <button class="btn btn-light py-0 px-0 mx-1" (click)="showDeleteContainerModal()" [disabled]='!isContainerSelected'>
+        <button class="btn btn-light py-0 px-0 mx-1" (click)="showDeleteContainerModal()" [disabled]='!isContainerSelected'
+            aria-label="Delete Container">
             <span placement="bottom" ngbTooltip="Delete Container" class="fas fa-trash-alt fa-2x"></span>
         </button>
     </div>

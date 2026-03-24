@@ -10,56 +10,31 @@
             <div ngbDropdown>
                 <button class="btn btn-link nav-link" id="samplesdrop" ngbDropdownToggle>Samples</button>
                 <div ngbDropdownMenu aria-labelledby="samplesdrop">
-                    <a ngbDropdownItem routerLink='/primitives'>Primitives</a>
-                    <a ngbDropdownItem routerLink="/animations">Animations</a>
-                    <a ngbDropdownItem routerLink="/sketches">Sketches</a>
+                    <a ngbDropdownItem routerLink='/primitives' routerLinkActive='active'>Primitives</a>
+                    <a ngbDropdownItem routerLink="/animations" routerLinkActive='active'>Animations</a>
+                    <a ngbDropdownItem routerLink="/sketches" routerLinkActive='active'>Sketches</a>
                 </div>
             </div>
 
-            <!--
-            <li class='nav-item'>
-                <a class='nav-link' routerLink='/primitives'>Primitives</a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link' routerLink='/samples'>Samples</a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link' routerLink='/sketches'>Sketches</a>
-            </li>
--->
             <!-- Tests dropdown -->
             <div ngbDropdown>
                 <button class="btn btn-link nav-link" id="testsdrop" ngbDropdownToggle>Tests</button>
                 <div ngbDropdownMenu aria-labelledby="testsdrop">
-                    <a ngbDropdownItem routerLink='/tests/view'>View Tests</a>
-                    <a ngbDropdownItem routerLink='/tests/design'>Design Tests</a>
-                    <a ngbDropdownItem routerLink='/tests/surface'>Surface Tests</a>
-                    <a ngbDropdownItem routerLink='/tests/container-explorer'>Container Explorer</a>
-                    <a ngbDropdownItem routerLink='/tests/model-designer'>Model Designer</a>
-                    <a ngbDropdownItem routerLink='/tests/model-playground'>Model Playground</a>
-                    <a ngbDropdownItem routerLink='/api-tests'>API Tests</a>
+                    <a ngbDropdownItem routerLink='/tests/view' routerLinkActive='active'>View Tests</a>
+                    <a ngbDropdownItem routerLink='/tests/design' routerLinkActive='active'>Design Tests</a>
+                    <a ngbDropdownItem routerLink='/tests/surface' routerLinkActive='active'>Surface Tests</a>
+                    <a ngbDropdownItem routerLink='/tests/container-explorer' routerLinkActive='active'>Container Explorer</a>
+                    <a ngbDropdownItem routerLink='/tests/model-designer' routerLinkActive='active'>Model Designer</a>
+                    <a ngbDropdownItem routerLink='/tests/model-playground' routerLinkActive='active'>Model Playground</a>
+                    <a ngbDropdownItem routerLink='/api-tests' routerLinkActive='active'>API Tests</a>
                 </div>
             </div>
 
-<!--
             <li class='nav-item'>
-                <a class='nav-link' routerLink='/tests/view'>View Tests</a>
+                <a *ngIf='isLoggedIn===false' class='nav-link' routerLink='/login' routerLinkActive='active'>Log In</a>
             </li>
             <li class='nav-item'>
-                <a class='nav-link' routerLink='/tests/design'>Design Tests</a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link' routerLink='/tests/surface'>Surface Tests</a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link' routerLink='/api-tests'>API Tests</a>
-            </li>
--->
-            <li class='nav-item'>
-                <a *ngIf='isLoggedIn===false' class='nav-link' routerLink='/login'>Log In</a>
-            </li>
-            <li class='nav-item'>
-                <a class='nav-link' *ngIf='isLoggedIn===true' routerLink='/login'>Account Info</a>
+                <a class='nav-link' *ngIf='isLoggedIn===true' routerLink='/login' routerLinkActive='active'>Account Info</a>
             </li>
         </ul>
     </div>

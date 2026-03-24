@@ -186,7 +186,7 @@
                     <div class="mb-3">
                         <label>Opacity</label>
                         <span style="float: right;"><strong>{{modalInfo.opacity}}</strong></span>
-                        <input type="range" class="form-control-range" min="0" max="255"
+                        <input type="range" class="form-range" min="0" max="255"
                             [(ngModel)]="modalInfo.opacity" name="imageFillOpacity"
                             id="imageFillOpacity" (input)="onOpacityChanged($event)">
                     </div>
@@ -195,7 +195,7 @@
                     <div class="mb-3">
                         <label>Scale</label>
                         <span style="float: right;"><strong>{{modalInfo.scale / 100}}</strong></span>
-                        <input type="range" class="form-control-range" min="1" max="100"
+                        <input type="range" class="form-range" min="1" max="100"
                             [(ngModel)]="modalInfo.scale" name="imageFillScale"
                             id="imageFillScale">
                     </div>
@@ -241,7 +241,7 @@
                     <div class="mb-3">
                         <label>Opacity</label>
                         <span style="float: right;"><strong>{{modalInfo.opacity}}</strong></span>
-                        <input type="range" class="form-control-range" min="0" max="255"
+                        <input type="range" class="form-range" min="0" max="255"
                             [(ngModel)]="modalInfo.opacity" name="modelFillOpacity"
                             id="modelFillOpacity" (input)="onOpacityChanged($event)">
                     </div>
@@ -250,7 +250,7 @@
                     <div class="mb-3">
                         <label>Scale</label>
                         <span style="float: right;"><strong>{{modalInfo.scale / 100}}</strong></span>
-                        <input type="range" class="form-control-range" min="1" max="1000"
+                        <input type="range" class="form-range" min="1" max="1000"
                             [(ngModel)]="modalInfo.scale" name="modelFillScale"
                             id="modelFillScale">
                     </div>
@@ -294,5 +294,5 @@
 <!-- Modal footer -->
 <div class="modal-footer">
     <button type="button" class="btn btn-primary" (click)="commit()" ngbAutofocus>OK</button>
-    <button type="button" class="btn btn-danger" (click)="activeModal.dismiss('Cancel')">Cancel</button>
+    <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss('Cancel')">Cancel</button>
 </div>

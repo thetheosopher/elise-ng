@@ -1,6 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
+@use './styles/variables' as *;
 @use "bootstrap/scss/bootstrap";
-@import url(https://fonts.googleapis.com/css?family=Anonymous+Pro|Coda|Coda+Caption:800|Poiret+One);
+@use './styles/utilities';
+@import url(https://fonts.googleapis.com/css?family=Anonymous+Pro|Poiret+One);
 @import url(./assets/fonts/stylesheet.css);
 @import '@ali-hm/angular-tree-component/css/angular-tree-component.css';
 

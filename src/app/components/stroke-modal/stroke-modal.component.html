@@ -24,7 +24,7 @@
                 <div class="col">
                     <label>Width</label>
                     <span style="float: right;"><strong>{{modalInfo.width}}</strong></span>
-                    <input type="range" class="form-control-range" min="1" max="48" [(ngModel)]="modalInfo.width"
+                    <input type="range" class="form-range" min="1" max="48" [(ngModel)]="modalInfo.width"
                         name="width" id="width" (change)="onWidthChanged($event)">
                 </div>
                 <div class="col">
@@ -81,5 +81,5 @@
 <!-- Modal footer -->
 <div class="modal-footer">
     <button type="button" class="btn btn-primary" (click)="commit()" ngbAutofocus>OK</button>
-    <button type="button" class="btn btn-danger" (click)="activeModal.dismiss('Cancel')">Cancel</button>
+    <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss('Cancel')">Cancel</button>
 </div>

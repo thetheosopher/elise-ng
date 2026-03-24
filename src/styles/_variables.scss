@@ -1,0 +1,47 @@
+// Design Tokens — Elise Library Demos
+
+// Brand colors
+$elise-primary: #3b82f6;
+$elise-primary-dark: #1e40af;
+$elise-secondary: #6366f1;
+$elise-accent: #8b5cf6;
+$elise-success: #22c55e;
+$elise-warning: #f59e0b;
+$elise-danger: #ef4444;
+
+// Neutral palette
+$elise-gray-50: #f8fafc;
+$elise-gray-100: #f1f5f9;
+$elise-gray-200: #e2e8f0;
+$elise-gray-300: #cbd5e1;
+$elise-gray-500: #64748b;
+$elise-gray-700: #334155;
+$elise-gray-800: #1e293b;
+$elise-gray-900: #0f172a;
+
+// Canvas/editor surfaces
+$canvas-border: $elise-gray-200;
+$panel-border: $elise-gray-200;
+$toolbar-bg: $elise-gray-50;
+$editor-bg: $elise-gray-100;
+
+// Typography
+$font-display: 'Poiret One', sans-serif;
+$font-body: system-ui, -apple-system, sans-serif;
+$font-mono: 'Anonymous Pro', 'Fira Code', monospace;
+
+// Spacing
+$toolbar-height: 48px;
+$toolbar-padding: 0.5rem 0.75rem;
+$panel-gap: 4px;
+$footer-height: 36px;
+
+// Shadows
+$shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+$shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+
+// Border radius
+$radius-sm: 4px;
+$radius-md: 8px;
+$radius-lg: 12px;
