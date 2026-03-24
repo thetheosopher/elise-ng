@@ -78,7 +78,7 @@
 
 // Shared split panel styles (lighter borders + styled gutter)
 .editor-panel {
-    height: calc(100vh - 131px);
+    height: calc(100vh - 145px);
 }
 
 as-split.editor-split {
@@ -177,5 +177,48 @@ as-split.editor-split {
         outline: none;
         border-color: $elise-primary;
         box-shadow: 0 0 0 2px rgba($elise-primary, 0.15);
+    }
+}
+
+// Auth page card framing
+.auth-container {
+    display: flex;
+    justify-content: center;
+    padding: 3rem 1rem;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 420px;
+
+    .card-header {
+        text-align: center;
+        background: transparent;
+        border-bottom: 1px solid $elise-gray-200;
+        padding: 1.25rem 1.5rem;
+
+        .auth-brand-icon {
+            color: $elise-primary;
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        h3 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    .card-footer {
+        background: transparent;
+        border-top: 1px solid $elise-gray-200;
+        padding: 0.75rem 1.5rem;
+        text-align: center;
+        font-size: 0.875rem;
     }
 }

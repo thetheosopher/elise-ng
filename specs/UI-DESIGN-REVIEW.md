@@ -1205,15 +1205,15 @@ src/
 | 3.6 | Categorize Model Playground Load menu | M | Better organization for 50+ items | ✅ Done |
 | 3.7 | Style playground textarea (dark, monospace) | S | Quick code editor upgrade | ✅ Done |
 
-### Phase 4 — Authentication & Shell (Medium Effort)
+### Phase 4 — Authentication & Shell (Medium Effort) ✅ COMPLETED
 
-| # | Task | Effort | Impact |
-|---|------|--------|--------|
-| 4.1 | Center and card-frame all auth pages | M | Professional auth flow |
-| 4.2 | Add user dropdown menu in header (when logged in) | M | Better auth UX |
-| 4.3 | Restructure nav taxonomy (Samples / Tools / Explore) | M | Clearer information architecture |
-| 4.4 | Fix footer overlap with CSS sticky footer | S | Eliminates hardcoded margin |
-| 4.5 | Add brand icon and use display font in navbar | S | Visual identity |
+| # | Task | Effort | Impact | Status |
+|---|------|--------|--------|--------|
+| 4.1 | Center and card-frame all auth pages | M | Professional auth flow | ✅ Done |
+| 4.2 | Add user dropdown menu in header (when logged in) | M | Better auth UX | ✅ Done |
+| 4.3 | Restructure nav taxonomy (Samples / Tools / Explore) | M | Clearer information architecture | ✅ Done |
+| 4.4 | Fix footer overlap with CSS sticky footer | S | Eliminates hardcoded margin | ✅ Done |
+| 4.5 | Add brand icon and use display font in navbar | S | Visual identity | ✅ Done |
 
 ### Phase 5 — Landing & Advanced (Higher Effort)
 

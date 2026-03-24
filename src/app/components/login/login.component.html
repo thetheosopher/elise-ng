@@ -1,42 +1,58 @@
-<div class="col-sm-4">
-    <div *ngIf="isLoggedIn===false" class="ps-3">
-        <h3>Log In</h3>
-        <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
-            <div class="mb-3">
-                <label for="username">User Name or Email</label>
-                <input type="text" id="username" autocomplete="username" name="username" #name="ngModel"
-                    class="form-control" required [(ngModel)]="loginDTO.Name" />
-                <div [hidden]="name.valid || name.pristine" class="alert alert-danger">
-                    User Name is Required
+<div class="auth-container">
+    <div class="auth-card card shadow-sm" *ngIf="isLoggedIn===false">
+        <div class="card-header">
+            <div class="auth-brand-icon"><span class="fas fa-bezier-curve"></span></div>
+            <h3>Log In</h3>
+        </div>
+        <div class="card-body">
+            <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+                <div class="mb-3">
+                    <label for="username">User Name or Email</label>
+                    <input type="text" id="username" autocomplete="username" name="username" #name="ngModel"
+                        class="form-control" required [(ngModel)]="loginDTO.Name" />
+                    <div [hidden]="name.valid || name.pristine" class="alert alert-danger mt-1">
+                        User Name is Required
+                    </div>
                 </div>
-            </div>
-            <div class="mb-3">
-                <label for="password">Password</label>
-                <input type="password" autocomplete="current-password" id="password" name="password" #password="ngModel"
-                    class="form-control" required [(ngModel)]="loginDTO.Password" />
-                <div [hidden]="password.valid || password.pristine" class="alert alert-danger">
-                    Password is Required
+                <div class="mb-3">
+                    <label for="password">Password</label>
+                    <input type="password" autocomplete="current-password" id="password" name="password" #password="ngModel"
+                        class="form-control" required [(ngModel)]="loginDTO.Password" />
+                    <div [hidden]="password.valid || password.pristine" class="alert alert-danger mt-1">
+                        Password is Required
+                    </div>
                 </div>
-            </div>
-            <button type="submit" class="btn btn-primary" [disabled]="!loginForm.form.valid || processing">
-                Log In
-                <span *ngIf="processing" class="spinner-border spinner-border-sm"></span>
-            </button>
-            <button type='button' class='btn btn-link' routerLink='/register'>Register</button>
-            <button type='button' class='btn btn-link' routerLink='/send-password-reset-code'>Reset Password</button>
-        </form>
+                <button type="submit" class="btn btn-primary w-100" [disabled]="!loginForm.form.valid || processing">
+                    Log In
+                    <span *ngIf="processing" class="spinner-border spinner-border-sm"></span>
+                </button>
+            </form>
+        </div>
+        <div class="card-footer">
+            <a routerLink='/register'>Register</a>
+            <span class="mx-2">&middot;</span>
+            <a routerLink='/send-password-reset-code'>Reset Password</a>
+        </div>
     </div>
-    <div *ngIf="isLoggedIn===true" class="ps-3">
-        <h2>Account Info</h2>
-        <dl>
-            <dt>User Name</dt>
-            <dd class="text-info">{{loginDTO.Name}}</dd>
-            <dt>Friendly Name (Alias)</dt>
-            <dd class="text-info">{{loginDTO.Alias}}</dd>
-            <dt>Email</dt>
-            <dd class="text-info">{{loginDTO.Email}}</dd>
-        </dl>
-        <button type='button' class="btn btn-danger" (click)="onLogout()">Logout</button>
-        <button type='button' class='btn btn-link' routerLink='/change-password'>Change Password</button>
+    <div class="auth-card card shadow-sm" *ngIf="isLoggedIn===true">
+        <div class="card-header">
+            <div class="auth-brand-icon"><span class="fas fa-user-circle"></span></div>
+            <h3>Account Info</h3>
+        </div>
+        <div class="card-body">
+            <dl class="mb-0">
+                <dt>User Name</dt>
+                <dd class="text-info">{{loginDTO.Name}}</dd>
+                <dt>Friendly Name (Alias)</dt>
+                <dd class="text-info">{{loginDTO.Alias}}</dd>
+                <dt>Email</dt>
+                <dd class="text-info mb-0">{{loginDTO.Email}}</dd>
+            </dl>
+        </div>
+        <div class="card-footer">
+            <button type='button' class="btn btn-danger btn-sm" (click)="onLogout()">Logout</button>
+            <span class="mx-2">&middot;</span>
+            <a routerLink='/change-password'>Change Password</a>
+        </div>
     </div>
 </div>

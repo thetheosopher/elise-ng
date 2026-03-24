@@ -1,5 +1,7 @@
 <nav class='navbar navbar-expand-sm navbar-dark bg-dark'>
-    <a class='navbar-brand ps-3' href='#'>Elise Library Demos</a>
+    <a class='navbar-brand ps-3' href='#'>
+        <span class="fas fa-bezier-curve me-2"></span><span class="brand-text">Elise</span>
+    </a>
     <button class='navbar-toggler' type='button' data-bs-toggle='collapse' data-bs-target='#navbarSupportedContent'
         aria-controls='navbarSupportedContent' aria-expanded='false' aria-label='Toggle navigation'>
         <span class='navbar-toggler-icon'></span>
@@ -16,26 +18,52 @@
                 </div>
             </div>
 
-            <!-- Tests dropdown -->
+            <!-- Tools dropdown -->
             <div ngbDropdown>
-                <button class="btn btn-link nav-link" id="testsdrop" ngbDropdownToggle>Tests</button>
-                <div ngbDropdownMenu aria-labelledby="testsdrop">
-                    <a ngbDropdownItem routerLink='/tests/view' routerLinkActive='active'>View Tests</a>
-                    <a ngbDropdownItem routerLink='/tests/design' routerLinkActive='active'>Design Tests</a>
-                    <a ngbDropdownItem routerLink='/tests/surface' routerLinkActive='active'>Surface Tests</a>
-                    <a ngbDropdownItem routerLink='/tests/container-explorer' routerLinkActive='active'>Container Explorer</a>
+                <button class="btn btn-link nav-link" id="toolsdrop" ngbDropdownToggle>Tools</button>
+                <div ngbDropdownMenu aria-labelledby="toolsdrop">
                     <a ngbDropdownItem routerLink='/tests/model-designer' routerLinkActive='active'>Model Designer</a>
                     <a ngbDropdownItem routerLink='/tests/model-playground' routerLinkActive='active'>Model Playground</a>
+                    <a ngbDropdownItem routerLink='/tests/container-explorer' routerLinkActive='active'>Container Explorer</a>
                     <a ngbDropdownItem routerLink='/api-tests' routerLinkActive='active'>API Tests</a>
                 </div>
             </div>
 
-            <li class='nav-item'>
-                <a *ngIf='isLoggedIn===false' class='nav-link' routerLink='/login' routerLinkActive='active'>Log In</a>
+            <!-- Explore dropdown -->
+            <div ngbDropdown>
+                <button class="btn btn-link nav-link" id="exploredrop" ngbDropdownToggle>Explore</button>
+                <div ngbDropdownMenu aria-labelledby="exploredrop">
+                    <a ngbDropdownItem routerLink='/tests/view' routerLinkActive='active'>View Tests</a>
+                    <a ngbDropdownItem routerLink='/tests/design' routerLinkActive='active'>Design Tests</a>
+                    <a ngbDropdownItem routerLink='/tests/surface' routerLinkActive='active'>Surface Tests</a>
+                </div>
+            </div>
+        </ul>
+
+        <!-- User menu (right side) -->
+        <ul class="navbar-nav">
+            <li class="nav-item" *ngIf="!isLoggedIn">
+                <a class="nav-link" routerLink="/login" routerLinkActive="active">
+                    <span class="fas fa-sign-in-alt me-1"></span>Log In
+                </a>
             </li>
-            <li class='nav-item'>
-                <a class='nav-link' *ngIf='isLoggedIn===true' routerLink='/login' routerLinkActive='active'>Account Info</a>
-            </li>
+            <div *ngIf="isLoggedIn" ngbDropdown display="dynamic" placement="bottom-end">
+                <button class="btn btn-link nav-link" id="userdrop" ngbDropdownToggle>
+                    <span class="fas fa-user-circle me-1"></span>{{ loginDTO?.Alias || loginDTO?.Name }}
+                </button>
+                <div ngbDropdownMenu aria-labelledby="userdrop">
+                    <a ngbDropdownItem routerLink="/login">
+                        <span class="fas fa-id-card me-2"></span>Account Info
+                    </a>
+                    <a ngbDropdownItem routerLink="/change-password">
+                        <span class="fas fa-key me-2"></span>Change Password
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <button ngbDropdownItem (click)="logout()">
+                        <span class="fas fa-sign-out-alt me-2"></span>Logout
+                    </button>
+                </div>
+            </div>
         </ul>
     </div>
 </nav>

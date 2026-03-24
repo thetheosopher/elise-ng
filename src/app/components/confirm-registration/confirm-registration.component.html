@@ -1,27 +1,37 @@
-<div class="col-sm-4">
-    <h3>Confirm Registration</h3>
-    <form (ngSubmit)="onSubmit()" #confirmationForm="ngForm">
-        <div class="mb-3">
-            <label for="username-confirm">User Name or Email</label>
-            <input type="text" id="username-confirm" name="username-confirm" #usernameConfirm="ngModel" class="form-control" required
-                [(ngModel)]="userRegistrationDTO.Name" />
-            <div [hidden]="usernameConfirm.valid || usernameConfirm.pristine" class="alert alert-danger">
-                User Name or Email is Required
-            </div>
+<div class="auth-container">
+    <div class="auth-card card shadow-sm">
+        <div class="card-header">
+            <div class="auth-brand-icon"><span class="fas fa-check-circle"></span></div>
+            <h3>Confirm Registration</h3>
         </div>
-        <div class="mb-3">
-            <label for="code">Confirmation Code</label>
-            <input type="text" id="code" name="code" #code="ngModel" class="form-control" required
-                [(ngModel)]="userRegistrationDTO.Code" />
-            <div [hidden]="code.valid || code.pristine" class="alert alert-danger">
-                Confirmation Code is Required
-            </div>
+        <div class="card-body">
+            <form (ngSubmit)="onSubmit()" #confirmationForm="ngForm">
+                <div class="mb-3">
+                    <label for="username-confirm">User Name or Email</label>
+                    <input type="text" id="username-confirm" name="username-confirm" #usernameConfirm="ngModel" class="form-control" required
+                        [(ngModel)]="userRegistrationDTO.Name" />
+                    <div [hidden]="usernameConfirm.valid || usernameConfirm.pristine" class="alert alert-danger mt-1">
+                        User Name or Email is Required
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="code">Confirmation Code</label>
+                    <input type="text" id="code" name="code" #code="ngModel" class="form-control" required
+                        [(ngModel)]="userRegistrationDTO.Code" />
+                    <div [hidden]="code.valid || code.pristine" class="alert alert-danger mt-1">
+                        Confirmation Code is Required
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100" [disabled]="!confirmationForm.form.valid">
+                    Confirm Registration
+                    <span *ngIf="processing" class="spinner-border spinner-border-sm"></span>
+                </button>
+            </form>
         </div>
-        <button type="submit" class="btn btn-primary" [disabled]="!confirmationForm.form.valid">
-            Confirm Registration
-            <span *ngIf="processing" class="spinner-border spinner-border-sm"></span>
-        </button>
-        <button type="button" class='btn btn-link' routerLink='/login'>Login</button>
-        <button type="button" class='btn btn-link' routerLink='/register'>Register</button>
-    </form>
+        <div class="card-footer">
+            <a routerLink='/login'>Login</a>
+            <span class="mx-2">&middot;</span>
+            <a routerLink='/register'>Register</a>
+        </div>
+    </div>
 </div>
