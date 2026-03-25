@@ -60,7 +60,7 @@ const routes: Routes = [
     { path: 'send-password-reset-code', component: SendPasswordResetCodeComponent },
     { path: 'tests/container-explorer', component: ContainerExplorerComponent, canActivate: [authGuard] },
     { path: 'tests/model-designer', component: ModelDesignerComponent, canActivate: [authGuard] },
-    { path: 'tests/model-playground', component: ModelPlaygroundComponent, canActivate: [authGuard] },
+    { path: 'tests/model-playground', component: ModelPlaygroundComponent },
     { path: 'not-found', component: NotFoundComponent },
     { path: '**', component: NotFoundComponent }
 ];

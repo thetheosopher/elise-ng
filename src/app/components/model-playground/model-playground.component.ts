@@ -1,94 +1,39 @@
-import { Component, DestroyRef, OnInit, ViewChild, ViewChildren, QueryList, Input, Output,
-    ElementRef, AfterViewInit, ChangeDetectorRef, inject } from '@angular/core';
-import { NgModel } from '@angular/forms';
-import { NgbModal, NgbNavChangeEvent } from '@ng-bootstrap/ng-bootstrap';
-import { ContainerUrlProxy } from '../../schematrix/classes/container-url-proxy';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { NgbNavChangeEvent } from '@ng-bootstrap/ng-bootstrap';
 
-import { ContainerDTO } from '../../schematrix/classes/container-dto';
-import { ManifestDTO } from '../../schematrix/classes/manifest-dto';
-import { ManifestFileDTO } from '../../schematrix/classes/manifest-file-dto';
-import { SignedUrlRequestDTO } from '../../schematrix/classes/signed-url-request-dto';
-
-// Services
-import { ApiService } from '../../schematrix/services/api.service';
-import { HttpClient } from '@angular/common/http';
 import { ToastrService } from 'ngx-toastr';
 import { ModelService } from '../../services/model.service';
-import { UploadService, UploadStateCode, Upload } from '../../services/upload.service';
 
 // Elise core classes
-import { Model, ViewDragArgs } from 'elise-graphics';
-import { ViewController } from 'elise-graphics';
+import { Model } from 'elise-graphics';
 
 import { default as elise } from 'elise-graphics';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { AngularSplitModule } from 'angular-split';
 import { EliseViewComponent } from '../../elise/view/elise-view.component';
-import { ContainerSelectorComponent } from '../container-selector/container-selector.component';
-import { ContainerTreeComponent } from '../container-tree/container-tree.component';
-import { AlertComponent } from '../alert/alert.component';
-import { UploadListComponent } from '../upload-list/upload-list.component';
-import { FileListComponent } from '../file-list/file-list.component';
-import { DndDirective } from '../../directives/dnd.directive';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { take } from 'rxjs';
 
 @Component({
-    imports: [CommonModule, FormsModule, NgbModule, AngularSplitModule, EliseViewComponent, ContainerSelectorComponent, ContainerTreeComponent, AlertComponent, UploadListComponent, FileListComponent, DndDirective],
+    imports: [CommonModule, FormsModule, NgbModule, EliseViewComponent],
     selector: 'app-model-playground',
     templateUrl: './model-playground.component.html',
     styleUrls: ['./model-playground.component.scss']
 })
-export class ModelPlaygroundComponent implements OnInit, AfterViewInit {
+export class ModelPlaygroundComponent implements OnInit {
 
     private readonly destroyRef = inject(DestroyRef);
 
-    @ViewChild(ContainerTreeComponent, { static: true })
-    containerTree: ContainerTreeComponent;
-
-    @ViewChildren('fileUploadInput', { read: ElementRef })
-    fileUploadInputRefs: QueryList<ElementRef>;
-    fileUploadInputElement: HTMLInputElement;
-
-    @ViewChild('elise', { read: ElementRef, static: false })
-    eliseViewElementRef: ElementRef;
-
-    selectedContainerID: string | null;
-    selectedContainerName: string;
-    @Output() public selectedFolderPath?: string;
-
-    folderFiles?: ManifestFileDTO[];
-    uploads: Upload[] = [];
-
-    selectedFilePath: string;
-
-    readonly MODEL_MIME_TYPE = 'application/elise';
-
-    controller: ViewController;
-    lastMessage = '-';
     scale = 1;
     background = 'grid';
-    viewMouseX: number;
-    viewMouseY: number;
-    modelEditorNavId: number;
-    mouseOverView = false;
-    formattedJson: string;
-    isBusy = false;
-    isDragging = false;
+    modelEditorNavId = 1;
 
     model: Model;
-    modelContainerID: string;
-    modelContainerName: string;
-    modelPath: string;
 
     playgroundText: string;
     scriptError: string;
 
     constructor(
-        private apiService: ApiService,
-        private uploadService: UploadService,
         private toasterService: ToastrService,
         private modelService: ModelService) {
     }
@@ -108,10 +53,6 @@ export class ModelPlaygroundComponent implements OnInit, AfterViewInit {
         try {
             const modelFunction = new Function('elise', this.playgroundText);
             const model = modelFunction(elise);
-            if(this.selectedContainerID) {
-                const proxy = new ContainerUrlProxy(this.apiService, this.selectedContainerID);
-                model.resourceManager.urlProxy = proxy;
-            }
             model.prepareResources(null, (result) => {
                 if (result) {
                     this.model = model;
@@ -142,17 +83,6 @@ export class ModelPlaygroundComponent implements OnInit, AfterViewInit {
         });
     }
 
-    ngAfterViewInit() {
-        this.fileUploadInputRefs.changes.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((refs: QueryList<ElementRef>) => {
-            if (refs.length > 0) {
-                this.fileUploadInputElement = refs.first.nativeElement;
-            }
-            else {
-                this.fileUploadInputElement = undefined;
-            }
-        });
-    }
-
     backgroundClass() {
         return {
             'view-host': true,
@@ -160,77 +90,8 @@ export class ModelPlaygroundComponent implements OnInit, AfterViewInit {
             grid: this.background === 'grid',
             black: this.background === 'black',
             white: this.background === 'white',
-            gray: this.background === 'gray',
-            'fileover': true
+            gray: this.background === 'gray'
         };
-    }
-
-    onContainerSelected(container: ContainerDTO | null) {
-        if (container) {
-            this.selectedContainerID = container.ContainerID;
-            this.selectedContainerName = container.Name;
-            this.selectedFolderPath = null;
-            this.containerTree.containerID = container.ContainerID;
-            this.containerTree.refresh();
-        }
-        else {
-            this.selectedContainerID = null;
-            this.selectedContainerName = null;
-            this.selectedFolderPath = null;
-            this.containerTree.containerID = null;
-            this.containerTree.refresh();
-            if (this.controller) {
-                this.controller.detach();
-                this.model = null;
-            }
-        }
-    }
-
-    onContainerDeleted(containerId: string) {
-        if (containerId === this.selectedContainerID) {
-            if (this.controller) {
-                this.controller.model = null;
-                this.controller.detach();
-            }
-            this.model = null;
-        }
-    }
-
-    onFolderPathSelected(folderPath: string | null) {
-        this.selectedFolderPath = folderPath;
-        this.listFolderFiles();
-        this.refreshUploads();
-    }
-
-    refreshUploads() {
-        this.uploads = [];
-        if (this.uploadService.uploads) {
-            this.uploadService.uploads.forEach(upload => {
-                if (upload.containerID === this.selectedContainerID && upload.folderPath === this.selectedFolderPath) {
-                    this.uploads.push(upload);
-                }
-            });
-        }
-    }
-
-    listFolderFiles() {
-        this.folderFiles = null;
-        if (!this.selectedContainerID) {
-            return;
-        }
-        this.apiService.getContainerManifest(this.selectedContainerID, false, this.selectedFolderPath, true, true, false).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-            next: (manifest: ManifestDTO) => {
-                this.folderFiles = [];
-                if (manifest.Files) {
-                    manifest.Files.forEach(file => {
-                        this.folderFiles.push(file);
-                    });
-                }
-            },
-            error: (err) => {
-                this.onError(err);
-            }
-        });
     }
 
     onNavChange(changeEvent: NgbNavChangeEvent) {
@@ -244,95 +105,6 @@ export class ModelPlaygroundComponent implements OnInit, AfterViewInit {
     onError(error, title?) {
         console.log(error);
         this.toasterService.error(error, title);
-    }
-
-    onFileDropped($event) {
-        this.uploadFiles($event);
-    }
-
-    uploadFiles(files: File[]) {
-        for (const file of files) {
-            this.uploadFile(file);
-        }
-        this.fileUploadInputElement.value = null;
-    }
-
-    uploadFile(file: File) {
-        const urlRequest = new SignedUrlRequestDTO();
-        urlRequest.ContainerID = this.selectedContainerID;
-        urlRequest.Path = this.selectedFolderPath + file.name;
-        urlRequest.ContentType = file.type;
-        urlRequest.Verb = 'put';
-        this.apiService.getSignedUrl(urlRequest).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-            next: (signedUrlRequest) => {
-                // Start upload using signed URL
-                const upload = new Upload(file.name, file.type, file.size, signedUrlRequest.Url);
-                upload.containerID = this.selectedContainerID;
-                upload.folderPath = this.selectedFolderPath;
-                upload.file = file;
-                upload.removeOnFailure = true;
-                upload.removeOnSuccess = true;
-                upload.callback.pipe(take(1), takeUntilDestroyed(this.destroyRef)).subscribe({
-                    next: (result) => {
-                        if (result.success) {
-                            console.log('Upload callback: Success');
-                            this.toasterService.success(upload.name, 'File Upload Complete');
-                            if (upload.containerID === this.selectedContainerID && upload.folderPath === this.selectedFolderPath) {
-                                this.listFolderFiles();
-                            }
-                        }
-                        else {
-                            if (upload.state.code === UploadStateCode.FAILED) {
-                                this.onError(`Upload of ${upload.name} failed.`);
-                            }
-                            if (upload.state.code === UploadStateCode.ABORTED) {
-                                this.onError(`Upload of ${upload.name} was aborted.`);
-                            }
-                        }
-                        const index = this.uploads.indexOf(upload);
-                        if (index !== -1) {
-                            this.uploads.splice(index, 1);
-                        }
-                    }
-                });
-                this.uploads.push(upload);
-                // upload.state = new UploadState(UploadStateCode.QUEUED, 50, '');
-                this.uploadService.queue(upload);
-            },
-            error: (error) => {
-                this.onError(error);
-            }
-        });
-    }
-
-    cancelUpload(upload: Upload) {
-        this.uploadService.remove(upload);
-        this.refreshUploads();
-    }
-
-    selectFile(fileName: string) {
-        // Handle file types
-        this.selectedFilePath = this.selectedFolderPath + fileName;
-    }
-
-    controllerSet(controller: ViewController) {
-        this.controller = controller;
-        if (!this.controller) {
-            return;
-        }
-        // this.controller.renderer = new DesignRenderer(this.controller);
-    }
-
-    viewDragEnter(args: ViewDragArgs) {
-        this.isDragging = true;
-    }
-
-    viewDragLeave(args: ViewDragArgs) {
-        this.isDragging = false;
-    }
-
-    log(message: string) {
-        this.lastMessage = message;
     }
 
 }
