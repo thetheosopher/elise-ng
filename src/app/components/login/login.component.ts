@@ -4,7 +4,7 @@ import { ToastrService } from 'ngx-toastr';
 import { LoginDTO } from '../../schematrix/classes/login-dto';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
@@ -20,10 +20,13 @@ export class LoginComponent implements OnInit {
     processing = false;
     isLoggedIn = false;
     loginDTO: LoginDTO = new LoginDTO();
+    returnUrl: string | null = null;
 
     constructor(
         private apiService: ApiService,
-        private toasterService: ToastrService) {
+        private toasterService: ToastrService,
+        private route: ActivatedRoute,
+        private router: Router) {
         this.isLoggedIn = apiService.isLoggedIn;
         if(apiService.login) {
             this.loginDTO = apiService.login;
@@ -31,11 +34,16 @@ export class LoginComponent implements OnInit {
      }
 
     ngOnInit() {
+        this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
         this.apiService.loginEvent.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (login) => {
                 this.processing = false;
                 this.isLoggedIn = true;
                 this.loginDTO = login;
+
+                if (this.returnUrl && this.isSafeReturnUrl(this.returnUrl)) {
+                    this.router.navigateByUrl(this.returnUrl);
+                }
             }
         });
         this.apiService.logoutEvent.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
@@ -65,5 +73,9 @@ export class LoginComponent implements OnInit {
     onLogout() {
         this.processing = false;
         this.apiService.logout();
+    }
+
+    private isSafeReturnUrl(url: string): boolean {
+        return url.startsWith('/') && !url.startsWith('//') && url !== '/login';
     }
 }

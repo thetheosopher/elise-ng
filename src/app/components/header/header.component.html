@@ -18,17 +18,6 @@
                 </div>
             </div>
 
-            <!-- Tools dropdown -->
-            <div ngbDropdown>
-                <button class="btn btn-link nav-link" id="toolsdrop" ngbDropdownToggle>Tools</button>
-                <div ngbDropdownMenu aria-labelledby="toolsdrop">
-                    <a ngbDropdownItem routerLink='/tests/model-designer' routerLinkActive='active'>Model Designer</a>
-                    <a ngbDropdownItem routerLink='/tests/model-playground' routerLinkActive='active'>Model Playground</a>
-                    <a ngbDropdownItem routerLink='/tests/container-explorer' routerLinkActive='active'>Container Explorer</a>
-                    <a ngbDropdownItem routerLink='/api-tests' routerLinkActive='active'>API Tests</a>
-                </div>
-            </div>
-
             <!-- Explore dropdown -->
             <div ngbDropdown>
                 <button class="btn btn-link nav-link" id="exploredrop" ngbDropdownToggle>Explore</button>
@@ -36,6 +25,17 @@
                     <a ngbDropdownItem routerLink='/tests/view' routerLinkActive='active'>View Tests</a>
                     <a ngbDropdownItem routerLink='/tests/design' routerLinkActive='active'>Design Tests</a>
                     <a ngbDropdownItem routerLink='/tests/surface' routerLinkActive='active'>Surface Tests</a>
+                </div>
+            </div>
+
+            <!-- Tools dropdown -->
+            <div *ngIf="isLoggedIn" ngbDropdown>
+                <button class="btn btn-link nav-link" id="toolsdrop" ngbDropdownToggle>Tools</button>
+                <div ngbDropdownMenu aria-labelledby="toolsdrop">
+                    <a ngbDropdownItem routerLink='/tests/model-designer' routerLinkActive='active'>Model Designer</a>
+                    <a ngbDropdownItem routerLink='/tests/model-playground' routerLinkActive='active'>Model Playground</a>
+                    <a ngbDropdownItem routerLink='/tests/container-explorer' routerLinkActive='active'>Container Explorer</a>
+                    <a ngbDropdownItem routerLink='/api-tests' routerLinkActive='active'>API Tests</a>
                 </div>
             </div>
         </ul>
