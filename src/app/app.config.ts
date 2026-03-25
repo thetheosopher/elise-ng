@@ -11,6 +11,7 @@ import { DesignTestsComponent } from './components/design-tests/design-tests.com
 import { EliseDesignHarnessComponent } from './components/elise-design-harness/elise-design-harness.component';
 import { EliseViewHarnessComponent } from './components/elise-view-harness/elise-view-harness.component';
 import { EliseSurfaceHarnessComponent } from './components/elise-surface-harness/elise-surface-harness.component';
+import { HomeComponent } from './components/home/home.component';
 import { LoginComponent } from './components/login/login.component';
 import { ModelDesignerComponent } from './components/model-designer/model-designer.component';
 import { ModelPlaygroundComponent } from './components/model-playground/model-playground.component';
@@ -34,7 +35,8 @@ import { NotFoundComponent } from './components/not-found/not-found.component';
 import { authInterceptor } from './interceptors/auth.interceptor';
 
 const routes: Routes = [
-    { path: '', redirectTo: '/primitives', pathMatch: 'full' },
+    { path: '', component: HomeComponent },
+    { path: 'home', redirectTo: '', pathMatch: 'full' },
     { path: 'primitives', component: PrimitivesComponent },
     { path: 'primitives/:id', component: PrimitiveComponent },
     { path: 'animations', component: AnimationsComponent },

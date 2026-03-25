@@ -1,0 +1,95 @@
+<div class="landing-page">
+    <section class="landing-hero">
+        <div class="hero-copy">
+            <div class="hero-kicker">Elise Graphics Demo Studio</div>
+            <h1>Explore samples, validate rendering, and build new models from a single front door.</h1>
+            <p>
+                Elise bundles gallery-style examples, rendering harnesses, and authenticated authoring tools.
+                The landing page gives first-time visitors a clear map of what to try next.
+            </p>
+            <div class="hero-actions">
+                <a class="btn btn-primary" routerLink="/primitives">
+                    <span class="fas fa-sparkles me-2"></span>Browse Samples
+                </a>
+                <a class="btn btn-outline-light" routerLink="/tests/view">
+                    <span class="fas fa-flask me-2"></span>Open Test Harnesses
+                </a>
+            </div>
+        </div>
+
+        <div class="hero-panel">
+            <div class="hero-stat-grid">
+                <div class="hero-stat">
+                    <span class="hero-stat-value">{{ sampleCounts.primitives ?? '...' }}</span>
+                    <span class="hero-stat-label">Primitive studies</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-value">{{ sampleCounts.animations ?? '...' }}</span>
+                    <span class="hero-stat-label">Animated scenes</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-value">{{ sampleCounts.sketches ?? '...' }}</span>
+                    <span class="hero-stat-label">Sketch experiments</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-value">3</span>
+                    <span class="hero-stat-label">Authoring tools</span>
+                </div>
+            </div>
+            <div class="hero-note">
+                <span class="fas fa-circle-info me-2"></span>
+                Tooling routes are available after sign-in. Sample galleries and test harnesses remain a fast public entry point.
+            </div>
+        </div>
+    </section>
+
+    <section class="landing-section">
+        <div class="landing-section-header">
+            <h2>Start with the galleries</h2>
+            <p>Three curated collections cover the core drawing model, motion-heavy demos, and more open-ended visual experiments.</p>
+        </div>
+        <div class="landing-grid landing-grid-three">
+            <a *ngFor="let item of sampleLinks; trackBy: trackByRoute" class="landing-card" [routerLink]="item.route">
+                <div class="landing-card-eyebrow">{{ item.eyebrow }}</div>
+                <div class="landing-card-icon"><span class="fas" [ngClass]="item.icon"></span></div>
+                <h3>{{ item.title }}</h3>
+                <p>{{ item.description }}</p>
+                <span class="landing-card-link">Open {{ item.title }} <span class="fas fa-arrow-right ms-2"></span></span>
+            </a>
+        </div>
+    </section>
+
+    <section class="landing-section landing-section-accent">
+        <div class="landing-section-header">
+            <h2>Build with the toolchain</h2>
+            <p>When you need to edit models, inspect storage, or script scenes directly, these routes are the operational workspace.</p>
+        </div>
+        <div class="landing-grid landing-grid-three">
+            <a *ngFor="let item of toolLinks; trackBy: trackByRoute" class="landing-card landing-card-dark" [routerLink]="item.route">
+                <div class="landing-card-meta">
+                    <span class="landing-card-eyebrow">{{ item.eyebrow }}</span>
+                    <span *ngIf="item.requiresAuth" class="landing-pill">Sign in required</span>
+                </div>
+                <div class="landing-card-icon"><span class="fas" [ngClass]="item.icon"></span></div>
+                <h3>{{ item.title }}</h3>
+                <p>{{ item.description }}</p>
+                <span class="landing-card-link">Launch {{ item.title }} <span class="fas fa-arrow-right ms-2"></span></span>
+            </a>
+        </div>
+    </section>
+
+    <section class="landing-section">
+        <div class="landing-section-header">
+            <h2>Investigate rendering behavior</h2>
+            <p>Use the harness routes to validate view, design, and surface behavior without jumping straight into the editor tools.</p>
+        </div>
+        <div class="landing-grid landing-grid-three">
+            <a *ngFor="let item of exploreLinks; trackBy: trackByRoute" class="landing-card landing-card-minimal" [routerLink]="item.route">
+                <div class="landing-card-eyebrow">{{ item.eyebrow }}</div>
+                <h3>{{ item.title }}</h3>
+                <p>{{ item.description }}</p>
+                <span class="landing-card-link">Inspect {{ item.title }} <span class="fas fa-arrow-right ms-2"></span></span>
+            </a>
+        </div>
+    </section>
+</div>
