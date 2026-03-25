@@ -50,4 +50,8 @@ export class AnimationsComponent implements OnInit {
     trackByModelId(_index: number, model: ModelInfo): string {
         return model.id;
     }
+
+    getThumbnailPath(model: ModelInfo): string {
+        return `assets/images/animations/${model.id}.jpg`;
+    }
 }

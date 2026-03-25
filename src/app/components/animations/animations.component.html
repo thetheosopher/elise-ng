@@ -8,6 +8,9 @@
     <div class="sample-grid">
         <a *ngFor="let model of filteredModels; trackBy: trackByModelId"
            class="sample-card" [routerLink]="['/animations', model.id]">
+            <div class="sample-card-preview">
+                <img class="sample-card-image" [src]="getThumbnailPath(model)" [alt]="model.name + ' preview'" loading="lazy">
+            </div>
             <div class="sample-card-body">
                 <span class="sample-card-title">{{model.name}}</span>
                 <p class="sample-card-description">{{model.description}}</p>
