@@ -32,6 +32,7 @@ export class EliseDesignHarnessComponent implements OnInit, ISampleDesigner {
     eliseView: EliseDesignComponent;
     controller: DesignController;
     lastMessage = '-';
+    testId: string | null = null;
 
     scale = 1;
     background = 'black';
@@ -98,9 +99,16 @@ export class EliseDesignHarnessComponent implements OnInit, ISampleDesigner {
     ngOnInit() {
         this.eliseView = this.eliseViewElementRef.nativeElement;
         const id = this._route.snapshot.paramMap.get('id');
+        this.testId = id;
         if (id) {
             this._designTestService.configure(this, id);
         }
+    }
+
+    get showComponentPlacementHint(): boolean {
+        return this.testId === 'create_component'
+            || this.testId === 'image_component'
+            || this.testId === 'upload_component';
     }
 
     backgroundClass() {

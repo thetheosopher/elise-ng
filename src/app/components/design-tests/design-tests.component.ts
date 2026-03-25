@@ -5,9 +5,10 @@ import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { DesignTestPreviewComponent } from './design-test-preview.component';
 
 @Component({
-    imports: [CommonModule, RouterModule],
+    imports: [CommonModule, RouterModule, DesignTestPreviewComponent],
     selector: 'app-design-tests',
     templateUrl: './design-tests.component.html',
     styleUrls: ['./design-tests.component.scss']

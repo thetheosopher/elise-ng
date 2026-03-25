@@ -427,7 +427,7 @@ const tests: ViewSample[] = [
             y += height + margin;
 
             elise.rectangle(x, y, width, height).setStroke(borderStroke).addTo(model);
-            const url = 'https://httpbin.org/ip';
+            const url = 'https://jsonplaceholder.typicode.com/todos/1';
             elise
                 .text(elise.uriTextResource('key4', url).addTo(model), x, y, width, height)
                 .setTypesize(fontSize)

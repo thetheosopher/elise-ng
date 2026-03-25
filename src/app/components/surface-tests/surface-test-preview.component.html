@@ -1,0 +1,11 @@
+<div #previewHost class="sample-preview-shell">
+    <div class="sample-preview-canvas gray" *ngIf="surface; else previewState">
+        <app-elise-surface [surface]="surface" [scale]="scale" [opacity]="opacity"></app-elise-surface>
+    </div>
+
+    <ng-template #previewState>
+        <div class="sample-preview-placeholder" [class.sample-preview-error]="loadFailed">
+            <span class="fas" [ngClass]="loadFailed ? 'fa-triangle-exclamation' : 'fa-spinner fa-spin'"></span>
+        </div>
+    </ng-template>
+</div>

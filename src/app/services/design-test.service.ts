@@ -30,6 +30,13 @@ function defaultModel(): Model {
     return model;
 }
 
+const starterComponentRegion = {
+    x: 48,
+    y: 64,
+    width: 224,
+    height: 128
+};
+
 function drawstar(element: PolylineElement | PolygonElement, xcenter: number, ycenter: number, radius: number) {
     const numpoints = 5;
     const angle = Math.PI * 4 / numpoints;
@@ -433,7 +440,7 @@ const tests: DesignSample[] = [
             p1.setStroke('White,2').addTo(model);
             const p2 = elise.polyline();
             drawstar(p2, xc, yc, radius);
-            p2.setStroke('Gold,').setTransform('translate(90,90)').addTo(model);
+            p2.setStroke('Gold,2').setTransform('translate(90,90)').addTo(model);
             viewer.model = model;
         }
     },
@@ -1544,12 +1551,13 @@ const tests: DesignSample[] = [
         title: 'Generic Component Test',
         description: 'Tests generic component creation and rendering.',
         configure: (viewer) => {
+            let seeded = false;
             if(!ComponentRegistry.isComponentRegistered('generic')) {
                 ComponentRegistry.registerComponent('generic', new GenericComponentProps());
             }
             const model = defaultModel();
             model.setStroke('Black,3').setFill('#f2f2f2');
-            model.controllerAttached.add(function(m, controller: DesignController) {
+            model.controllerAttached.add(function(_model, controller: DesignController) {
                 controller.elementCreated.add((c: DesignController, region?: Region) => {
                     c.addComponentElement('generic', elise.newId(), region.x, region.y, region.width, region.height, null,
                     function(el: ElementBase) {
@@ -1557,6 +1565,19 @@ const tests: DesignSample[] = [
                 });
                 controller.selectionEnabled = false;
                 controller.activeComponent = ComponentRegistry.getComponent('generic');
+                if(!seeded) {
+                    seeded = true;
+                    controller.addComponentElement(
+                        'generic',
+                        elise.newId(),
+                        starterComponentRegion.x,
+                        starterComponentRegion.y,
+                        starterComponentRegion.width,
+                        starterComponentRegion.height,
+                        null,
+                        function(_el: ElementBase) {
+                        });
+                }
             });
             viewer.model = model;
         }
@@ -1566,6 +1587,7 @@ const tests: DesignSample[] = [
         title: 'Image Based Component Test',
         description: 'Tests image based component creation and rendering.',
         configure: (viewer) => {
+            let seeded = false;
 
             Component.baseImagePath = ':./assets/components/';
             if(!ComponentRegistry.isComponentRegistered('navigate')) {
@@ -1587,6 +1609,19 @@ const tests: DesignSample[] = [
                 });
                 controller.selectionEnabled = false;
                 controller.activeComponent = ComponentRegistry.getComponent('navigate');
+                if(!seeded) {
+                    seeded = true;
+                    controller.addComponentElement(
+                        'navigate',
+                        elise.newId(),
+                        starterComponentRegion.x,
+                        starterComponentRegion.y,
+                        starterComponentRegion.width,
+                        starterComponentRegion.height,
+                        null,
+                        function(_el: ElementBase) {
+                        });
+                }
             });
 
             viewer.model = model;
@@ -1597,6 +1632,7 @@ const tests: DesignSample[] = [
         title: 'Upload Component Test',
         description: 'Tests upload based component creation and rendering.',
         configure: (viewer) => {
+            let seeded = false;
 
             const elementsWithUploads: ElementBase[] = [];
             let controller: DesignController;
@@ -1655,6 +1691,20 @@ const tests: DesignSample[] = [
                 });
                 controller.selectionEnabled = false;
                 controller.activeComponent = ComponentRegistry.getComponent('html');
+                if(!seeded) {
+                    seeded = true;
+                    controller.addComponentElement(
+                        'html',
+                        elise.newId(),
+                        starterComponentRegion.x,
+                        starterComponentRegion.y,
+                        starterComponentRegion.width,
+                        starterComponentRegion.height,
+                        null,
+                        function(el: ComponentElement) {
+                            simulateUpload(el);
+                        });
+                }
             });
             viewer.model = model;
         }
