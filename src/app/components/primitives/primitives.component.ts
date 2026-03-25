@@ -5,9 +5,10 @@ import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { SamplePreviewComponent } from '../sample-preview/sample-preview.component';
 
 @Component({
-    imports: [CommonModule, RouterModule],
+    imports: [CommonModule, RouterModule, SamplePreviewComponent],
     selector: 'app-primitives',
     templateUrl: './primitives.component.html',
     styleUrls: [ './primitives.component.scss' ]

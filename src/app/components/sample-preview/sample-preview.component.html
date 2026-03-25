@@ -1,0 +1,11 @@
+<div #previewHost class="sample-preview-shell">
+    <div class="sample-preview-canvas" [class.grid]="backgroundStyle === 'grid'" [class.white]="backgroundStyle === 'white'" *ngIf="model; else previewState">
+        <app-elise-view [model]="model" [scale]="scale" [timerEnabled]="usesAnimatedPreview"></app-elise-view>
+    </div>
+
+    <ng-template #previewState>
+        <div class="sample-preview-placeholder" [class.grid]="backgroundStyle === 'grid'" [class.white]="backgroundStyle === 'white'" [class.sample-preview-error]="loadFailed">
+            <span class="fas" [ngClass]="loadFailed ? 'fa-triangle-exclamation' : 'fa-spinner fa-spin'"></span>
+        </div>
+    </ng-template>
+</div>

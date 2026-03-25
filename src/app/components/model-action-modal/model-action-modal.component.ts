@@ -26,7 +26,20 @@ export class ModelActionModalComponent implements OnInit {
     }
 
     get title() {
-        return this.modalInfo.sourceType === 'svg' ? 'SVG Import' : 'Model Action';
+        const baseTitle = this.modalInfo.sourceType === 'svg' ? 'SVG Import' : 'Model Action';
+        const fileName = this.sourceFileName;
+        return fileName ? `${baseTitle} - ${fileName}` : baseTitle;
+    }
+
+    get sourceFileName() {
+        const sourcePath = this.modalInfo?.path?.trim();
+        if (!sourcePath) {
+            return '';
+        }
+
+        const normalizedPath = sourcePath.split('?')[0].split('#')[0];
+        const pathSegments = normalizedPath.split(/[\\/]/);
+        return pathSegments[pathSegments.length - 1] || '';
     }
 
     get editLabel() {

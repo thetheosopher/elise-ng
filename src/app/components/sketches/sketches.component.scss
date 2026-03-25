@@ -1,0 +1,22 @@
+:host {
+	display: block;
+}
+
+.sample-card-preview {
+	height: 132px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+	border-bottom: 1px solid rgba(226, 232, 240, 0.95);
+	background: linear-gradient(180deg, rgba(248, 250, 252, 0.9), rgba(241, 245, 249, 0.92));
+}
+
+.sample-card-image {
+	display: block;
+	max-width: 100%;
+	max-height: 100%;
+	width: auto;
+	height: auto;
+	object-fit: contain;
+}

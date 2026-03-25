@@ -41,4 +41,8 @@ export class SketchesComponent implements OnInit {
     trackByModelId(_index: number, model: ModelInfo): string {
         return model.id;
     }
+
+    getThumbnailPath(model: ModelInfo): string {
+        return `assets/images/sketches/${model.id}.jpg`;
+    }
 }

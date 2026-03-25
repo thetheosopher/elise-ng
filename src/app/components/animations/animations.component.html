@@ -8,7 +8,10 @@
     <div class="sample-grid">
         <a *ngFor="let model of filteredModels; trackBy: trackByModelId"
            class="sample-card" [routerLink]="['/animations', model.id]">
-            <span class="sample-card-title">{{model.name}}</span>
+            <div class="sample-card-body">
+                <span class="sample-card-title">{{model.name}}</span>
+                <p class="sample-card-description">{{model.description}}</p>
+            </div>
         </a>
     </div>
 </div>

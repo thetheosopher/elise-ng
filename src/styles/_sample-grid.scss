@@ -11,22 +11,45 @@
     flex-direction: column;
     border: 1px solid $elise-gray-200;
     border-radius: $radius-md;
-    padding: 0.75rem 1rem;
+    overflow: hidden;
     text-decoration: none;
     color: inherit;
-    transition: box-shadow 0.15s, border-color 0.15s;
+    background: white;
+    transition: box-shadow 0.15s, border-color 0.15s, transform 0.15s;
 
     &:hover {
         border-color: $elise-primary;
         box-shadow: $shadow-md;
+        transform: translateY(-2px);
         text-decoration: none;
         color: inherit;
     }
 }
 
+.sample-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.85rem 1rem 1rem;
+    min-height: 0;
+    flex: 1;
+}
+
 .sample-card-title {
     font-weight: 500;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+    color: $elise-gray-800;
+}
+
+.sample-card-description {
+    font-size: 0.82rem;
+    color: $elise-gray-500;
+    line-height: 1.45;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .page-header {

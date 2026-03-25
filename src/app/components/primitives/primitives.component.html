@@ -6,7 +6,11 @@
     <div class="sample-grid">
         <a *ngFor="let model of models; trackBy: trackByModelId"
            class="sample-card" [routerLink]="['/primitives', model.id]">
-            <span class="sample-card-title">{{model.name}}</span>
+            <app-sample-preview type="primitives" [id]="model.id" backgroundStyle="white" [scale]="0.26"></app-sample-preview>
+            <div class="sample-card-body">
+                <span class="sample-card-title">{{model.name}}</span>
+                <p class="sample-card-description">{{model.description}}</p>
+            </div>
         </a>
     </div>
 </div>

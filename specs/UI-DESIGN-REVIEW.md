@@ -1220,7 +1220,7 @@ src/
 | # | Task | Effort | Impact | Status |
 |---|------|--------|--------|--------|
 | 5.1 | Create Home/Landing page component | L | First-visit experience | ✅ Done |
-| 5.2 | Add live thumbnail previews to sample cards | L | Visually stunning gallery | |
+| 5.2 | Add live thumbnail previews to sample cards | L | Visually stunning gallery | ✅ Done |
 | 5.3 | Add code syntax highlighting to detail pages | M | Developer-friendly presentation | |
 | 5.4 | Add copy-to-clipboard for code blocks | S | Developer convenience | |
 | 5.5 | Integrate Monaco editor for Model Playground | L | Professional code editing | |
