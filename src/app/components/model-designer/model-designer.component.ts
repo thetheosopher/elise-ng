@@ -19,7 +19,7 @@ import { UploadService, UploadStateCode, Upload, UploadState } from '../../servi
 // Elise core classes
 import { BitmapResource, Color, Model, ModelResource, Point, Region, Resource, Size,
     PolylineElement, PolygonElement, PathElement } from 'elise-graphics';
-import { FillInfo, LinearGradientFill, PointEventParameters, RadialGradientFill, StrokeInfo, ViewDragArgs } from 'elise-graphics';
+import { FillInfo, LinearGradientFill, PointEventParameters, RadialGradientFill, StrokeInfo, UndoState, ViewDragArgs } from 'elise-graphics';
 import { ElementBase, ImageElement, ModelElement, TextElement } from 'elise-graphics';
 import { DesignController } from 'elise-graphics';
 import { SVGImporter } from 'elise-graphics';
@@ -99,6 +99,8 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     isDragging = false;
     pendingImportPoint?: Point;
     selectedElementCount = 0;
+    canUndo = false;
+    canRedo = false;
     lowestSelectedIndex: number;
     highestSelectedIndex: number;
     singleElementType: string;
@@ -1651,6 +1653,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
     controllerSet(controller: DesignController) {
         this.controller = controller;
+        this.syncUndoState();
         if (!this.controller) {
             return;
         }
@@ -1663,6 +1666,44 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             this.controller.selectionEnabled = true;
         }
         // this.controller.renderer = new DesignRenderer(this.controller);
+    }
+
+    undoChanged(state: UndoState) {
+        this.canUndo = state?.canUndo ?? false;
+        this.canRedo = state?.canRedo ?? false;
+    }
+
+    private syncUndoState() {
+        this.canUndo = this.controller?.canUndo ?? false;
+        this.canRedo = this.controller?.canRedo ?? false;
+    }
+
+    undo() {
+        if (!this.controller?.undo()) {
+            this.syncUndoState();
+            return;
+        }
+
+        this.afterUndoRedo();
+    }
+
+    redo() {
+        if (!this.controller?.redo()) {
+            this.syncUndoState();
+            return;
+        }
+
+        this.afterUndoRedo();
+    }
+
+    private afterUndoRedo() {
+        if (this.modelEditorNavId === 2 && this.model) {
+            this.formattedJson = this.model.formattedJSON();
+        }
+
+        this.selectionChanged(this.controller?.selectedElementCount?.() ?? 0);
+        this.syncUndoState();
+        this.changeDetectorRef.detectChanges();
     }
 
     elementSelected(element: ElementBase) {
@@ -1692,6 +1733,9 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         else {
             this.selectedElementCount = 0;
         }
+
+        this.syncUndoState();
+
         if (this.selectedElementCount === 1) {
             selectedElement = this.controller.selectedElements[0];
         }

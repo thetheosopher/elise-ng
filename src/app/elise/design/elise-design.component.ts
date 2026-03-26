@@ -10,6 +10,7 @@ import {
     ElementDragArgs,
     ElementLocationArgs,
     ElementSizeArgs,
+    UndoState,
     ViewDragArgs
 } from 'elise-graphics';
 
@@ -53,6 +54,7 @@ export class EliseDesignComponent implements AfterViewInit, OnDestroy {
     @Output() elementDrop = new EventEmitter<ElementDragArgs>();
     @Output() elementsReordered = new EventEmitter<ElementBase[]>();
     @Output() isDirtyChanged = new EventEmitter<boolean>();
+    @Output() undoChanged = new EventEmitter<UndoState>();
 
     private _model: Model;
     private _hostDiv: HTMLDivElement;
@@ -194,6 +196,9 @@ export class EliseDesignComponent implements AfterViewInit, OnDestroy {
                     });
                     this.controller.isDirtyChanged.add((c, e) => {
                         this.isDirtyChanged.emit(e);
+                    });
+                    this.controller.undoChanged.add((c, e) => {
+                        this.undoChanged.emit(e);
                     });
                     this.controllerSet.emit(this.controller);
                 }

@@ -124,9 +124,24 @@
                             </div>
                             <div class='toolbar-divider'></div>
                             <div class='toolbar-group'>
+                                <button class="btn btn-sm btn-outline-primary" type="button"
+                                    [disabled]="!canUndo" (click)="undo()" ngbTooltip="Undo (Ctrl+Z)">
+                                    <span class="fas fa-undo me-1"></span>Undo
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary" type="button"
+                                    [disabled]="!canRedo" (click)="redo()" ngbTooltip="Redo (Ctrl+Y or Ctrl+Shift+Z)">
+                                    <span class="fas fa-redo me-1"></span>Redo
+                                </button>
+                            </div>
+                            <div class='toolbar-divider'></div>
+                            <div class='toolbar-group'>
                                 <div ngbDropdown class="d-inline-block">
                                     <button class="btn btn-sm btn-outline-primary" id="editMenuDropdown" ngbDropdownToggle>Edit</button>
                                             <div ngbDropdownMenu aria-labelledby="editMenuDropdown">
+
+                                                <button ngbDropdownItem class="btn btn-sm" [disabled]="!canUndo" (click)="undo()">Undo</button>
+                                                <button ngbDropdownItem class="btn btn-sm" [disabled]="!canRedo" (click)="redo()">Redo</button>
+                                                <div class="dropdown-divider"></div>
 
                                                 <button ngbDropdownItem class="btn btn-sm" (click)="showModelSizeModal()">Model Size...</button>
 
@@ -219,6 +234,7 @@
                                         (elementClicked)="elementClicked($event)"
                                         (controllerSet)="controllerSet($event)"
                                         (selectionChanged)="selectionChanged($event)"
+                                        (undoChanged)="undoChanged($event)"
                                         (elementCreated)="elementCreated($event)"
                                         (viewDragEnter)="viewDragEnter($event)" (viewDragLeave)="viewDragLeave($event)"
                                         (viewDrop)="viewDrop($event)">

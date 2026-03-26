@@ -7,6 +7,7 @@ import { Region } from 'elise-graphics/lib/core/Region';
 import { PointEventParameters } from 'elise-graphics/lib/core/point-event-parameters';
 import { DesignController } from 'elise-graphics/lib/design/design-controller';
 import { ElementBase } from 'elise-graphics/lib/elements/element-base';
+import { UndoState } from 'elise-graphics';
 
 import { EliseDesignComponent } from '../../elise/design/elise-design.component';
 import { DesignTestService } from '../../services/design-test.service';
@@ -42,6 +43,8 @@ export class EliseDesignHarnessComponent implements OnInit, ISampleDesigner {
     displayModel = true;
     formattedJson: string;
     selectionEnabled: boolean;
+    canUndo = false;
+    canRedo = false;
 
     constructor(
         private _designTestService: DesignTestService,
@@ -167,6 +170,49 @@ export class EliseDesignHarnessComponent implements OnInit, ISampleDesigner {
 
     controllerSet(controller: DesignController) {
         this.controller = controller;
+        this.syncUndoState();
+    }
+
+    undoChanged(state: UndoState) {
+        this.canUndo = state?.canUndo ?? false;
+        this.canRedo = state?.canRedo ?? false;
+    }
+
+    undo() {
+        if (!this.controller?.undo()) {
+            this.syncUndoState();
+            return;
+        }
+
+        this.afterUndoRedo('Undo');
+    }
+
+    redo() {
+        if (!this.controller?.redo()) {
+            this.syncUndoState();
+            return;
+        }
+
+        this.afterUndoRedo('Redo');
+    }
+
+    modelUpdated(model: Model) {
+        if (this.displayModel) {
+            this.formattedJson = model.formattedJSON();
+        }
+    }
+
+    private afterUndoRedo(action: string) {
+        if (this.displayModel && this.model) {
+            this.formattedJson = this.model.formattedJSON();
+        }
+        this.syncUndoState();
+        this.log(`${action} applied`);
+    }
+
+    private syncUndoState() {
+        this.canUndo = this.controller?.canUndo ?? false;
+        this.canRedo = this.controller?.canRedo ?? false;
     }
 
     selectionChanged(c: number) {

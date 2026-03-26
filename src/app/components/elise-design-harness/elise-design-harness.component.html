@@ -39,6 +39,18 @@
                     style="margin-left: 8px;">
                 <label style="margin-left: 4px; margin-right: 16px;"><strong>Select Mode</strong></label>
             </td>
+            <td>
+                <button type="button" class="btn btn-sm btn-outline-primary ms-2" [disabled]="!canUndo"
+                    (click)="undo()" title="Undo (Ctrl+Z)">
+                    <span class="fas fa-undo me-1"></span>Undo
+                </button>
+            </td>
+            <td>
+                <button type="button" class="btn btn-sm btn-outline-primary ms-2" [disabled]="!canRedo"
+                    (click)="redo()" title="Redo (Ctrl+Y or Ctrl+Shift+Z)">
+                    <span class="fas fa-redo me-1"></span>Redo
+                </button>
+            </td>
             <td *ngIf="mouseOverView" style="min-width: 60px;">
                 <label for="xpos"><strong>X:</strong></label>&nbsp;
                 <span id="xpos">{{viewMouseX}}</span>
@@ -51,14 +63,17 @@
     </table>
     <div [ngClass]='backgroundClass()'>
         <app-elise-design #elise [model]="model" [scale]="scale" [selectionEnabled]="selectionEnabled"
+            (modelUpdated)="modelUpdated($event)"
             (mouseMovedView)="mouseMovedView($event)" (mouseEnteredView)="mouseEnteredView($event)"
             (mouseLeftView)="mouseLeftView($event)" (mouseDownView)="mouseDownView($event)"
             (mouseUpView)="mouseUpView($event)" (mouseEnteredElement)="mouseEnteredElement($event)"
             (mouseLeftElement)="mouseLeftElement($event)" (mouseDownElement)="mouseDownElement($event)"
             (mouseUpElement)="mouseUpElement($event)" (elementClicked)="elementClicked($event)"
             (controllerSet)="controllerSet($event)" (selectionChanged)="selectionChanged($event)"
+            (undoChanged)="undoChanged($event)"
             (elementCreated)="elementCreated($event)"></app-elise-design>
     </div>
+    <div class="shortcut-hint">Shortcuts: Ctrl+Z for undo, Ctrl+Y or Ctrl+Shift+Z for redo.</div>
     <div>
         <label for='last-message'>Last Event</label>
         <div id='last-message'>{{lastMessage}}</div>
