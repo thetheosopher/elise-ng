@@ -1,0 +1,105 @@
+@use '../../../styles/variables' as *;
+
+:host {
+    display: block;
+}
+
+.code-block {
+    border: 1px solid $elise-gray-200;
+    border-radius: $radius-md;
+    overflow: hidden;
+    margin-top: 1rem;
+    box-shadow: $shadow-sm;
+}
+
+.code-block-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    background: $elise-gray-100;
+    border-bottom: 1px solid $elise-gray-200;
+}
+
+.code-block-label {
+    color: $elise-gray-700;
+    font-family: $font-mono;
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.code-block-copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    border: 1px solid $elise-gray-300;
+    border-radius: 999px;
+    background: white;
+    color: $elise-gray-700;
+    font-family: $font-mono;
+    font-size: 0.78rem;
+    padding: 0.3rem 0.65rem;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.code-block-copy:hover:not(:disabled) {
+    background: $elise-gray-50;
+    border-color: $elise-gray-500;
+}
+
+.code-block-copy:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.code-block-pre {
+    margin: 0;
+    max-height: min(60vh, 720px);
+    overflow: auto;
+    background: $elise-gray-900;
+}
+
+.code-block-pre code {
+    display: block;
+    padding: 1rem 1.125rem;
+    font-family: $font-mono;
+    font-size: 0.9rem;
+    line-height: 1.55;
+}
+
+:host-context(.dark-theme) .code-block {
+    border-color: $elise-gray-700;
+}
+
+:host-context(.dark-theme) .code-block-header {
+    background: $elise-gray-800;
+    border-bottom-color: $elise-gray-700;
+}
+
+:host-context(.dark-theme) .code-block-label {
+    color: $elise-gray-200;
+}
+
+:host-context(.dark-theme) .code-block-copy {
+    background: $elise-gray-900;
+    border-color: $elise-gray-500;
+    color: $elise-gray-100;
+}
+
+:host-context(.dark-theme) .code-block-copy:hover:not(:disabled) {
+    background: $elise-gray-700;
+    border-color: $elise-gray-300;
+}
+
+@media (max-width: 768px) {
+    .code-block-header {
+        flex-wrap: wrap;
+    }
+
+    .code-block-pre code {
+        padding: 0.875rem;
+        font-size: 0.82rem;
+    }
+}

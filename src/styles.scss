@@ -3,9 +3,196 @@
 @use "bootstrap/scss/bootstrap";
 @use './styles/utilities';
 @use './styles/sample-grid';
-@import url(https://fonts.googleapis.com/css?family=Anonymous+Pro|Poiret+One);
+@import 'highlight.js/styles/github-dark.css';
+@import url(https://fonts.googleapis.com/css?family=Anonymous+Pro|Coda|Coda+Caption|Poiret+One);
 @import url(./assets/fonts/stylesheet.css);
 @import '@ali-hm/angular-tree-component/css/angular-tree-component.css';
+
+:root {
+    color-scheme: light;
+    --app-bg: #{$elise-gray-50};
+    --app-surface: #ffffff;
+    --app-surface-muted: #{$elise-gray-100};
+    --app-surface-strong: #ffffff;
+    --app-border: #{$elise-gray-200};
+    --app-border-strong: #{$elise-gray-300};
+    --app-text: #{$elise-gray-800};
+    --app-text-muted: #{$elise-gray-500};
+    --app-link: #{$elise-primary-dark};
+    --app-toolbar-bg: #{$toolbar-bg};
+    --app-toolbar-border: #{$panel-border};
+    --app-shadow: #{$shadow-sm};
+}
+
+body.dark-theme {
+    color-scheme: dark;
+    --app-bg: #09111f;
+    --app-surface: #0f172a;
+    --app-surface-muted: #111c33;
+    --app-surface-strong: #16233b;
+    --app-border: #334155;
+    --app-border-strong: #475569;
+    --app-text: #e2e8f0;
+    --app-text-muted: #94a3b8;
+    --app-link: #93c5fd;
+    --app-toolbar-bg: #0b1220;
+    --app-toolbar-border: #334155;
+    --app-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+html,
+body {
+    background: var(--app-bg);
+    color: var(--app-text);
+}
+
+body {
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+a {
+    color: var(--app-link);
+}
+
+body.dark-theme .page-content,
+body.dark-theme .container,
+body.dark-theme .container-fluid,
+body.dark-theme .row,
+body.dark-theme .col,
+body.dark-theme .col-12 {
+    color: inherit;
+}
+
+body.dark-theme .app-footer,
+body.dark-theme .card,
+body.dark-theme .modal-content,
+body.dark-theme .dropdown-menu,
+body.dark-theme .list-group-item,
+body.dark-theme .nav-tabs,
+body.dark-theme .tab-content,
+body.dark-theme .accordion-item,
+body.dark-theme .toolbar,
+body.dark-theme .tree,
+body.dark-theme .bg-light {
+    background-color: var(--app-surface) !important;
+    color: var(--app-text);
+    border-color: var(--app-border) !important;
+}
+
+body.dark-theme .toolbar {
+    box-shadow: var(--app-shadow);
+}
+
+body.dark-theme .toolbar-divider {
+    background: var(--app-border);
+}
+
+body.dark-theme .dropdown-divider,
+body.dark-theme hr {
+    border-color: var(--app-border);
+    color: var(--app-border);
+}
+
+body.dark-theme .dropdown-item,
+body.dark-theme .nav-link,
+body.dark-theme .navbar-text,
+body.dark-theme .card-title,
+body.dark-theme .card-text,
+body.dark-theme .form-label,
+body.dark-theme .toolbar-title,
+body.dark-theme .toolbar-status,
+body.dark-theme .text-body,
+body.dark-theme .text-dark,
+body.dark-theme .text-muted {
+    color: var(--app-text) !important;
+}
+
+body.dark-theme .text-secondary,
+body.dark-theme .small,
+body.dark-theme small,
+body.dark-theme .text-body-secondary {
+    color: var(--app-text-muted) !important;
+}
+
+body.dark-theme .dropdown-item:hover,
+body.dark-theme .dropdown-item:focus,
+body.dark-theme .nav-tabs .nav-link:hover,
+body.dark-theme .nav-tabs .nav-link:focus {
+    background-color: var(--app-surface-muted);
+}
+
+body.dark-theme .nav-tabs .nav-link.active,
+body.dark-theme .nav-tabs .nav-item.show .nav-link {
+    background: var(--app-surface-strong);
+    color: var(--app-text);
+    border-color: var(--app-border) var(--app-border) var(--app-surface-strong);
+}
+
+body.dark-theme .form-control,
+body.dark-theme .form-select,
+body.dark-theme textarea,
+body.dark-theme input,
+body.dark-theme select {
+    background-color: var(--app-surface-strong);
+    color: var(--app-text);
+    border-color: var(--app-border);
+}
+
+body.dark-theme .form-control::placeholder,
+body.dark-theme textarea::placeholder {
+    color: var(--app-text-muted);
+}
+
+body.dark-theme .form-control:focus,
+body.dark-theme .form-select:focus,
+body.dark-theme textarea:focus,
+body.dark-theme input:focus,
+body.dark-theme select:focus {
+    background-color: var(--app-surface-strong);
+    color: var(--app-text);
+    border-color: #93c5fd;
+    box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.2);
+}
+
+body.dark-theme .btn-outline-secondary,
+body.dark-theme .btn-outline-dark,
+body.dark-theme .btn-light {
+    background: transparent;
+    color: var(--app-text);
+    border-color: var(--app-border-strong);
+}
+
+body.dark-theme .btn-outline-secondary:hover,
+body.dark-theme .btn-outline-dark:hover,
+body.dark-theme .btn-light:hover {
+    background: var(--app-surface-muted);
+    color: var(--app-text);
+    border-color: var(--app-border-strong);
+}
+
+body.dark-theme .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+body.dark-theme .border,
+body.dark-theme .border-top,
+body.dark-theme .border-bottom,
+body.dark-theme .border-start,
+body.dark-theme .border-end {
+    border-color: var(--app-border) !important;
+}
+
+body.dark-theme .table {
+    --bs-table-color: var(--app-text);
+    --bs-table-bg: var(--app-surface);
+    --bs-table-border-color: var(--app-border);
+    --bs-table-striped-bg: var(--app-surface-muted);
+    --bs-table-hover-bg: var(--app-surface-strong);
+}
+
+body.dark-theme .alert {
+    border-color: var(--app-border);
+}
 
 .ng-valid[required],
 .ng-valid.required {

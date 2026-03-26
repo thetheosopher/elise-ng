@@ -3,3 +3,14 @@
     font-size: 1.4rem;
     letter-spacing: 0.05em;
 }
+
+.theme-toggle-item {
+    display: flex;
+    align-items: center;
+}
+
+.theme-toggle-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}

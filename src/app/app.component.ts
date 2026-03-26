@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { HeaderComponent } from './components/header/header.component';
 import { AlertComponent } from './components/alert/alert.component';
 import { FooterComponent } from './components/footer/footer.component';
+import { ThemeService } from './services/theme.service';
 
 @Component({
     imports: [RouterModule, HeaderComponent, AlertComponent, FooterComponent],
@@ -14,9 +15,13 @@ import { FooterComponent } from './components/footer/footer.component';
 })
 export class AppComponent implements OnInit {
 
-    constructor(private apiService: ApiService) {}
+    constructor(
+        private apiService: ApiService,
+        private themeService: ThemeService
+    ) {}
 
     ngOnInit() {
         this.apiService.baseUrl = environment.schematrixBaseUrl;
+        this.themeService.initializeTheme();
     }
 }

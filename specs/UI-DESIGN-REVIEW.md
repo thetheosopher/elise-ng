@@ -1221,14 +1221,13 @@ src/
 |---|------|--------|--------|--------|
 | 5.1 | Create Home/Landing page component | L | First-visit experience | ✅ Done |
 | 5.2 | Add live thumbnail previews to sample cards | L | Visually stunning gallery | ✅ Done |
-| 5.3 | Add code syntax highlighting to detail pages | M | Developer-friendly presentation | |
-| 5.4 | Add copy-to-clipboard for code blocks | S | Developer convenience | |
+| 5.3 | Add code syntax highlighting to detail pages | M | Developer-friendly presentation | ✅ Done |
+| 5.4 | Add copy-to-clipboard for code blocks | S | Developer convenience | ✅ Done |
 | 5.5 | Integrate Monaco editor for Model Playground | L | Professional code editing | |
-| 5.6 | Add dark mode toggle | L | Important for graphics/design tool | |
+| 5.6 | Add dark mode toggle | L | Important for graphics/design tool | ✅ Done |
 | 5.7 | Add route titles for accessibility | S | Screen reader support | |
 | 5.8 | Implement responsive panel collapse for mobile | M | Mobile usability | |
 | 5.9 | Add skip-to-content link | S | Accessibility compliance | |
-| 5.10 | Remove unused Google Font imports (Coda, Coda Caption) | S | Performance | ✅ Done (Phase 1) |
 
 ### Effort Key
 - **S** = Small (< 1 hour)

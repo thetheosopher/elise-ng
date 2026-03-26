@@ -42,6 +42,17 @@
 
         <!-- User menu (right side) -->
         <ul class="navbar-nav">
+            <li class="nav-item theme-toggle-item">
+                <button
+                    class="btn btn-link nav-link theme-toggle-button"
+                    type="button"
+                    (click)="themeService.toggleTheme()"
+                    [attr.aria-label]="themeService.isDarkMode() ? 'Switch to light mode' : 'Switch to dark mode'"
+                    [attr.aria-pressed]="themeService.isDarkMode()">
+                    <span class="fas me-1" [ngClass]="themeService.isDarkMode() ? 'fa-sun' : 'fa-moon'"></span>
+                    <span>{{ themeService.isDarkMode() ? 'Light' : 'Dark' }}</span>
+                </button>
+            </li>
             <li class="nav-item" *ngIf="!isLoggedIn">
                 <a class="nav-link" routerLink="/login" routerLinkActive="active">
                     <span class="fas fa-sign-in-alt me-1"></span>Log In

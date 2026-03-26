@@ -1,0 +1,17 @@
+<div class="code-block">
+    <div class="code-block-header">
+        <span class="code-block-label">{{label}}</span>
+        <button
+            class="code-block-copy"
+            type="button"
+            (click)="copyCode()"
+            [disabled]="!code.trim()"
+            [attr.aria-label]="copyState === 'success' ? 'Code copied' : 'Copy code to clipboard'">
+            <span class="fas me-1" [ngClass]="copyState === 'success' ? 'fa-check' : 'fa-copy'"></span>
+            <span>
+                {{ copyState === 'success' ? 'Copied' : copyState === 'error' ? 'Retry Copy' : 'Copy' }}
+            </span>
+        </button>
+    </div>
+    <pre class="code-block-pre"><code class="hljs" [innerHTML]="highlightedCode"></code></pre>
+</div>

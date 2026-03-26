@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
     imports: [CommonModule, RouterModule, NgbModule],
@@ -19,7 +20,10 @@ export class HeaderComponent implements OnInit {
     isLoggedIn = false;
     loginDTO: LoginDTO = null;
 
-    constructor(private apiService: ApiService) {
+    constructor(
+        private apiService: ApiService,
+        public themeService: ThemeService
+    ) {
         this.isLoggedIn = apiService.isLoggedIn;
     }
 

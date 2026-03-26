@@ -9,10 +9,11 @@ import { default as elise } from 'elise-graphics';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { EliseViewComponent } from '../../elise/view/elise-view.component';
+import { CodeBlockComponent } from '../code-block/code-block.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-    imports: [CommonModule, FormsModule, RouterModule, EliseViewComponent],
+    imports: [CommonModule, FormsModule, RouterModule, EliseViewComponent, CodeBlockComponent],
     selector: 'app-primitive',
     templateUrl: './primitive.component.html',
     styleUrls: [ './primitive.component.scss' ]

@@ -20,5 +20,5 @@
     <div class="border" style="display: inline-block;" [ngClass]="background">
         <app-elise-view #elise [model]="model" [scale]="scale"></app-elise-view>
     </div>
-    <pre>{{modelCode}}</pre>
+    <app-code-block [code]="modelCode" language="typescript" label="TypeScript"></app-code-block>
 </div>
