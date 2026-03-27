@@ -22,9 +22,9 @@ export class PrimitiveComponent implements OnInit {
     private readonly destroyRef = inject(DestroyRef);
 
     model: Model;
-    modelName: string;
-    modelDescription: string;
-    modelCode: string;
+    modelName = '';
+    modelDescription = '';
+    modelCode = '';
     scale: number;
     background = 'grid';
 

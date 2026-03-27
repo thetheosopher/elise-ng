@@ -5,7 +5,7 @@
             class="code-block-copy"
             type="button"
             (click)="copyCode()"
-            [disabled]="!code.trim()"
+            [disabled]="!(code ?? '').trim()"
             [attr.aria-label]="copyState === 'success' ? 'Code copied' : 'Copy code to clipboard'">
             <span class="fas me-1" [ngClass]="copyState === 'success' ? 'fa-check' : 'fa-copy'"></span>
             <span>

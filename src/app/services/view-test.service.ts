@@ -65,6 +65,17 @@ const tests: ViewSample[] = [
         }
     },
     {
+        id: 'roundedrectangle',
+        title: 'Rounded Rectangle Element',
+        description: 'Tests rounded rectangle element rendering.',
+        configure: (viewer) => {
+            const model = defaultModel();
+            elise.rectangle(10, 10, 200, 200).setCornerRadius(24).setFill('Gold').addTo(model);
+            elise.rectangle(110, 110, 200, 200).setCornerRadius(24).setFill('0.75;Blue').addTo(model);
+            viewer.model = model;
+        }
+    },
+    {
         id: 'ellipse',
         title: 'Ellipse Element',
         description: 'Tests Ellipse element rendering.',

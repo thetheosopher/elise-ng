@@ -18,6 +18,12 @@
         "displayModelJson": true
     },
     {
+        "name": "Rounded Rectangle",
+        "id": "rounded-rectangle",
+        "description": "Rectangular area with rounded corners.",
+        "displayModelJson": true
+    },
+    {
         "name": "Ellipse",
         "id": "ellipse",
         "description": "Elliptical area defined by a center and size.",
@@ -51,6 +57,12 @@
         "name": "Text",
         "id": "text",
         "description": "Styled text element.",
+        "displayModelJson": true
+    },
+    {
+        "name": "Drop Shadow",
+        "id": "drop-shadow",
+        "description": "Demonstrates element shadow rendering across multiple primitive types.",
         "displayModelJson": true
     },
     {
