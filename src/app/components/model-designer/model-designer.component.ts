@@ -2173,34 +2173,13 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
     duplicateSelected() {
         if (this.controller && this.controller.selectedElementCount() > 0) {
-            const clonedElements: ElementBase[] = new Array();
-            this.controller.selectedElements.forEach(selectedElement => {
-                const clonedElement = selectedElement.clone();
-                clonedElements.push(clonedElement);
-                clonedElement.setInteractive(true);
-                this.model.add(clonedElement);
-            });
-            this.controller.selectedElements = clonedElements;
-            this.controller.draw();
-            this.selectionChanged(clonedElements.length);
+            this.controller.duplicateSelectedElements();
+            this.refreshSelectionUiState();
         }
     }
 
-    sortElementsByIndex(array: ElementBase[]) {
-        array.sort((el1, el2) => {
-            const index1 = this.controller.model.elements.indexOf(el1);
-            const index2 = this.controller.model.elements.indexOf(el2);
-            return index1 - index2;
-        });
-    }
-
-    getSelectedElementsSorted() {
-        const clonedArray: ElementBase[] = new Array();
-        this.controller.selectedElements.forEach(el => {
-            clonedArray.push(el);
-        });
-        this.sortElementsByIndex(clonedArray);
-        return clonedArray;
+    private refreshSelectionUiState() {
+        this.selectionChanged(this.controller?.selectedElementCount?.() ?? 0);
     }
 
     canMoveSelectedUp() {
@@ -2209,13 +2188,8 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
     moveSelectedUp() {
         if (this.controller && this.controller.selectedElementCount() > 0) {
-            let selectedElements = this.getSelectedElementsSorted();
-            selectedElements = selectedElements.reverse();
-            selectedElements.forEach(el => {
-                this.controller.moveElementForward(el);
-            });
-            this.setSelectedIndexes();
-            this.controller.draw();
+            this.controller.bringForward();
+            this.refreshSelectionUiState();
         }
     }
 
@@ -2225,12 +2199,8 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
     moveSelectedDown() {
         if (this.controller && this.controller.selectedElementCount() > 0) {
-            const selectedElements = this.getSelectedElementsSorted();
-            selectedElements.forEach(el => {
-                this.controller.moveElementBackward(el);
-            });
-            this.setSelectedIndexes();
-            this.controller.draw();
+            this.controller.sendBackward();
+            this.refreshSelectionUiState();
         }
     }
 
@@ -2240,12 +2210,8 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
     moveSelectedToTop() {
         if (this.controller && this.controller.selectedElementCount() > 0) {
-            const selectedElements = this.getSelectedElementsSorted();
-            selectedElements.forEach(el => {
-                this.controller.moveElementToTop(el);
-            });
-            this.setSelectedIndexes();
-            this.controller.draw();
+            this.controller.bringToFront();
+            this.refreshSelectionUiState();
         }
     }
 
@@ -2255,13 +2221,8 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
     moveSelectedToBottom() {
         if (this.controller && this.controller.selectedElementCount() > 0) {
-            let selectedElements = this.getSelectedElementsSorted();
-            selectedElements = selectedElements.reverse();
-            selectedElements.forEach(el => {
-                this.controller.moveElementToBottom(el);
-            });
-            this.setSelectedIndexes();
-            this.controller.draw();
+            this.controller.sendToBack();
+            this.refreshSelectionUiState();
         }
     }
 
@@ -2271,149 +2232,75 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
     deleteSelected() {
         if (this.controller) {
-            const clonedArray: ElementBase[] = new Array();
-            this.controller.selectedElements.forEach(el => {
-                clonedArray.push(el);
-            });
-            clonedArray.forEach(el => {
-                this.controller.removeElement(el);
-            });
-            this.setSelectedIndexes();
-            this.controller.draw();
+            this.controller.removeSelected();
+            this.refreshSelectionUiState();
         }
     }
 
     removeUnusedResources() {
         if (this.controller) {
-            const usedResources = this.model.getResourceKeyReferenceCounts(null);
-            const unusedResources: Resource[] = [];
-            this.model.resources.forEach((resource) => {
-                if (!usedResources[resource.key]) {
-                    unusedResources.push(resource);
-                }
-            });
-            unusedResources.forEach((resource) => {
-                const index = this.model.resources.indexOf(resource, 0);
-                if (index > -1) {
-                    this.model.resources.splice(index, 1);
-                }
-            });
+            const removedCount = this.controller.removeUnusedResourcesFromResourceManager();
+            if (removedCount > 0) {
+                this.log(`Removed ${removedCount} unused resource${removedCount === 1 ? '' : 's'}`);
+                this.refreshSelectionUiState();
+            }
+            else {
+                this.log('No unused resources found');
+            }
         }
     }
 
     canArrange() {
-        return this.selectedElementCount > 1;
+        return (this.controller?.movableSelectedElementCount?.() ?? 0) > 1;
     }
 
     alignSelectedLeft() {
-        const left = this.controller.selectedElements[0].getLocation().x;
-        this.controller.selectedElements.forEach(el => {
-            const location = el.getLocation();
-            if (location.x !== left) {
-                el.setLocation(new Point(left, location.y));
-            }
-        });
-        this.controller.draw();
+        this.controller.alignSelectedHorizontally('left');
+        this.refreshSelectionUiState();
     }
 
     alignSelectedCenter() {
-        const center = this.controller.selectedElements[0].getLocation().x +
-            this.controller.selectedElements[0].getSize().width / 2;
-        this.controller.selectedElements.forEach(el => {
-            const location = el.getLocation();
-            const size = el.getSize();
-            if (location.x + size.width / 2 !== center) {
-                el.setLocation(new Point(center - size.width / 2, location.y));
-            }
-        });
-        this.controller.draw();
+        this.controller.alignSelectedHorizontally('center');
+        this.refreshSelectionUiState();
     }
 
     alignSelectedRight() {
-        const right = this.controller.selectedElements[0].getLocation().x +
-            this.controller.selectedElements[0].getSize().width;
-        this.controller.selectedElements.forEach(el => {
-            const location = el.getLocation();
-            const size = el.getSize();
-            if (location.x + size.width !== right) {
-                el.setLocation(new Point(right - size.width, location.y));
-            }
-        });
-        this.controller.draw();
+        this.controller.alignSelectedHorizontally('right');
+        this.refreshSelectionUiState();
     }
 
     alignSelectedTop() {
-        const top = this.controller.selectedElements[0].getLocation().y;
-        this.controller.selectedElements.forEach(el => {
-            const location = el.getLocation();
-            if (location.y !== top) {
-                el.setLocation(new Point(location.x, top));
-            }
-        });
-        this.controller.draw();
+        this.controller.alignSelectedVertically('top');
+        this.refreshSelectionUiState();
     }
 
     alignSelectedMiddle() {
-        const middle = this.controller.selectedElements[0].getLocation().y +
-            this.controller.selectedElements[0].getSize().height / 2;
-        this.controller.selectedElements.forEach(el => {
-            const location = el.getLocation();
-            const size = el.getSize();
-            if (location.y + size.height / 2 !== middle) {
-                el.setLocation(new Point(location.x, middle - size.height / 2));
-            }
-        });
-        this.controller.draw();
+        this.controller.alignSelectedVertically('middle');
+        this.refreshSelectionUiState();
     }
 
     alignSelectedBottom() {
-        const bottom = this.controller.selectedElements[0].getLocation().y +
-            this.controller.selectedElements[0].getSize().height;
-        this.controller.selectedElements.forEach(el => {
-            const location = el.getLocation();
-            const size = el.getSize();
-            if (location.y + size.height !== bottom) {
-                el.setLocation(new Point(location.x, bottom - size.height));
-            }
-        });
-        this.controller.draw();
+        this.controller.alignSelectedVertically('bottom');
+        this.refreshSelectionUiState();
     }
 
     canResize() {
-        return this.selectedElementCount > 1;
+        return (this.controller?.resizeableSelectedElementCount?.() ?? 0) > 1;
     }
 
     resizeSelectedWidth() {
-        const width = this.controller.selectedElements[0].getSize().width;
-        this.controller.selectedElements.forEach(el => {
-            const size = el.getSize();
-            if (size.width !== width) {
-                el.setSize(new Size(width, size.height));
-            }
-        });
-        this.controller.draw();
+        this.controller.resizeSelectedToSameWidth();
+        this.refreshSelectionUiState();
     }
 
     resizeSelectedHeight() {
-        const height = this.controller.selectedElements[0].getSize().height;
-        this.controller.selectedElements.forEach(el => {
-            const size = el.getSize();
-            if (size.height !== height) {
-                el.setSize(new Size(size.width, height));
-            }
-        });
-        this.controller.draw();
+        this.controller.resizeSelectedToSameHeight();
+        this.refreshSelectionUiState();
     }
 
     resizeSelectedSize() {
-        const size1 = this.controller.selectedElements[0].getSize();
-        this.controller.selectedElements.forEach(el => {
-            const size2 = el.getSize();
-            if (size1.width !== size2.width || size1.height !== size2.height) {
-                el.setSize(size1);
-            }
-        });
-        this.controller.draw();
+        this.controller.resizeSelectedToSameSize();
+        this.refreshSelectionUiState();
     }
 
     showElementSizeModal() {

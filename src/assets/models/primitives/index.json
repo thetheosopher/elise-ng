@@ -60,6 +60,12 @@
         "displayModelJson": true
     },
     {
+        "name": "Rich Text",
+        "id": "rich-text",
+        "description": "Demonstrates mixed typography within a single text element.",
+        "displayModelJson": true
+    },
+    {
         "name": "Drop Shadow",
         "id": "drop-shadow",
         "description": "Demonstrates element shadow rendering across multiple primitive types.",
