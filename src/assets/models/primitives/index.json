@@ -48,6 +48,42 @@
         "displayModelJson": true
     },
     {
+        "name": "Quadratic Bezier Path",
+        "id": "quadratic-path",
+        "description": "Demonstrates quadratic and smooth quadratic path commands.",
+        "displayModelJson": true
+    },
+    {
+        "name": "Arc Path",
+        "id": "arc-path",
+        "description": "Demonstrates the new arc primitive with configurable sweeps.",
+        "displayModelJson": true
+    },
+    {
+        "name": "Star and Regular Polygon",
+        "id": "regular-polygon",
+        "description": "Demonstrates regular polygons and star polygons from one primitive type.",
+        "displayModelJson": true
+    },
+    {
+        "name": "Arrow",
+        "id": "arrow",
+        "description": "Demonstrates arrows with configurable head and shaft proportions.",
+        "displayModelJson": true
+    },
+    {
+        "name": "Wedge / Sector",
+        "id": "wedge",
+        "description": "Demonstrates filled elliptical sectors with configurable start and end angles.",
+        "displayModelJson": true
+    },
+    {
+        "name": "Ring / Annulus",
+        "id": "ring",
+        "description": "Demonstrates annulus shapes with configurable inner radius scale.",
+        "displayModelJson": true
+    },
+    {
         "name": "Clip Paths",
         "id": "clip-paths",
         "description": "Demonstrates clipping rendered elements with custom path geometry.",

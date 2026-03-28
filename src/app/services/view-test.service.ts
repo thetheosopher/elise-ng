@@ -168,6 +168,149 @@ const tests: ViewSample[] = [
         }
     },
     {
+        id: 'quadraticpath',
+        title: 'Quadratic Bezier Path',
+        description: 'Tests quadratic and smooth quadratic path command rendering.',
+        configure: (viewer) => {
+            const model = defaultModel();
+            model.setFill('#f8fafc');
+
+            const wave = elise.path();
+            wave.commands = 'm18,166 Q76,34,134,166 T250,166 T302,142';
+            wave.setStroke('#2563eb,8').setLineCap('round').addTo(model);
+
+            const ribbon = elise.path();
+            ribbon.commands = 'm36,264 Q108,204,180,264 T300,264 Q234,304,180,294 T36,264 z';
+            ribbon.setFill('#fb7185').setStroke('#9f1239,3').addTo(model);
+
+            viewer.model = model;
+        }
+    },
+    {
+        id: 'arcpath',
+        title: 'Arc Path',
+        description: 'Tests arc primitive rendering with different sweep ranges.',
+        configure: (viewer) => {
+            const model = defaultModel();
+            model.setFill('#f8fafc');
+
+            const arc1 = elise.arc(20, 26, 126, 126);
+            arc1.startAngle = 210;
+            arc1.endAngle = 25;
+            arc1.setStroke('#2563eb,7').addTo(model);
+
+            const arc2 = elise.arc(164, 18, 116, 160);
+            arc2.startAngle = 130;
+            arc2.endAngle = 340;
+            arc2.setStroke('#ea580c,7').addTo(model);
+
+            const arc3 = elise.arc(70, 186, 176, 112);
+            arc3.startAngle = 35;
+            arc3.endAngle = 305;
+            arc3.setStroke('#7c3aed,7').addTo(model);
+
+            viewer.model = model;
+        }
+    },
+    {
+        id: 'regularpolygon',
+        title: 'Star and Regular Polygon',
+        description: 'Tests regular polygon and star polygon rendering from one primitive.',
+        configure: (viewer) => {
+            const model = defaultModel();
+            model.setFill('#f8fafc');
+
+            const hexagon = elise.regularPolygon(18, 26, 118, 118);
+            hexagon.sides = 6;
+            hexagon.setFill('#60a5fa').setStroke('#1d4ed8,3').addTo(model);
+
+            const star = elise.regularPolygon(168, 22, 124, 124);
+            star.sides = 5;
+            star.innerRadiusScale = 0.48;
+            star.setFill('#fb7185').setStroke('#9f1239,3').addTo(model);
+
+            const burst = elise.regularPolygon(94, 176, 132, 132);
+            burst.sides = 8;
+            burst.innerRadiusScale = 0.68;
+            burst.setFill('#fbbf24').setStroke('#b45309,3').addTo(model);
+
+            viewer.model = model;
+        }
+    },
+    {
+        id: 'arrow',
+        title: 'Arrow Primitive',
+        description: 'Tests arrow rendering with different head and shaft proportions.',
+        configure: (viewer) => {
+            const model = defaultModel();
+            model.setFill('#f8fafc');
+
+            elise.arrow(26, 42, 262, 54).setFill('#60a5fa').setStroke('#1d4ed8,3').addTo(model);
+
+            const arrow2 = elise.arrow(42, 138, 236, 62);
+            arrow2.headLengthScale = 0.5;
+            arrow2.headWidthScale = 0.92;
+            arrow2.shaftWidthScale = 0.2;
+            arrow2.setFill('#f97316').setStroke('#c2410c,3').addTo(model);
+
+            const arrow3 = elise.arrow(62, 232, 198, 56);
+            arrow3.headLengthScale = 0.32;
+            arrow3.shaftWidthScale = 0.5;
+            arrow3.setFill('#22c55e').setStroke('#166534,3').addTo(model);
+
+            viewer.model = model;
+        }
+    },
+    {
+        id: 'wedge',
+        title: 'Wedge / Sector',
+        description: 'Tests wedge rendering for circular and elliptical sectors.',
+        configure: (viewer) => {
+            const model = defaultModel();
+            model.setFill('#f8fafc');
+
+            const wedge1 = elise.wedge(22, 24, 120, 120);
+            wedge1.startAngle = 270;
+            wedge1.endAngle = 20;
+            wedge1.setFill('#38bdf8').setStroke('#0c4a6e,3').addTo(model);
+
+            const wedge2 = elise.wedge(176, 20, 120, 120);
+            wedge2.startAngle = 210;
+            wedge2.endAngle = 60;
+            wedge2.setFill('#f97316').setStroke('#9a3412,3').addTo(model);
+
+            const wedge3 = elise.wedge(72, 186, 176, 110);
+            wedge3.startAngle = 320;
+            wedge3.endAngle = 145;
+            wedge3.setFill('#a855f7').setStroke('#6b21a8,3').addTo(model);
+
+            viewer.model = model;
+        }
+    },
+    {
+        id: 'ring',
+        title: 'Ring / Annulus',
+        description: 'Tests ring rendering with different inner radius scales.',
+        configure: (viewer) => {
+            const model = defaultModel();
+            model.setFill('#f8fafc');
+
+            const ring1 = elise.ring(26, 28, 112, 112);
+            ring1.innerRadiusScale = 0.55;
+            ring1.setFill('#60a5fa').setStroke('#1d4ed8,3').addTo(model);
+
+            const ring2 = elise.ring(166, 22, 124, 124);
+            ring2.innerRadiusScale = 0.35;
+            ring2.setFill('#fb7185').setStroke('#9f1239,3').addTo(model);
+
+            const ring3 = elise.ring(64, 188, 192, 92);
+            ring3.innerRadiusScale = 0.68;
+            ring3.setFill('#22c55e').setStroke('#166534,3').addTo(model);
+
+            viewer.model = model;
+        }
+    },
+    {
         id: 'textalignment',
         title: 'Text Element Alignment',
         description: 'Tests text element alignment options.',
@@ -640,7 +783,7 @@ const tests: ViewSample[] = [
     {
         id: 'spritetransitions',
         title: 'Sprite Element Transitions',
-        description: 'Tests sprite frame transitions with interpolation between frames.',
+        description: 'Tests sprite frame transitions with a stable fade interpolation between frames.',
         configure: (viewer) => {
             const model = defaultModel();
 
@@ -664,9 +807,9 @@ const tests: ViewSample[] = [
                 spriteWidth,
                 spriteHeight,
                 frameCount,
-                0.08,
-                'slideLeft',
-                0.03
+                0.1,
+                'fade',
+                0.05
             );
             model.controllerAttached.add(function(_model: Model, controller: ViewController) {
                 const commandHandler = new ElementCommandHandler();
