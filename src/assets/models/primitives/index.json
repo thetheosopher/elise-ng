@@ -48,6 +48,12 @@
         "displayModelJson": true
     },
     {
+        "name": "Clip Paths",
+        "id": "clip-paths",
+        "description": "Demonstrates clipping rendered elements with custom path geometry.",
+        "displayModelJson": true
+    },
+    {
         "name": "Image",
         "id": "image",
         "description": "Bitmap image.",
@@ -66,9 +72,21 @@
         "displayModelJson": true
     },
     {
+        "name": "Text Decoration",
+        "id": "text-decoration",
+        "description": "Demonstrates text decoration and letter spacing on standard text elements.",
+        "displayModelJson": true
+    },
+    {
         "name": "Drop Shadow",
         "id": "drop-shadow",
         "description": "Demonstrates element shadow rendering across multiple primitive types.",
+        "displayModelJson": true
+    },
+    {
+        "name": "Blend Modes",
+        "id": "blend-modes",
+        "description": "Demonstrates canvas blend modes on overlapping elements.",
         "displayModelJson": true
     },
     {
@@ -93,6 +111,12 @@
         "name": "Colors",
         "id": "colors",
         "description": "Colors used for stroking and filling elements.",
+        "displayModelJson": true
+    },
+    {
+        "name": "Stroke Styles",
+        "id": "stroke-styles",
+        "description": "Demonstrates dash patterns, line caps, and line joins.",
         "displayModelJson": true
     },
     {

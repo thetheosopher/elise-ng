@@ -223,6 +223,167 @@ const tests: DesignSample[] = [
         }
     },
     {
+        id: 'richtext',
+        title: 'Rich Text Element',
+        description: 'Demonstrates selecting, moving, resizing, and duplicating text elements that contain rich text runs.',
+        configure: (viewer) => {
+            const model = defaultModel();
+            model.setFill('#f3f4f6');
+
+            elise.rectangle(16, 16, 288, 110).setCornerRadius(18).setFill('#ffffff').setStroke('#94a3b8,2').addTo(model);
+            const heading = elise.text(' ', 30, 30, 260, 82)
+                .setFill('#1f2937')
+                .setAlignment('center,middle')
+                .setRichText([
+                    { text: 'Edit ', typeface: 'Coda Caption', typesize: 24 },
+                    { text: 'Rich', typeface: 'Coda Caption', typesize: 30, typestyle: 'bold', decoration: 'underline' },
+                    { text: ' Text', typeface: 'Georgia', typesize: 30, typestyle: 'italic' }
+                ]);
+            model.add(heading);
+
+            elise.rectangle(16, 144, 288, 150).setCornerRadius(20).setFill('#ecfeff').setStroke('#0891b2,2').addTo(model);
+            const body = elise.text(' ', 32, 160, 256, 120)
+                .setFill('#164e63')
+                .setAlignment('left,top')
+                .setRichText([
+                    { text: 'Drag or resize this element to verify ', typesize: 18 },
+                    { text: 'rich text', typeface: 'Coda Caption', typesize: 20, typestyle: 'bold' },
+                    { text: ' survives editing, including ', typesize: 18 },
+                    { text: 'letter spacing', typesize: 16, letterSpacing: 1.6 },
+                    { text: ' and ', typesize: 18 },
+                    { text: 'decoration', typesize: 18, decoration: 'underline' },
+                    { text: '.', typesize: 18 }
+                ]);
+            model.add(body);
+
+            viewer.model = model;
+        }
+    },
+    {
+        id: 'arrangecommands',
+        title: 'Arrange Commands',
+        description: 'Tests bring forward, send backward, bring to front, and send to back on overlapping selections.',
+        configure: (viewer) => {
+            const model = defaultModel();
+            model.setFill('#f8fafc');
+
+            elise.rectangle(56, 56, 160, 160).setCornerRadius(18).setFill('#60a5fa').setStroke('#1d4ed8,2').addTo(model);
+            elise.ellipse(120, 110, 82, 82).setFill('#f97316').setStroke('#c2410c,2').addTo(model);
+            elise.rectangle(146, 146, 130, 96).setCornerRadius(16).setFill('#22c55e').setStroke('#15803d,2').addTo(model);
+            elise.text('Arrange', 104, 120, 120, 42).setFill('#ffffff').setTypeface('Coda Caption').setTypesize(24).addTo(model);
+
+            model.controllerAttached.add(function(_model, controller: DesignController) {
+                controller.selectAll();
+                controller.draw();
+            });
+
+            viewer.model = model;
+        }
+    },
+    {
+        id: 'nudgecommands',
+        title: 'Nudge Commands',
+        description: 'Tests keyboard or toolbar nudging for location and size adjustments on selected elements.',
+        configure: (viewer) => {
+            const model = defaultModel();
+            model.setFill('#f1f5f9');
+
+            elise.rectangle(34, 34, 250, 250).setStroke('#cbd5e1,2').addTo(model);
+            elise.rectangle(62, 60, 88, 72).setCornerRadius(12).setFill('#2563eb').addTo(model);
+            elise.rectangle(174, 80, 92, 56).setCornerRadius(12).setFill('#f59e0b').addTo(model);
+            elise.ellipse(116, 196, 34, 34).setFill('#ec4899').addTo(model);
+            elise.text('Use nudge commands to adjust the selected layout.', 46, 254, 228, 38).setFill('#334155').setTypesize(16).setAlignment('center,middle').addTo(model);
+
+            model.controllerAttached.add(function(_model, controller: DesignController) {
+                controller.selectAll();
+                controller.draw();
+            });
+
+            viewer.model = model;
+        }
+    },
+    {
+        id: 'clippathinteraction',
+        title: 'Clip Path Interaction',
+        description: 'Tests that clipped elements remain selectable and editable in the designer.',
+        configure: (viewer) => {
+            const model = defaultModel();
+            model.setFill('#e2e8f0');
+
+            elise.rectangle(26, 28, 126, 126)
+                .setFill('#0ea5e9')
+                .setClipPath({
+                    units: 'objectBoundingBox',
+                    commands: ['m0.5,0', 'l1,0.38', 'l0.82,1', 'l0.18,1', 'l0,0.38', 'z']
+                })
+                .addTo(model);
+
+            elise.ellipse(236, 92, 60, 60)
+                .setFill('#f97316')
+                .setClipPath({ commands: ['m200,60', 'l272,60', 'l298,92', 'l272,124', 'l200,124', 'l174,92', 'z'] })
+                .addTo(model);
+
+            elise.text('Clipped element handles should stay predictable.', 34, 204, 252, 74)
+                .setFill('#1f2937')
+                .setTypesize(20)
+                .setAlignment('center,middle')
+                .setClipPath({ units: 'objectBoundingBox', commands: ['m0.08,0', 'l1,0', 'l0.92,1', 'l0,1', 'z'] })
+                .addTo(model);
+
+            model.controllerAttached.add(function(_model, controller: DesignController) {
+                controller.selectAll();
+                controller.draw();
+            });
+
+            viewer.model = model;
+        }
+    },
+    {
+        id: 'styledstrokeediting',
+        title: 'Styled Stroke Editing',
+        description: 'Tests selection and editing workflows on elements with dash, cap, and join styling.',
+        configure: (viewer) => {
+            const model = defaultModel();
+            model.setFill('#ffffff');
+
+            elise.line(42, 62, 282, 62).setStroke('#2563eb,16').setLineCap('round').setStrokeDash([24, 14]).addTo(model);
+            elise.rectangle(44, 112, 108, 100).setStroke('#7c3aed,10').setStrokeDash([16, 10]).setCornerRadius(14).addTo(model);
+
+            const polyline = elise.polyline();
+            polyline.addPoint(elise.point(188, 212));
+            polyline.addPoint(elise.point(236, 118));
+            polyline.addPoint(elise.point(284, 212));
+            polyline.setStroke('#dc2626,18').setLineJoin('round').addTo(model);
+
+            model.controllerAttached.add(function(_model, controller: DesignController) {
+                controller.selectAll();
+                controller.draw();
+            });
+
+            viewer.model = model;
+        }
+    },
+    {
+        id: 'shadowpreservation',
+        title: 'Shadow Preservation',
+        description: 'Tests that duplicate, move, resize, and delete workflows preserve shadow styling until explicitly changed.',
+        configure: (viewer) => {
+            const model = defaultModel();
+            model.setFill('#f8fafc');
+
+            elise.rectangle(34, 34, 112, 94).setCornerRadius(18).setFill('#38bdf8').setShadow({ color: '#0f172a66', blur: 16, offsetX: 8, offsetY: 10 }).addTo(model);
+            elise.ellipse(234, 92, 46, 46).setFill('#f97316').setShadow({ color: '#7c2d1266', blur: 12, offsetX: 8, offsetY: 8 }).addTo(model);
+            elise.text('Shadow', 58, 190, 204, 52).setFill('#1f2937').setTypeface('Coda Caption').setTypesize(32).setShadow({ color: '#11182766', blur: 10, offsetX: 6, offsetY: 8 }).addTo(model);
+
+            model.controllerAttached.add(function(_model, controller: DesignController) {
+                controller.selectAll();
+                controller.draw();
+            });
+
+            viewer.model = model;
+        }
+    },
+    {
         id: 'images',
         title: 'Image Element',
         description: 'Tests image element rendering.',

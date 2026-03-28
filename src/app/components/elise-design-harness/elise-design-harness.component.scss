@@ -9,3 +9,13 @@
     color: var(--app-text-muted);
     font-size: 0.85rem;
 }
+
+.toolbar-table td {
+    vertical-align: middle;
+}
+
+.toolbar-icon-button {
+    margin-left: 0.5rem;
+    min-width: 2rem;
+    padding: 0.25rem 0.45rem;
+}

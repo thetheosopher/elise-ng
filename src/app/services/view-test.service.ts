@@ -451,6 +451,93 @@ const tests: ViewSample[] = [
         }
     },
     {
+        id: 'richtext',
+        title: 'Rich Text Element',
+        description: 'Tests mixed typography, spacing, and decoration within a single text element.',
+        configure: (viewer) => {
+            const model = defaultModel();
+            model.setFill('#1f2937');
+
+            elise.rectangle(16, 16, 288, 86).setCornerRadius(18).setFill('#f8fafc').setStroke('#94a3b8,2').addTo(model);
+            const heading = elise.text(' ', 28, 28, 264, 62)
+                .setFill('#1f2937')
+                .setAlignment('center,middle')
+                .setRichText([
+                    { text: 'Rich ', typeface: 'Coda Caption', typesize: 26 },
+                    { text: 'Text', typeface: 'Coda Caption', typesize: 30, typestyle: 'bold', decoration: 'underline' },
+                    { text: ' Runs', typeface: 'Georgia', typesize: 28, typestyle: 'italic' }
+                ]);
+            model.add(heading);
+
+            elise.rectangle(16, 118, 288, 186).setCornerRadius(20).setFill('#fff7ed').setStroke('#c2410c,2').addTo(model);
+            const body = elise.text(' ', 30, 136, 260, 150)
+                .setFill('#431407')
+                .setAlignment('left,top')
+                .setRichText([
+                    { text: 'One Elise text element can mix ', typesize: 20 },
+                    { text: 'sizes', typesize: 28, typestyle: 'bold' },
+                    { text: ', ', typesize: 20 },
+                    { text: 'styles', typesize: 20, typestyle: 'italic' },
+                    { text: ', ', typesize: 20 },
+                    { text: 'spacing', typesize: 18, letterSpacing: 1.8 },
+                    { text: ', and ', typesize: 20 },
+                    { text: 'decoration', typesize: 20, decoration: 'underline line-through' },
+                    { text: ' while preserving one shared layout region.', typesize: 20 }
+                ]);
+            model.add(body);
+
+            viewer.model = model;
+        }
+    },
+    {
+        id: 'richtextlayout',
+        title: 'Rich Text Layout',
+        description: 'Tests rich text wrapping, alignment, and mixed run layout inside constrained regions.',
+        configure: (viewer) => {
+            const model = Model.create(420, 320);
+            model.setFill('#111827');
+
+            elise.rectangle(18, 18, 384, 124).setCornerRadius(18).setFill('#f8fafc').setStroke('#94a3b8,2').addTo(model);
+            elise.text(' ', 34, 34, 352, 92)
+                .setFill('#1f2937')
+                .setAlignment('center,middle')
+                .setRichText([
+                    { text: 'Wrapped ', typeface: 'Coda Caption', typesize: 22 },
+                    { text: 'rich text', typeface: 'Coda Caption', typesize: 26, typestyle: 'bold', decoration: 'underline' },
+                    { text: ' can mix ', typesize: 20 },
+                    { text: 'spacing', typesize: 18, letterSpacing: 1.4 },
+                    { text: ', ', typesize: 20 },
+                    { text: 'italic runs', typesize: 20, typestyle: 'italic' },
+                    { text: ', and larger headings in one box.', typesize: 20 }
+                ])
+                .addTo(model);
+
+            elise.rectangle(18, 162, 180, 136).setCornerRadius(16).setFill('#ecfeff').setStroke('#0891b2,2').addTo(model);
+            elise.text(' ', 30, 176, 156, 108)
+                .setFill('#164e63')
+                .setAlignment('left,top')
+                .setRichText([
+                    { text: 'Left aligned ', typesize: 18 },
+                    { text: 'notes', typesize: 18, decoration: 'underline' },
+                    { text: ' keep normal paragraph flow while styling key words.', typesize: 18 }
+                ])
+                .addTo(model);
+
+            elise.rectangle(222, 162, 180, 136).setCornerRadius(16).setFill('#fff7ed').setStroke('#c2410c,2').addTo(model);
+            elise.text(' ', 236, 176, 152, 108)
+                .setFill('#7c2d12')
+                .setAlignment('right,bottom')
+                .setRichText([
+                    { text: 'Bottom-right ', typesize: 18 },
+                    { text: 'alignment', typesize: 22, typestyle: 'bold' },
+                    { text: ' preserves run styling while the block aligns as one element.', typesize: 18 }
+                ])
+                .addTo(model);
+
+            viewer.model = model;
+        }
+    },
+    {
         id: 'imageopacity',
         title: 'Image Element Opacity',
         description: 'Tests image element rendering with full and partial opacity.',
@@ -523,6 +610,63 @@ const tests: ViewSample[] = [
                 0.05,
                 null,
                 0
+            );
+            model.controllerAttached.add(function(_model: Model, controller: ViewController) {
+                const commandHandler = new ElementCommandHandler();
+                commandHandler.attachController(controller);
+                commandHandler.addHandler('tick', function(
+                    _controller: ViewController,
+                    element,
+                    command,
+                    trigger,
+                    parameters
+                ) {
+                    TransitionRenderer.spriteTransitionHandler(
+                        _controller,
+                        element as SpriteElement,
+                        command,
+                        trigger,
+                        parameters
+                    );
+                });
+                controller.startTimer(0);
+            });
+
+            viewer.timerEnabled = true;
+            viewer.displayModel = false;
+            viewer.model = model;
+        }
+    },
+    {
+        id: 'spritetransitions',
+        title: 'Sprite Element Transitions',
+        description: 'Tests sprite frame transitions with interpolation between frames.',
+        configure: (viewer) => {
+            const model = defaultModel();
+
+            model.setBasePath('./assets/test');
+
+            const sx = 4;
+            const sy = 4;
+            const frameCount = 16;
+            const imageWidth = 600;
+            const imageHeight = 600;
+            const spriteWidth = imageWidth / sx;
+            const spriteHeight = imageHeight / sy;
+
+            elise.bitmapResource('santa', '/sprites/santa.png').addTo(model);
+            const sprite = elise.sprite(10, 10, spriteWidth * 2, spriteHeight * 2).addTo(model);
+            sprite.timer = 'tick';
+            sprite.createSheetFrames(
+                'santa',
+                imageWidth,
+                imageHeight,
+                spriteWidth,
+                spriteHeight,
+                frameCount,
+                0.08,
+                'slideLeft',
+                0.03
             );
             model.controllerAttached.add(function(_model: Model, controller: ViewController) {
                 const commandHandler = new ElementCommandHandler();
@@ -631,6 +775,37 @@ const tests: ViewSample[] = [
         }
     },
     {
+        id: 'strokedashjoin',
+        title: 'Stroke Dash and Join',
+        description: 'Tests dash patterns, line caps, and line joins on stroke rendering.',
+        configure: (viewer) => {
+            const model = defaultModel();
+
+            elise.line(32, 54, 288, 54).setStroke('#f59e0b,16').setLineCap('round').setStrokeDash([24, 14]).addTo(model);
+            elise.line(32, 104, 288, 104).setStroke('#14b8a6,12').setLineCap('square').setStrokeDash([10, 10, 2, 10]).addTo(model);
+
+            const miter = elise.polyline();
+            miter.addPoint(elise.point(46, 256));
+            miter.addPoint(elise.point(96, 164));
+            miter.addPoint(elise.point(146, 256));
+            miter.setStroke('#e11d48,18').setLineJoin('miter').addTo(model);
+
+            const round = elise.polyline();
+            round.addPoint(elise.point(146, 256));
+            round.addPoint(elise.point(196, 164));
+            round.addPoint(elise.point(246, 256));
+            round.setStroke('#2563eb,18').setLineJoin('round').addTo(model);
+
+            const bevel = elise.polyline();
+            bevel.addPoint(elise.point(246, 256));
+            bevel.addPoint(elise.point(296, 164));
+            bevel.addPoint(elise.point(346, 256));
+            bevel.setStroke('#7c3aed,18').setLineJoin('bevel').addTo(model);
+
+            viewer.model = model;
+        }
+    },
+    {
         id: 'fillcolors',
         title: 'Fill Colors',
         description: 'Tests fill rendering of named colors and gray scale brightness.',
@@ -687,6 +862,82 @@ const tests: ViewSample[] = [
             pg.addPoint(elise.point(170, 245));
             pg.addPoint(elise.point(310, 180));
             pg.setStroke(stroke).addTo(model);
+            viewer.model = model;
+        }
+    },
+    {
+        id: 'elementshadows',
+        title: 'Element Shadows',
+        description: 'Tests shadow rendering across line, shape, and text primitives.',
+        configure: (viewer) => {
+            const model = defaultModel();
+            model.setFill('#f8fafc');
+
+            elise.rectangle(36, 36, 110, 96).setCornerRadius(18).setFill('#38bdf8').setShadow({ color: '#0f172a66', blur: 16, offsetX: 10, offsetY: 10 }).addTo(model);
+            elise.ellipse(232, 92, 52, 52).setFill('#f97316').setShadow({ color: '#7c2d1266', blur: 12, offsetX: 8, offsetY: 8 }).addTo(model);
+            elise.line(44, 206, 278, 246).setStroke('#2563eb,12').setLineCap('round').setShadow({ color: '#1e3a8a66', blur: 8, offsetX: 6, offsetY: 8 }).addTo(model);
+            elise.text('Shadow', 38, 246, 244, 50).setFill('#1f2937').setTypeface('Coda Caption').setTypesize(34).setShadow({ color: '#11182766', blur: 10, offsetX: 6, offsetY: 8 }).addTo(model);
+
+            viewer.model = model;
+        }
+    },
+    {
+        id: 'clippathrendering',
+        title: 'Clip Path Rendering',
+        description: 'Tests clipping on filled elements and text.',
+        configure: (viewer) => {
+            const model = defaultModel();
+            model.setFill('#e2e8f0');
+
+            const gradient = elise.linearGradientFill('20,20', '150,150');
+            gradient.addFillStop('#06b6d4', 0);
+            gradient.addFillStop('#1d4ed8', 1);
+            elise.rectangle(20, 20, 130, 130)
+                .setFill(gradient)
+                .setClipPath({
+                    units: 'objectBoundingBox',
+                    commands: ['m0.5,0', 'l1,0.38', 'l0.8,1', 'l0.2,1', 'l0,0.38', 'z']
+                })
+                .addTo(model);
+
+            elise.ellipse(236, 86, 60, 60)
+                .setFill('#f43f5e')
+                .setClipPath({ commands: ['m196,52', 'l278,52', 'l306,86', 'l278,120', 'l196,120', 'l166,86', 'z'] })
+                .addTo(model);
+
+            elise.text('Clipped Text', 26, 184, 268, 90)
+                .setFill('#0f172a')
+                .setTypeface('Georgia')
+                .setTypesize(28)
+                .setAlignment('center,middle')
+                .setClipPath({ units: 'objectBoundingBox', commands: ['m0.08,0', 'l1,0', 'l0.92,1', 'l0,1', 'z'] })
+                .addTo(model);
+
+            viewer.model = model;
+        }
+    },
+    {
+        id: 'blendmodes',
+        title: 'Blend Modes',
+        description: 'Tests compositing modes on overlapping filled elements.',
+        configure: (viewer) => {
+            const model = defaultModel();
+            model.setFill('#f8fafc');
+
+            const modes: { title: string; mode: GlobalCompositeOperation; x: number; y: number }[] = [
+                { title: 'multiply', mode: 'multiply', x: 18, y: 22 },
+                { title: 'screen', mode: 'screen', x: 170, y: 22 },
+                { title: 'overlay', mode: 'overlay', x: 18, y: 174 },
+                { title: 'lighten', mode: 'lighten', x: 170, y: 174 }
+            ];
+            for (const item of modes) {
+                elise.rectangle(item.x, item.y, 132, 132).setFill('#ffffff').setStroke('#cbd5e1,2').addTo(model);
+                elise.text(item.title, item.x + 6, item.y + 4, 120, 20).setFill('#334155').setTypesize(14).addTo(model);
+                elise.ellipse(item.x + 46, item.y + 72, 28, 28).setFill('#ef4444b8').addTo(model);
+                elise.ellipse(item.x + 78, item.y + 72, 28, 28).setFill('#22c55eb8').setBlendMode(item.mode).addTo(model);
+                elise.ellipse(item.x + 62, item.y + 48, 28, 28).setFill('#3b82f6b8').setBlendMode(item.mode).addTo(model);
+            }
+
             viewer.model = model;
         }
     },

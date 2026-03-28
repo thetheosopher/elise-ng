@@ -10,8 +10,8 @@
     <p *ngIf="showComponentPlacementHint" class="alert alert-info py-2 px-3 mb-3">
         One starter component is placed automatically. Drag on the canvas to create more component regions. Select Mode only toggles selection behavior; component placement remains driven by the active component test.
     </p>
-    <table>
-        <tr style="vertical-align: baseline;">
+    <table class="toolbar-table">
+        <tr>
             <td>
                 <label for="scale" style="margin-right: 4px;"><strong>Scale</strong></label>
                 <select id="scale" [(ngModel)]="scale">
@@ -35,21 +35,21 @@
                 </select>
             </td>
             <td>
+                <button type="button" class="btn btn-sm btn-outline-primary toolbar-icon-button" [disabled]="!canUndo"
+                    (click)="undo()" title="Undo (Ctrl+Z)" aria-label="Undo">
+                    <span class="fas fa-undo"></span>
+                </button>
+            </td>
+            <td>
+                <button type="button" class="btn btn-sm btn-outline-primary toolbar-icon-button" [disabled]="!canRedo"
+                    (click)="redo()" title="Redo (Ctrl+Y or Ctrl+Shift+Z)" aria-label="Redo">
+                    <span class="fas fa-redo"></span>
+                </button>
+            </td>
+            <td>
                 <input type="checkbox" [checked]="selectionEnabled" (change)="selectionEnabled = !selectionEnabled"
                     style="margin-left: 8px;">
                 <label style="margin-left: 4px; margin-right: 16px;"><strong>Select Mode</strong></label>
-            </td>
-            <td>
-                <button type="button" class="btn btn-sm btn-outline-primary ms-2" [disabled]="!canUndo"
-                    (click)="undo()" title="Undo (Ctrl+Z)">
-                    <span class="fas fa-undo me-1"></span>Undo
-                </button>
-            </td>
-            <td>
-                <button type="button" class="btn btn-sm btn-outline-primary ms-2" [disabled]="!canRedo"
-                    (click)="redo()" title="Redo (Ctrl+Y or Ctrl+Shift+Z)">
-                    <span class="fas fa-redo me-1"></span>Redo
-                </button>
             </td>
             <td *ngIf="mouseOverView" style="min-width: 60px;">
                 <label for="xpos"><strong>X:</strong></label>&nbsp;
