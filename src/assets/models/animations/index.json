@@ -42,6 +42,24 @@
         "displayModelJson": false
     },
     {
+        "name": "Easing Gallery: Core Curves",
+        "id": "easing-gallery-core",
+        "description": "Horizontal motion comparison for linear, quadratic, cubic, and sine easing.",
+        "displayModelJson": false
+    },
+    {
+        "name": "Easing Gallery: Extended Curves",
+        "id": "easing-gallery-extended",
+        "description": "Horizontal motion comparison for quart, quint, exponential, and circular easing.",
+        "displayModelJson": false
+    },
+    {
+        "name": "Easing Gallery: Overshoot and Bounce",
+        "id": "easing-gallery-expressive",
+        "description": "Horizontal motion comparison for back, elastic, and bounce easing.",
+        "displayModelJson": false
+    },
+    {
         "name": "Ellipse Animation",
         "id": "ellipse-animation",
         "description": "Demonstrates animation of an array of ellipses.",

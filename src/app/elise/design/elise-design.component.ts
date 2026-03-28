@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, AfterViewInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { Model } from 'elise-graphics/lib/core/model';
 import { DesignController } from 'elise-graphics/lib/design/design-controller';
+import { DesignContextMenuEventArgs } from 'elise-graphics/lib/design/design-context-menu-event-args';
 import { PointEventParameters } from 'elise-graphics/lib/core/point-event-parameters';
 import { ElementBase } from 'elise-graphics/lib/elements/element-base';
 import { MouseEventArgs } from 'elise-graphics/lib/core/mouse-event-args';
@@ -34,6 +35,7 @@ export class EliseDesignComponent implements AfterViewInit, OnDestroy {
     @Output() mouseDownElement = new EventEmitter<ElementBase>();
     @Output() mouseUpElement = new EventEmitter<ElementBase>();
     @Output() elementClicked = new EventEmitter<ElementBase>();
+    @Output() contextMenuRequested = new EventEmitter<DesignContextMenuEventArgs>();
     @Output() controllerSet = new EventEmitter<DesignController>();
 
     @Output() selectionChanged = new EventEmitter<number>();
@@ -140,6 +142,9 @@ export class EliseDesignComponent implements AfterViewInit, OnDestroy {
                     });
                     this.controller.elementClicked.add((c, e) => {
                         this.elementClicked.emit(e);
+                    });
+                    this.controller.contextMenuRequested.add((c, e) => {
+                        this.contextMenuRequested.emit(e);
                     });
                     this.controller.selectionChanged.add((c, e) => {
                         this.selectionChanged.emit(e);

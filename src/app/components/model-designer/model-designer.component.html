@@ -137,55 +137,63 @@
                             <div class='toolbar-group'>
                                 <div ngbDropdown class="d-inline-block">
                                     <button class="btn btn-sm btn-outline-primary" id="editMenuDropdown" ngbDropdownToggle>Edit</button>
-                                            <div ngbDropdownMenu aria-labelledby="editMenuDropdown">
+                                            <div ngbDropdownMenu class="edit-dropdown-menu" aria-labelledby="editMenuDropdown">
 
-                                                <button ngbDropdownItem class="btn btn-sm" [disabled]="!canUndo" (click)="undo()">Undo</button>
-                                                <button ngbDropdownItem class="btn btn-sm" [disabled]="!canRedo" (click)="redo()">Redo</button>
+                                                <button ngbDropdownItem class="edit-dropdown-item edit-dropdown-command" [disabled]="!canUndo" (click)="undo()"><span>Undo</span><span class="edit-dropdown-shortcut">Ctrl+Z</span></button>
+                                                <button ngbDropdownItem class="edit-dropdown-item edit-dropdown-command" [disabled]="!canRedo" (click)="redo()"><span>Redo</span><span class="edit-dropdown-shortcut">Ctrl+Y</span></button>
                                                 <div class="dropdown-divider"></div>
 
-                                                <button ngbDropdownItem class="btn btn-sm" (click)="showModelSizeModal()">Model Size...</button>
+                                            <button ngbDropdownItem class="edit-dropdown-item edit-dropdown-command" [disabled]="!canCutSelected()" (click)="cutSelectedToClipboard()"><span>Cut</span><span class="edit-dropdown-shortcut">Ctrl+X</span></button>
+                                            <button ngbDropdownItem class="edit-dropdown-item edit-dropdown-command" [disabled]="!canCopySelected()" (click)="copySelectedToClipboard()"><span>Copy</span><span class="edit-dropdown-shortcut">Ctrl+C</span></button>
+                                            <button ngbDropdownItem class="edit-dropdown-item edit-dropdown-command" [disabled]="!canPasteClipboard()" (click)="pasteFromClipboard()"><span>Paste</span><span class="edit-dropdown-shortcut">Ctrl+V</span></button>
+                                                <div class="dropdown-divider"></div>
 
-                                                <button *ngIf="selectedElementCount === 1" ngbDropdownItem class="btn btn-sm" (click)="showElementSizeModal()">Element Size...</button>
+                                                <button ngbDropdownItem class="edit-dropdown-item" (click)="showModelSizeModal()">Model Size...</button>
+
+                                                <button *ngIf="selectedElementCount === 1" ngbDropdownItem class="edit-dropdown-item" (click)="showElementSizeModal()">Element Size...</button>
 
                                                 <!-- Single element property dialogs -->
-                                                <button *ngIf="singleElementType=='text'" ngbDropdownItem class="btn btn-sm" (click)="showTextElementModal()">Element Properties...</button>
-                                                <button *ngIf="singleElementType=='image'" ngbDropdownItem class="btn btn-sm" (click)="showImageElementModal()">Element Properties...</button>
-                                                <button *ngIf="singleElementType=='model'" ngbDropdownItem class="btn btn-sm" (click)="showModelElementModal()">Element Properties...</button>
-                                                <button *ngIf="singleElementType=='polyline'" ngbDropdownItem class="btn btn-sm" (click)="showPointsContainerModal()">Edit Points...</button>
-                                                <button *ngIf="singleElementType=='polygon'" ngbDropdownItem class="btn btn-sm" (click)="showPointsContainerModal()">Edit Points...</button>
-                                                <button *ngIf="singleElementType=='path'" ngbDropdownItem class="btn btn-sm" (click)="showPathElementModal()">Edit Commands...</button>
+                                                <button *ngIf="singleElementType=='text'" ngbDropdownItem class="edit-dropdown-item" (click)="showTextElementModal()">Element Properties...</button>
+                                                <button *ngIf="singleElementType=='image'" ngbDropdownItem class="edit-dropdown-item" (click)="showImageElementModal()">Element Properties...</button>
+                                                <button *ngIf="singleElementType=='model'" ngbDropdownItem class="edit-dropdown-item" (click)="showModelElementModal()">Element Properties...</button>
+                                                <button *ngIf="singleElementType=='polyline'" ngbDropdownItem class="edit-dropdown-item" (click)="showPointsContainerModal()">Edit Points...</button>
+                                                <button *ngIf="singleElementType=='polygon'" ngbDropdownItem class="edit-dropdown-item" (click)="showPointsContainerModal()">Edit Points...</button>
+                                                <button *ngIf="singleElementType=='path'" ngbDropdownItem class="edit-dropdown-item" (click)="showPathElementModal()">Edit Commands...</button>
 
-                                                <button ngbDropdownItem class="btn btn-sm" [disabled]="!canDuplicateSelected()" (click)="duplicateSelected()">Duplicate</button>
-                                                <div ngbDropdown style="padding-left: 15px;">
-                                                    <button id="editMoveMenuDropdown" class="btn btn-sm btn-light" style="background-color: white;" ngbDropdownToggle>Move</button>
-                                                    <div ngbDropdownMenu aria-labelledby="editMoveMenuDropdown">
-                                                        <button ngbDropdownItem class="btn btn-sm" [disabled]="!canMoveSelectedUp()" (click)="moveSelectedUp()">Forward</button>
-                                                        <button ngbDropdownItem class="btn btn-sm" [disabled]="!canMoveSelectedDown()" (click)="moveSelectedDown()">Backward</button>
-                                                        <button ngbDropdownItem class="btn btn-sm" [disabled]="!canMoveSelectedToTop()" (click)="moveSelectedToTop()">To Top</button>
-                                                        <button ngbDropdownItem class="btn btn-sm" [disabled]="!canMoveSelectedToBottom()" (click)="moveSelectedToBottom()">To Bottom</button>
+                                                <button ngbDropdownItem class="edit-dropdown-item" [disabled]="!canDuplicateSelected()" (click)="duplicateSelected()">Duplicate</button>
+                                                <div ngbDropdown class="edit-dropdown-submenu">
+                                                    <button id="editMoveMenuDropdown" class="edit-dropdown-submenu-toggle" ngbDropdownToggle>Move</button>
+                                                    <div ngbDropdownMenu class="edit-dropdown-menu" aria-labelledby="editMoveMenuDropdown">
+                                                        <button ngbDropdownItem class="edit-dropdown-item" [disabled]="!canMoveSelectedUp()" (click)="moveSelectedUp()">Forward</button>
+                                                        <button ngbDropdownItem class="edit-dropdown-item" [disabled]="!canMoveSelectedDown()" (click)="moveSelectedDown()">Backward</button>
+                                                        <button ngbDropdownItem class="edit-dropdown-item" [disabled]="!canMoveSelectedToTop()" (click)="moveSelectedToTop()">To Top</button>
+                                                        <button ngbDropdownItem class="edit-dropdown-item" [disabled]="!canMoveSelectedToBottom()" (click)="moveSelectedToBottom()">To Bottom</button>
                                                     </div>
                                                 </div>
-                                                <div ngbDropdown style="padding-left: 15px;">
-                                                    <button id="editArrangMenuDropdown" class="btn btn-sm btn-light" style="background-color: white;" ngbDropdownToggle>Arrange</button>
-                                                    <div ngbDropdownMenu aria-labelledby="editArrangeMenuDropdown">
-                                                        <button ngbDropdownItem class="btn btn-sm" [disabled]="!canArrange()" (click)="alignSelectedLeft()">Align Left</button>
-                                                        <button ngbDropdownItem class="btn btn-sm" [disabled]="!canArrange()" (click)="alignSelectedCenter()">Align Center</button>
-                                                        <button ngbDropdownItem class="btn btn-sm" [disabled]="!canArrange()" (click)="alignSelectedRight()">Align Right</button>
-                                                        <button ngbDropdownItem class="btn btn-sm" [disabled]="!canArrange()" (click)="alignSelectedTop()">Align Top</button>
-                                                        <button ngbDropdownItem class="btn btn-sm" [disabled]="!canArrange()" (click)="alignSelectedMiddle()">Align Middle</button>
-                                                        <button ngbDropdownItem class="btn btn-sm" [disabled]="!canArrange()" (click)="alignSelectedBottom()">Align Bottom</button>
+                                                <div ngbDropdown class="edit-dropdown-submenu">
+                                                    <button id="editArrangeMenuDropdown" class="edit-dropdown-submenu-toggle" ngbDropdownToggle>Arrange</button>
+                                                    <div ngbDropdownMenu class="edit-dropdown-menu" aria-labelledby="editArrangeMenuDropdown">
+                                                        <button ngbDropdownItem class="edit-dropdown-item" [disabled]="!canArrange()" (click)="alignSelectedLeft()">Align Left</button>
+                                                        <button ngbDropdownItem class="edit-dropdown-item" [disabled]="!canArrange()" (click)="alignSelectedCenter()">Align Center</button>
+                                                        <button ngbDropdownItem class="edit-dropdown-item" [disabled]="!canArrange()" (click)="alignSelectedRight()">Align Right</button>
+                                                        <button ngbDropdownItem class="edit-dropdown-item" [disabled]="!canArrange()" (click)="alignSelectedTop()">Align Top</button>
+                                                        <button ngbDropdownItem class="edit-dropdown-item" [disabled]="!canArrange()" (click)="alignSelectedMiddle()">Align Middle</button>
+                                                        <button ngbDropdownItem class="edit-dropdown-item" [disabled]="!canArrange()" (click)="alignSelectedBottom()">Align Bottom</button>
+                                                        <div class="dropdown-divider"></div>
+                                                        <button ngbDropdownItem class="edit-dropdown-item" [disabled]="!canDistribute()" (click)="distributeSelectedHorizontally()">Distribute Horizontally</button>
+                                                        <button ngbDropdownItem class="edit-dropdown-item" [disabled]="!canDistribute()" (click)="distributeSelectedVertically()">Distribute Vertically</button>
                                                     </div>
                                                 </div>
-                                                <div ngbDropdown style="padding-left: 15px;">
-                                                    <button id="editResizeMenuDropdown" class="btn btn-sm btn-light" style="background-color: white;" ngbDropdownToggle>Resize</button>
-                                                    <div ngbDropdownMenu aria-labelledby="editResizeMenuDropdown">
-                                                        <button ngbDropdownItem class="btn btn-sm" [disabled]="!canResize()" (click)="resizeSelectedWidth()">Make Same Width</button>
-                                                        <button ngbDropdownItem class="btn btn-sm" [disabled]="!canResize()" (click)="resizeSelectedHeight()">Make Same Height</button>
-                                                        <button ngbDropdownItem class="btn btn-sm" [disabled]="!canResize()" (click)="resizeSelectedSize()">Make Same Size</button>
+                                                <div ngbDropdown class="edit-dropdown-submenu">
+                                                    <button id="editResizeMenuDropdown" class="edit-dropdown-submenu-toggle" ngbDropdownToggle>Resize</button>
+                                                    <div ngbDropdownMenu class="edit-dropdown-menu" aria-labelledby="editResizeMenuDropdown">
+                                                        <button ngbDropdownItem class="edit-dropdown-item" [disabled]="!canResize()" (click)="resizeSelectedWidth()">Make Same Width</button>
+                                                        <button ngbDropdownItem class="edit-dropdown-item" [disabled]="!canResize()" (click)="resizeSelectedHeight()">Make Same Height</button>
+                                                        <button ngbDropdownItem class="edit-dropdown-item" [disabled]="!canResize()" (click)="resizeSelectedSize()">Make Same Size</button>
                                                     </div>
                                                 </div>
-                                                <button ngbDropdownItem class="btn btn-sm" (click)="removeUnusedResources()">Remove Unused Resources</button>
-                                                <button ngbDropdownItem class="btn btn-sm" [disabled]="!canDeleteSelected()" (click)="deleteSelected()">Delete</button>
+                                                <button ngbDropdownItem class="edit-dropdown-item" (click)="removeUnusedResources()">Remove Unused Resources</button>
+                                                <button ngbDropdownItem class="edit-dropdown-item edit-dropdown-command" [disabled]="!canDeleteSelected()" (click)="deleteSelected()"><span>Delete</span><span class="edit-dropdown-shortcut">Delete</span></button>
                                             </div>
                                 </div>
                             </div>
@@ -201,8 +209,13 @@
                                     <option value="line">Line</option>
                                     <option value="rectangle">Rectangle</option>
                                     <option value="ellipse">Ellipse</option>
+                                    <option value="arc">Arc</option>
                                     <option value="polyline">Polyline</option>
                                     <option value="polygon">Polygon</option>
+                                    <option value="regularpolygon">Regular Polygon</option>
+                                    <option value="arrow">Arrow</option>
+                                    <option value="wedge">Wedge / Sector</option>
+                                    <option value="ring">Ring / Annulus</option>
                                     <option value="text">Text</option>
                                     <option value="image">Image</option>
                                     <option value="model">Model</option>
@@ -232,6 +245,7 @@
                                         (mouseDownElement)="mouseDownElement($event)"
                                         (mouseUpElement)="mouseUpElement($event)"
                                         (elementClicked)="elementClicked($event)"
+                                        (contextMenuRequested)="contextMenuRequested($event)"
                                         (controllerSet)="controllerSet($event)"
                                         (selectionChanged)="selectionChanged($event)"
                                         (undoChanged)="undoChanged($event)"
@@ -239,6 +253,56 @@
                                         (viewDragEnter)="viewDragEnter($event)" (viewDragLeave)="viewDragLeave($event)"
                                         (viewDrop)="viewDrop($event)">
                                     </app-elise-design>
+                                    <div *ngIf="surfaceContextMenuVisible"
+                                        #surfaceContextMenu
+                                        class="surface-context-menu"
+                                        [style.left.px]="surfaceContextMenuX"
+                                        [style.top.px]="surfaceContextMenuY">
+                                        <button class="edit-dropdown-item edit-dropdown-command" [disabled]="!canUndo" (click)="closeSurfaceContextMenu(); undo()"><span>Undo</span><span class="edit-dropdown-shortcut">Ctrl+Z</span></button>
+                                        <button class="edit-dropdown-item edit-dropdown-command" [disabled]="!canRedo" (click)="closeSurfaceContextMenu(); redo()"><span>Redo</span><span class="edit-dropdown-shortcut">Ctrl+Y</span></button>
+                                        <div class="surface-context-menu-divider"></div>
+
+                                        <button class="edit-dropdown-item edit-dropdown-command" [disabled]="!canCutSelected()" (click)="closeSurfaceContextMenu(); cutSelectedToClipboard()"><span>Cut</span><span class="edit-dropdown-shortcut">Ctrl+X</span></button>
+                                        <button class="edit-dropdown-item edit-dropdown-command" [disabled]="!canCopySelected()" (click)="closeSurfaceContextMenu(); copySelectedToClipboard()"><span>Copy</span><span class="edit-dropdown-shortcut">Ctrl+C</span></button>
+                                        <button class="edit-dropdown-item edit-dropdown-command" [disabled]="!canPasteClipboard()" (click)="closeSurfaceContextMenu(); pasteFromClipboard()"><span>Paste</span><span class="edit-dropdown-shortcut">Ctrl+V</span></button>
+                                        <div class="surface-context-menu-divider"></div>
+
+                                        <button class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showModelSizeModal()">Model Size...</button>
+                                        <button *ngIf="selectedElementCount === 1" class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showElementSizeModal()">Element Size...</button>
+                                        <button *ngIf="singleElementType=='text'" class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showTextElementModal()">Element Properties...</button>
+                                        <button *ngIf="singleElementType=='image'" class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showImageElementModal()">Element Properties...</button>
+                                        <button *ngIf="singleElementType=='model'" class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showModelElementModal()">Element Properties...</button>
+                                        <button *ngIf="singleElementType=='polyline'" class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showPointsContainerModal()">Edit Points...</button>
+                                        <button *ngIf="singleElementType=='polygon'" class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showPointsContainerModal()">Edit Points...</button>
+                                        <button *ngIf="singleElementType=='path'" class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showPathElementModal()">Edit Commands...</button>
+
+                                        <button class="edit-dropdown-item" [disabled]="!canDuplicateSelected()" (click)="closeSurfaceContextMenu(); duplicateSelected()">Duplicate</button>
+
+                                        <div class="surface-context-menu-header">Move</div>
+                                        <button class="edit-dropdown-item" [disabled]="!canMoveSelectedUp()" (click)="closeSurfaceContextMenu(); moveSelectedUp()">Forward</button>
+                                        <button class="edit-dropdown-item" [disabled]="!canMoveSelectedDown()" (click)="closeSurfaceContextMenu(); moveSelectedDown()">Backward</button>
+                                        <button class="edit-dropdown-item" [disabled]="!canMoveSelectedToTop()" (click)="closeSurfaceContextMenu(); moveSelectedToTop()">To Top</button>
+                                        <button class="edit-dropdown-item" [disabled]="!canMoveSelectedToBottom()" (click)="closeSurfaceContextMenu(); moveSelectedToBottom()">To Bottom</button>
+
+                                        <div class="surface-context-menu-header">Arrange</div>
+                                        <button class="edit-dropdown-item" [disabled]="!canArrange()" (click)="closeSurfaceContextMenu(); alignSelectedLeft()">Align Left</button>
+                                        <button class="edit-dropdown-item" [disabled]="!canArrange()" (click)="closeSurfaceContextMenu(); alignSelectedCenter()">Align Center</button>
+                                        <button class="edit-dropdown-item" [disabled]="!canArrange()" (click)="closeSurfaceContextMenu(); alignSelectedRight()">Align Right</button>
+                                        <button class="edit-dropdown-item" [disabled]="!canArrange()" (click)="closeSurfaceContextMenu(); alignSelectedTop()">Align Top</button>
+                                        <button class="edit-dropdown-item" [disabled]="!canArrange()" (click)="closeSurfaceContextMenu(); alignSelectedMiddle()">Align Middle</button>
+                                        <button class="edit-dropdown-item" [disabled]="!canArrange()" (click)="closeSurfaceContextMenu(); alignSelectedBottom()">Align Bottom</button>
+                                        <button class="edit-dropdown-item" [disabled]="!canDistribute()" (click)="closeSurfaceContextMenu(); distributeSelectedHorizontally()">Distribute Horizontally</button>
+                                        <button class="edit-dropdown-item" [disabled]="!canDistribute()" (click)="closeSurfaceContextMenu(); distributeSelectedVertically()">Distribute Vertically</button>
+
+                                        <div class="surface-context-menu-header">Resize</div>
+                                        <button class="edit-dropdown-item" [disabled]="!canResize()" (click)="closeSurfaceContextMenu(); resizeSelectedWidth()">Make Same Width</button>
+                                        <button class="edit-dropdown-item" [disabled]="!canResize()" (click)="closeSurfaceContextMenu(); resizeSelectedHeight()">Make Same Height</button>
+                                        <button class="edit-dropdown-item" [disabled]="!canResize()" (click)="closeSurfaceContextMenu(); resizeSelectedSize()">Make Same Size</button>
+
+                                        <div class="surface-context-menu-divider"></div>
+                                        <button class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); removeUnusedResources()">Remove Unused Resources</button>
+                                        <button class="edit-dropdown-item edit-dropdown-command" [disabled]="!canDeleteSelected()" (click)="closeSurfaceContextMenu(); deleteSelected()"><span>Delete</span><span class="edit-dropdown-shortcut">Delete</span></button>
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -1,5 +1,5 @@
 import { Component, DestroyRef, OnInit, ViewChild, ViewChildren, QueryList, Input, Output,
-    ElementRef, AfterViewInit, ChangeDetectorRef, inject } from '@angular/core';
+    ElementRef, AfterViewInit, ChangeDetectorRef, HostListener, inject } from '@angular/core';
 import { NgModel } from '@angular/forms';
 import { NgbModal, NgbNavChangeEvent } from '@ng-bootstrap/ng-bootstrap';
 import { ContainerUrlProxy } from '../../schematrix/classes/container-url-proxy';
@@ -21,12 +21,12 @@ import { BitmapResource, Color, Model, ModelResource, Point, Region, Resource, S
     PolylineElement, PolygonElement, PathElement } from 'elise-graphics';
 import { FillInfo, LinearGradientFill, PointEventParameters, RadialGradientFill, StrokeInfo, UndoState, ViewDragArgs } from 'elise-graphics';
 import { ElementBase, ImageElement, ModelElement, TextElement } from 'elise-graphics';
-import { DesignController } from 'elise-graphics';
+import { DesignContextMenuEventArgs, DesignController } from 'elise-graphics';
 import { SVGImporter } from 'elise-graphics';
 
 // Design tools
-import { DesignTool, EllipseTool, ImageElementTool, LineTool, ModelElementTool,
-            PenTool, PolygonTool, PolylineTool, RectangleTool, TextTool } from 'elise-graphics';
+import { ArcTool, ArrowTool, DesignTool, EllipseTool, ImageElementTool, LineTool, ModelElementTool,
+            PenTool, PolygonTool, PolylineTool, RectangleTool, RegularPolygonTool, RingTool, TextTool, WedgeTool } from 'elise-graphics';
 
 // Modals
 import { ImageActionModalComponent, ImageActionModalInfo } from '../image-action-modal/image-action-modal.component';
@@ -74,6 +74,9 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     @ViewChild('elise', { read: ElementRef, static: false })
     eliseViewElementRef: ElementRef;
 
+    @ViewChild('surfaceContextMenu', { read: ElementRef, static: false })
+    surfaceContextMenuRef: ElementRef;
+
     selectedContainerID: string | null;
     selectedContainerName: string;
     @Output() public selectedFolderPath?: string;
@@ -101,6 +104,9 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     selectedElementCount = 0;
     canUndo = false;
     canRedo = false;
+    surfaceContextMenuVisible = false;
+    surfaceContextMenuX = 0;
+    surfaceContextMenuY = 0;
     lowestSelectedIndex: number;
     highestSelectedIndex: number;
     singleElementType: string;
@@ -430,6 +436,12 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                 this.ensureStrokeOrFill();
                 break;
 
+            case 'arc':
+                const arcTool = new ArcTool();
+                this.setActiveTool(arcTool);
+                this.ensureStroke();
+                break;
+
             case 'polyline':
                 const polylineTool = new PolylineTool();
                 this.setActiveTool(polylineTool);
@@ -439,6 +451,30 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             case 'polygon':
                 const polygonTool = new PolygonTool();
                 this.setActiveTool(polygonTool);
+                this.ensureStrokeOrFill();
+                break;
+
+            case 'regularpolygon':
+                const regularPolygonTool = new RegularPolygonTool();
+                this.setActiveTool(regularPolygonTool);
+                this.ensureStrokeOrFill();
+                break;
+
+            case 'arrow':
+                const arrowTool = new ArrowTool();
+                this.setActiveTool(arrowTool);
+                this.ensureStrokeOrFill();
+                break;
+
+            case 'wedge':
+                const wedgeTool = new WedgeTool();
+                this.setActiveTool(wedgeTool);
+                this.ensureStrokeOrFill();
+                break;
+
+            case 'ring':
+                const ringTool = new RingTool();
+                this.setActiveTool(ringTool);
                 this.ensureStrokeOrFill();
                 break;
 
@@ -1621,6 +1657,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     }
 
     mouseDownView(e: PointEventParameters) {
+        this.closeSurfaceContextMenu();
         this.log(`Mouse Down View: ${e.point.x}:${e.point.y}`);
     }
 
@@ -1640,6 +1677,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     }
 
     mouseDownElement(e: ElementBase) {
+        this.closeSurfaceContextMenu();
         // this.log(`Mouse down element: ${e.describe()}`);
     }
 
@@ -1648,7 +1686,22 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     }
 
     elementClicked(e: ElementBase) {
+        this.closeSurfaceContextMenu();
         // this.log(`Element clicked: ${e.describe()}`);
+    }
+
+    contextMenuRequested(args: DesignContextMenuEventArgs) {
+        if (!this.controller) {
+            return;
+        }
+
+        if (args.element && !this.controller.isSelected(args.element)) {
+            this.controller.selectedElements = [args.element];
+            this.refreshSelectionUiState();
+        }
+
+        const sourceEvent = args.event as MouseEvent | undefined;
+        this.openSurfaceContextMenu(sourceEvent?.clientX ?? 0, sourceEvent?.clientY ?? 0);
     }
 
     controllerSet(controller: DesignController) {
@@ -1704,6 +1757,49 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         this.selectionChanged(this.controller?.selectedElementCount?.() ?? 0);
         this.syncUndoState();
         this.changeDetectorRef.detectChanges();
+    }
+
+    private openSurfaceContextMenu(clientX: number, clientY: number) {
+        this.surfaceContextMenuX = clientX;
+        this.surfaceContextMenuY = clientY;
+        this.surfaceContextMenuVisible = true;
+        this.changeDetectorRef.detectChanges();
+
+        setTimeout(() => {
+            const menuElement = this.surfaceContextMenuRef?.nativeElement as HTMLElement | undefined;
+            if (!menuElement || !this.surfaceContextMenuVisible) {
+                return;
+            }
+
+            const padding = 12;
+            this.surfaceContextMenuX = Math.max(padding, Math.min(clientX, window.innerWidth - menuElement.offsetWidth - padding));
+            this.surfaceContextMenuY = Math.max(padding, Math.min(clientY, window.innerHeight - menuElement.offsetHeight - padding));
+            this.changeDetectorRef.detectChanges();
+        });
+    }
+
+    closeSurfaceContextMenu() {
+        this.surfaceContextMenuVisible = false;
+    }
+
+    @HostListener('document:mousedown', ['$event'])
+    onDocumentMouseDown(event: MouseEvent) {
+        if (!this.surfaceContextMenuVisible) {
+            return;
+        }
+
+        const target = event.target as Node | null;
+        const menuElement = this.surfaceContextMenuRef?.nativeElement as HTMLElement | undefined;
+        if (target && menuElement?.contains(target)) {
+            return;
+        }
+
+        this.closeSurfaceContextMenu();
+    }
+
+    @HostListener('document:keydown.escape')
+    onEscapeKey() {
+        this.closeSurfaceContextMenu();
     }
 
     elementSelected(element: ElementBase) {
@@ -2178,6 +2274,38 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         }
     }
 
+    canCutSelected() {
+        return this.selectedElementCount > 0;
+    }
+
+    cutSelectedToClipboard() {
+        if (this.controller?.cutSelectedToClipboard()) {
+            this.refreshSelectionUiState();
+        }
+    }
+
+    canCopySelected() {
+        return this.selectedElementCount > 0;
+    }
+
+    copySelectedToClipboard() {
+        this.controller?.copySelectedToClipboard();
+    }
+
+    canPasteClipboard() {
+        return !!this.controller;
+    }
+
+    async pasteFromClipboard() {
+        if (!this.controller) {
+            return;
+        }
+
+        if (await this.controller.pasteFromClipboard()) {
+            this.refreshSelectionUiState();
+        }
+    }
+
     private refreshSelectionUiState() {
         this.selectionChanged(this.controller?.selectedElementCount?.() ?? 0);
     }
@@ -2254,6 +2382,10 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         return (this.controller?.movableSelectedElementCount?.() ?? 0) > 1;
     }
 
+    canDistribute() {
+        return (this.controller?.movableSelectedElementCount?.() ?? 0) > 2;
+    }
+
     alignSelectedLeft() {
         this.controller.alignSelectedHorizontally('left');
         this.refreshSelectionUiState();
@@ -2281,6 +2413,16 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
     alignSelectedBottom() {
         this.controller.alignSelectedVertically('bottom');
+        this.refreshSelectionUiState();
+    }
+
+    distributeSelectedHorizontally() {
+        this.controller.distributeSelectedHorizontally();
+        this.refreshSelectionUiState();
+    }
+
+    distributeSelectedVertically() {
+        this.controller.distributeSelectedVertically();
         this.refreshSelectionUiState();
     }
 
