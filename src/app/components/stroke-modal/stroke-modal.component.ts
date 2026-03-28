@@ -5,9 +5,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ColorPickerDirective } from 'ngx-color-picker';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { ColorSelectorComponent } from '../color-selector/color-selector.component';
 
 @Component({
-    imports: [CommonModule, FormsModule, ColorPickerDirective, NgbModule],
+    imports: [CommonModule, FormsModule, ColorPickerDirective, NgbModule, ColorSelectorComponent],
     selector: 'app-stroke-modal',
     templateUrl: './stroke-modal.component.html',
     styleUrls: ['./stroke-modal.component.scss']
@@ -18,9 +19,6 @@ export class StrokeModalComponent implements OnInit {
 
     @Input()
     modalInfo: StrokeModalInfo;
-
-    colors: NamedColor[] = Color.NamedColors.filter((c) => c.color.a === 255);
-
     ngOnInit(): void {
     }
 
@@ -41,18 +39,6 @@ export class StrokeModalComponent implements OnInit {
     colorPickerChange(event) {
         console.log(event);
         this.modalInfo.color = event;
-    }
-
-    compareColors(colorA: NamedColor, colorB: NamedColor) {
-        try {
-            if(!colorB) {
-                return false;
-            }
-            return colorA.name === colorB.name;
-        }
-        catch {
-            return false;
-        }
     }
 }
 

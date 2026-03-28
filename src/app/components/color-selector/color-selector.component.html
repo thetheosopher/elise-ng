@@ -1,8 +1,23 @@
-<select class='form-select form-select-sm form-control' [disabled]='!isEnabled' [(ngModel)]='selectedColor'
-    [compareWith]='compareColors' (change)='onColorSelected($event)'>
-    <option *ngFor='let color of colors' [ngValue]='color.color'>
-        <div>
-            <span>{{color.name}}</span>
-        </div>
-    </option>
-</select>
+<div ngbDropdown class="named-color-selector" [class.named-color-selector-disabled]="!isEnabled">
+    <button type="button" class="named-color-toggle" ngbDropdownToggle [disabled]="!isEnabled">
+        <span class="named-color-row">
+            <span class="named-color-label">{{selectedColor?.name || placeholder}}</span>
+            <span class="named-color-swatch-frame" *ngIf="selectedColor">
+                <span class="named-color-swatch" [style.backgroundColor]="getColorHex(selectedColor)"></span>
+            </span>
+        </span>
+    </button>
+    <div ngbDropdownMenu class="named-color-menu">
+        <button type="button" ngbDropdownItem class="named-color-option"
+            *ngFor="let color of colors"
+            [class.named-color-option-selected]="compareColors(color, selectedColor)"
+            (click)="selectColor(color)">
+            <span class="named-color-row">
+                <span class="named-color-label">{{color.name}}</span>
+                <span class="named-color-swatch-frame">
+                    <span class="named-color-swatch" [style.backgroundColor]="getColorHex(color)"></span>
+                </span>
+            </span>
+        </button>
+    </div>
+</div>

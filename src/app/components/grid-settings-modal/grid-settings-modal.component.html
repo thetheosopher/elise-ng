@@ -1,0 +1,40 @@
+<div class="modal-header">
+    <h4 class="modal-title">Grid and Snap Settings</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('X')"></button>
+</div>
+
+<form>
+    <div class="modal-body">
+        <div class="form-check mb-3">
+            <input type="checkbox" class="form-check-input" id="snapToGrid"
+                [(ngModel)]="modalInfo.snapToGrid" name="snapToGrid">
+            <label class="form-check-label" for="snapToGrid">Snap to grid</label>
+        </div>
+
+        <div class="form-check mb-4">
+            <input type="checkbox" class="form-check-input" id="smartAlignmentEnabled"
+                [(ngModel)]="modalInfo.smartAlignmentEnabled" name="smartAlignmentEnabled">
+            <label class="form-check-label" for="smartAlignmentEnabled">Smart object snapping</label>
+        </div>
+
+        <div class="row g-3 align-items-end">
+            <div class="col-sm-6">
+                <label class="form-label" for="gridType">Grid Type</label>
+                <select class="form-select" id="gridType" name="gridType" [(ngModel)]="modalInfo.gridType">
+                    <option *ngFor="let option of gridTypeOptions" [ngValue]="option.value">{{option.label}}</option>
+                </select>
+            </div>
+            <div class="col-sm-6">
+                <label class="form-label" for="gridSpacing">Grid Spacing</label>
+                <input class="form-control" id="gridSpacing" type="number" min="1" step="1"
+                    name="gridSpacing" [(ngModel)]="modalInfo.gridSpacing">
+                <div class="form-text">Pixels between grid lines or dots.</div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="commit()" ngbAutofocus>OK</button>
+    <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss('Cancel')">Cancel</button>
+</div>

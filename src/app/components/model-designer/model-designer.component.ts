@@ -1,6 +1,5 @@
 import { Component, DestroyRef, OnInit, ViewChild, ViewChildren, QueryList, Input, Output,
-    ElementRef, AfterViewInit, ChangeDetectorRef, HostListener, inject } from '@angular/core';
-import { NgModel } from '@angular/forms';
+    ElementRef, AfterViewInit, ChangeDetectorRef, HostListener, inject, PLATFORM_ID } from '@angular/core';
 import { NgbModal, NgbNavChangeEvent } from '@ng-bootstrap/ng-bootstrap';
 import { ContainerUrlProxy } from '../../schematrix/classes/container-url-proxy';
 
@@ -17,7 +16,7 @@ import { ToastrService } from 'ngx-toastr';
 import { UploadService, UploadStateCode, Upload, UploadState } from '../../services/upload.service';
 
 // Elise core classes
-import { BitmapResource, Color, Model, ModelResource, Point, Region, Resource, Size,
+import { BitmapResource, Color, GridType, Model, ModelResource, Point, Region, Resource, Size,
     PolylineElement, PolygonElement, PathElement } from 'elise-graphics';
 import { FillInfo, LinearGradientFill, PointEventParameters, RadialGradientFill, StrokeInfo, UndoState, ViewDragArgs } from 'elise-graphics';
 import { ElementBase, ImageElement, ModelElement, TextElement } from 'elise-graphics';
@@ -40,7 +39,8 @@ import { TextElementModalComponent, TextElementModalInfo } from '../text-element
 import { SizeModalComponent, SizeModalInfo } from '../size-modal/size-modal.component';
 import { PointsModalComponent, PointsModalInfo } from '../points-modal/points-modal.component';
 import { PathElementModalComponent, PathElementModalInfo } from '../path-element-modal/path-element-modal.component';
-import { CommonModule } from '@angular/common';
+import { GridSettingsModalComponent, GridSettingsModalInfo } from '../grid-settings-modal/grid-settings-modal.component';
+import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AngularSplitModule } from 'angular-split';
@@ -62,7 +62,29 @@ import { take } from 'rxjs';
 })
 export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
+    private readonly gridSettingsCookieName = 'elise-model-designer-grid-settings';
+
+    readonly toolOptions = [
+        { value: 'select', label: 'Select' },
+        { value: 'pen', label: 'Pen' },
+        { value: 'line', label: 'Line' },
+        { value: 'rectangle', label: 'Rectangle' },
+        { value: 'ellipse', label: 'Ellipse' },
+        { value: 'arc', label: 'Arc' },
+        { value: 'polyline', label: 'Polyline' },
+        { value: 'polygon', label: 'Polygon' },
+        { value: 'regularpolygon', label: 'Regular Polygon' },
+        { value: 'arrow', label: 'Arrow' },
+        { value: 'wedge', label: 'Wedge / Sector' },
+        { value: 'ring', label: 'Ring / Annulus' },
+        { value: 'text', label: 'Text' },
+        { value: 'image', label: 'Image' },
+        { value: 'model', label: 'Model' }
+    ];
+
     private readonly destroyRef = inject(DestroyRef);
+    private readonly document = inject(DOCUMENT);
+    private readonly platformId = inject(PLATFORM_ID);
 
     @ViewChild(ContainerTreeComponent, { static: true })
     containerTree: ContainerTreeComponent;
@@ -400,9 +422,8 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         }, 25);
     }
 
-    activeToolChange(event: any, ngActiveTool: NgModel) {
-        ngActiveTool.control.markAsTouched();
-        this.activeToolName = ngActiveTool.control.value;
+    selectTool(toolName: string) {
+        this.activeToolName = toolName;
     }
 
     set activeToolName(value: string) {
@@ -494,6 +515,10 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
     get activeToolName(): string {
         return this._activeToolName;
+    }
+
+    get activeToolLabel(): string {
+        return this.toolOptions.find((tool) => tool.value === this.activeToolName)?.label ?? 'Select';
     }
 
     ensureStroke() {
@@ -1718,6 +1743,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             this.controller.clearActiveTool();
             this.controller.selectionEnabled = true;
         }
+        this.applyPersistedGridSettings();
         // this.controller.renderer = new DesignRenderer(this.controller);
     }
 
@@ -2483,4 +2509,132 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         }, (reason) => {
         });
     }
+
+    showGridSettingsModal() {
+        if (!this.controller) {
+            return;
+        }
+
+        const currentSettings = this.getNormalizedGridSettings({
+            snapToGrid: this.controller.snapToGrid,
+            smartAlignmentEnabled: this.controller.smartAlignmentEnabled,
+            gridType: this.controller.gridType,
+            gridSpacing: this.controller.gridSpacing
+        });
+        const modalInfo = new GridSettingsModalInfo;
+        modalInfo.snapToGrid = currentSettings.snapToGrid;
+        modalInfo.smartAlignmentEnabled = currentSettings.smartAlignmentEnabled;
+        modalInfo.gridType = currentSettings.gridType;
+        modalInfo.gridSpacing = currentSettings.gridSpacing;
+
+        const modal = this.modalService.open(GridSettingsModalComponent, {
+            ariaLabelledBy: 'modal-basic-title'
+        });
+        modal.componentInstance.modalInfo = modalInfo;
+        modal.result.then((result: GridSettingsModalInfo) => {
+            const nextSettings = this.getNormalizedGridSettings(result);
+            this.applyGridSettings(nextSettings, true);
+        }, (reason) => {
+        });
+    }
+
+    private applyPersistedGridSettings() {
+        const persistedSettings = this.readGridSettingsCookie();
+        if (!persistedSettings) {
+            return;
+        }
+
+        this.applyGridSettings(persistedSettings, false);
+    }
+
+    private applyGridSettings(settings: PersistedGridSettings, persist: boolean) {
+        if (!this.controller) {
+            return;
+        }
+
+        const normalizedSettings = this.getNormalizedGridSettings(settings);
+        const settingsChanged =
+            normalizedSettings.snapToGrid !== this.controller.snapToGrid ||
+            normalizedSettings.smartAlignmentEnabled !== this.controller.smartAlignmentEnabled ||
+            normalizedSettings.gridType !== this.controller.gridType ||
+            normalizedSettings.gridSpacing !== this.controller.gridSpacing;
+
+        if (!settingsChanged && !persist) {
+            return;
+        }
+
+        this.controller.snapToGrid = normalizedSettings.snapToGrid;
+        this.controller.smartAlignmentEnabled = normalizedSettings.smartAlignmentEnabled;
+        this.controller.setGridType(normalizedSettings.gridType);
+        this.controller.setGridSpacing(normalizedSettings.gridSpacing);
+
+        if (persist) {
+            this.writeGridSettingsCookie(normalizedSettings);
+        }
+
+        if (settingsChanged) {
+            this.controller.draw();
+        }
+    }
+
+    private getNormalizedGridSettings(settings: Partial<PersistedGridSettings>): PersistedGridSettings {
+        const gridType = Number(settings.gridType);
+        const normalizedGridType = Object.values(GridType).includes(gridType)
+            ? gridType as GridType
+            : GridType.Lines;
+
+        return {
+            snapToGrid: !!settings.snapToGrid,
+            smartAlignmentEnabled: settings.smartAlignmentEnabled !== false,
+            gridType: normalizedGridType,
+            gridSpacing: Math.max(1, Math.round(Number(settings.gridSpacing) || 1))
+        };
+    }
+
+    private readGridSettingsCookie(): PersistedGridSettings | null {
+        if (!isPlatformBrowser(this.platformId)) {
+            return null;
+        }
+
+        try {
+            const cookiePrefix = `${this.gridSettingsCookieName}=`;
+            const cookieValue = this.document.cookie
+                .split(';')
+                .map((entry) => entry.trim())
+                .find((entry) => entry.startsWith(cookiePrefix));
+
+            if (!cookieValue) {
+                return null;
+            }
+
+            const parsed = JSON.parse(decodeURIComponent(cookieValue.substring(cookiePrefix.length)));
+            return this.getNormalizedGridSettings(parsed);
+        }
+        catch {
+            return null;
+        }
+    }
+
+    private writeGridSettingsCookie(settings: PersistedGridSettings) {
+        if (!isPlatformBrowser(this.platformId)) {
+            return;
+        }
+
+        try {
+            const expires = new Date();
+            expires.setFullYear(expires.getFullYear() + 1);
+            const value = encodeURIComponent(JSON.stringify(this.getNormalizedGridSettings(settings)));
+            this.document.cookie = `${this.gridSettingsCookieName}=${value}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`;
+        }
+        catch {
+            // Ignore cookie failures and keep in-memory settings.
+        }
+    }
+}
+
+interface PersistedGridSettings {
+    snapToGrid: boolean;
+    smartAlignmentEnabled: boolean;
+    gridType: GridType;
+    gridSpacing: number;
 }

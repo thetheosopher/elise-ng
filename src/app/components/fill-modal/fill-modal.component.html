@@ -41,10 +41,9 @@
                     </div>
                     -->
                     <label>Named Colors</label>
-                    <select class='form-select form-select-sm form-control' [(ngModel)]='modalInfo.namedColor'
-                        [compareWith]='compareColors' (change)='onColorSelected(namedColor)' name='namedColor'>
-                        <option *ngFor='let color of colors' [ngValue]='color'>{{color.name}}</option>
-                    </select>
+                    <app-color-selector [(selectedColor)]="modalInfo.namedColor"
+                        (colorSelected)="onColorSelected($event)">
+                    </app-color-selector>
                 </div>
             </div>
         </div>
@@ -55,10 +54,9 @@
                 <div class="col">
                     <div class="mb-3">
                         <label>Start Color</label>
-                        <select class='form-select form-select-sm form-control' [(ngModel)]='modalInfo.gradientNamedColor1'
-                            [compareWith]='compareColors' (change)='onGradient1ColorSelected(gradientNamedColor1)' name='gradientNamedColor1'>
-                            <option *ngFor='let color of colors' [ngValue]='color'>{{color.name}}</option>
-                        </select>
+                        <app-color-selector [(selectedColor)]="modalInfo.gradientNamedColor1"
+                            (colorSelected)="onGradient1ColorSelected($event)">
+                        </app-color-selector>
                         <input class="form-control"
                             [value]="modalInfo.gradientColor1"
                             [colorPicker]="modalInfo.gradientColor1"
@@ -70,10 +68,9 @@
                 <div class="col">
                     <div class="mb-3">
                         <label>End Color</label>
-                        <select class='form-select form-select-sm form-control' [(ngModel)]='modalInfo.gradientNamedColor2'
-                            [compareWith]='compareColors' (change)='onGradient2ColorSelected(gradientNamedColor2)' name='gradientNamedColor2'>
-                            <option *ngFor='let color of colors' [ngValue]='color'>{{color.name}}</option>
-                        </select>
+                        <app-color-selector [(selectedColor)]="modalInfo.gradientNamedColor2"
+                            (colorSelected)="onGradient2ColorSelected($event)">
+                        </app-color-selector>
                         <input class="form-control"
                             [value]="modalInfo.gradientColor2"
                             [colorPicker]="modalInfo.gradientColor2"

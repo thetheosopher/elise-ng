@@ -4,9 +4,10 @@ import { Color, ModelResource, BitmapResource, NamedColor } from 'elise-graphics
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ColorPickerDirective } from 'ngx-color-picker';
+import { ColorSelectorComponent } from '../color-selector/color-selector.component';
 
 @Component({
-    imports: [CommonModule, FormsModule, ColorPickerDirective],
+    imports: [CommonModule, FormsModule, ColorPickerDirective, ColorSelectorComponent],
     selector: 'app-fill-modal',
     templateUrl: './fill-modal.component.html',
     styleUrls: ['./fill-modal.component.scss']
@@ -18,9 +19,6 @@ export class FillModalComponent implements OnInit {
 
     @Input()
     modalInfo: FillModalInfo;
-
-    colors: NamedColor[] = Color.NamedColors.filter((c) => c.color.a === 255);
-
     ngOnInit(): void {
     }
 
@@ -57,19 +55,6 @@ export class FillModalComponent implements OnInit {
             this.modalInfo.gradientColor2 = (this.modalInfo.gradientNamedColor2.color as Color).toHexString();
         }
     }
-
-    compareColors(colorA: NamedColor, colorB: NamedColor) {
-        try {
-            if(!colorB) {
-                return false;
-            }
-            return colorA.name === colorB.name;
-        }
-        catch {
-            return false;
-        }
-    }
-
     compareBitmapResources(resourceA: BitmapResource, resourceB: BitmapResource) {
         try {
             return resourceA.key === resourceB.key;

@@ -121,6 +121,11 @@
                                     <option value="black">Black</option>
                                     <option value="gray">Gray</option>
                                 </select>
+                                <button class="btn btn-sm btn-outline-primary" type="button"
+                                    [disabled]="!controller" (click)="showGridSettingsModal()"
+                                    ngbTooltip="Grid and Snap Settings">
+                                    <span class="fas fa-cog me-1"></span>Grid
+                                </button>
                             </div>
                             <div class='toolbar-divider'></div>
                             <div class='toolbar-group'>
@@ -199,27 +204,16 @@
                             </div>
                             <div class='toolbar-divider'></div>
                             <div class='toolbar-group'>
-                                <select id="activeToolName" [ngModel]="activeToolName"
-                                    #ngActiveTool="ngModel"
-                                    (ngModelChange)="activeToolChange($event, ngActiveTool)"
-                                    class='btn btn-sm btn-outline-primary'
-                                    ngbTooltip="Tool">
-                                    <option value="select">Select</option>
-                                    <option value="pen">Pen</option>
-                                    <option value="line">Line</option>
-                                    <option value="rectangle">Rectangle</option>
-                                    <option value="ellipse">Ellipse</option>
-                                    <option value="arc">Arc</option>
-                                    <option value="polyline">Polyline</option>
-                                    <option value="polygon">Polygon</option>
-                                    <option value="regularpolygon">Regular Polygon</option>
-                                    <option value="arrow">Arrow</option>
-                                    <option value="wedge">Wedge / Sector</option>
-                                    <option value="ring">Ring / Annulus</option>
-                                    <option value="text">Text</option>
-                                    <option value="image">Image</option>
-                                    <option value="model">Model</option>
-                                </select>
+                                <div ngbDropdown class="d-inline-block" ngbTooltip="Tool">
+                                    <button class="btn btn-sm btn-outline-primary tool-dropdown-toggle"
+                                        id="toolMenuDropdown" ngbDropdownToggle>{{activeToolLabel}}</button>
+                                    <div ngbDropdownMenu class="edit-dropdown-menu tool-dropdown-menu" aria-labelledby="toolMenuDropdown">
+                                        <button ngbDropdownItem class="edit-dropdown-item"
+                                            *ngFor="let tool of toolOptions"
+                                            [class.tool-dropdown-item-selected]="tool.value === activeToolName"
+                                            (click)="selectTool(tool.value)">{{tool.label}}</button>
+                                    </div>
+                                </div>
                             </div>
                             <div class='toolbar-divider'></div>
                             <div class='toolbar-group'>
@@ -268,6 +262,7 @@
                                         <div class="surface-context-menu-divider"></div>
 
                                         <button class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showModelSizeModal()">Model Size...</button>
+                                        <button class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showGridSettingsModal()">Grid and Snap Settings...</button>
                                         <button *ngIf="selectedElementCount === 1" class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showElementSizeModal()">Element Size...</button>
                                         <button *ngIf="singleElementType=='text'" class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showTextElementModal()">Element Properties...</button>
                                         <button *ngIf="singleElementType=='image'" class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showImageElementModal()">Element Properties...</button>

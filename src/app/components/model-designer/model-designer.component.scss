@@ -54,6 +54,27 @@ pre {
     min-width: 16rem;
 }
 
+.tool-dropdown-menu {
+    min-width: 13rem;
+}
+
+.tool-dropdown-toggle {
+    min-width: 12rem;
+    text-align: left;
+}
+
+.tool-dropdown-item-selected {
+    background: #f4ede3;
+    color: #3a2f24;
+    font-weight: 600;
+}
+
+.tool-dropdown-item-selected:hover,
+.tool-dropdown-item-selected:focus {
+    background: #eadfce;
+    color: #2f261d;
+}
+
 .edit-dropdown-item.edit-dropdown-command {
     display: flex;
     align-items: center;

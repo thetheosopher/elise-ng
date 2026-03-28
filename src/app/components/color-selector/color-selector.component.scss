@@ -1,0 +1,72 @@
+.named-color-selector {
+	display: block;
+	width: 100%;
+}
+
+.named-color-selector-disabled {
+	opacity: 0.65;
+}
+
+.named-color-toggle {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	min-height: calc(1.5em + 0.5rem + 2px);
+	padding: 0.25rem 2rem 0.25rem 0.5rem;
+	border: 1px solid #ced4da;
+	border-radius: 0.25rem;
+	background: #fff;
+	color: #212529;
+	font-size: 0.875rem;
+	line-height: 1.5;
+	text-align: left;
+}
+
+.named-color-toggle:disabled {
+	background: #e9ecef;
+	cursor: not-allowed;
+}
+
+.named-color-menu {
+	width: 100%;
+	max-height: 18rem;
+	overflow-y: auto;
+}
+
+.named-color-option {
+	width: 100%;
+	padding: 0.375rem 0.75rem;
+}
+
+.named-color-option-selected,
+.named-color-option:active {
+	background: #f1f3f5;
+}
+
+.named-color-row {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	gap: 0.75rem;
+}
+
+.named-color-label {
+	min-width: 0;
+}
+
+.named-color-swatch-frame {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	margin-left: auto;
+	padding: 0.125em;
+	border: 1px solid #000;
+	background: #fff;
+	line-height: 0;
+}
+
+.named-color-swatch {
+	display: block;
+	width: 1.5em;
+	height: 1em;
+}
