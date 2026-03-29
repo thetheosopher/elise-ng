@@ -17,7 +17,7 @@ import { UploadService, UploadStateCode, Upload, UploadState } from '../../servi
 
 // Elise core classes
 import { BitmapResource, Color, GridType, Model, ModelResource, Point, Region, Resource, Size,
-    PolylineElement, PolygonElement, PathElement } from 'elise-graphics';
+    PolylineElement, PolygonElement, PathElement, TextResource } from 'elise-graphics';
 import { FillInfo, LinearGradientFill, PointEventParameters, RadialGradientFill, StrokeInfo, UndoState, ViewDragArgs } from 'elise-graphics';
 import { ElementBase, ImageElement, ModelElement, TextElement } from 'elise-graphics';
 import { DesignContextMenuEventArgs, DesignController } from 'elise-graphics';
@@ -35,11 +35,14 @@ import { StrokeModalComponent, StrokeModalInfo } from '../stroke-modal/stroke-mo
 import { FillModalComponent, FillModalInfo } from '../fill-modal/fill-modal.component';
 import { ImageElementModalComponent, ImageElementModalInfo } from '../image-element-modal/image-element-modal.component';
 import { ModelElementModalComponent, ModelElementModalInfo } from '../model-element-modal/model-element-modal.component';
-import { TextElementModalComponent, TextElementModalInfo } from '../text-element-modal/text-element-modal.component';
+import { TextContentMode, TextElementModalComponent, TextElementModalInfo, TextModalResourceSummary, TextModalRun, TextResourceMode } from '../text-element-modal/text-element-modal.component';
 import { SizeModalComponent, SizeModalInfo } from '../size-modal/size-modal.component';
 import { PointsModalComponent, PointsModalInfo } from '../points-modal/points-modal.component';
 import { PathElementModalComponent, PathElementModalInfo } from '../path-element-modal/path-element-modal.component';
 import { GridSettingsModalComponent, GridSettingsModalInfo } from '../grid-settings-modal/grid-settings-modal.component';
+import { AppearanceModalComponent, AppearanceModalInfo } from '../appearance-modal/appearance-modal.component';
+import { ExportModelModalComponent, ExportModelModalInfo, ModelExportFormat } from '../export-model-modal/export-model-modal.component';
+import { TransformModalComponent, TransformModalInfo } from '../transform-modal/transform-modal.component';
 import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -53,6 +56,32 @@ import { FileListComponent } from '../file-list/file-list.component';
 import { DndDirective } from '../../directives/dnd.directive';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { take } from 'rxjs';
+
+type AppearanceBlendMode = GlobalCompositeOperation;
+type AppearanceFilter = string;
+type AppearanceShadow = {
+    color: string;
+    blur?: number;
+    offsetX?: number;
+    offsetY?: number;
+};
+
+type AppearanceState = {
+    opacity: number;
+    interactive: boolean;
+    blendMode?: AppearanceBlendMode;
+    filter?: AppearanceFilter;
+    shadow?: AppearanceShadow;
+};
+
+type DesignerTextRun = {
+    text: string;
+    typeface?: string;
+    typesize?: number;
+    typestyle?: string;
+    letterSpacing?: number;
+    decoration?: string;
+};
 
 @Component({
     imports: [CommonModule, FormsModule, NgbModule, AngularSplitModule, EliseDesignComponent, ContainerSelectorComponent, ContainerTreeComponent, AlertComponent, UploadListComponent, FileListComponent, DndDirective],
@@ -110,6 +139,9 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
     readonly MODEL_MIME_TYPE = 'application/elise';
     readonly SVG_MIME_TYPE = 'image/svg+xml';
+    readonly PNG_MIME_TYPE = 'image/png';
+    readonly JPEG_MIME_TYPE = 'image/jpeg';
+    readonly WEBP_MIME_TYPE = 'image/webp';
 
     controller: DesignController;
     lastMessage = '-';
@@ -136,6 +168,10 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     strokeType = 'color';
     strokeColor: string = ('#000000cc');
     strokeWidth = 2;
+    strokeDash?: number[];
+    strokeLineCap: CanvasLineCap = 'butt';
+    strokeLineJoin: CanvasLineJoin = 'miter';
+    strokeMiterLimit = 10;
     strokeTooltip: string;
     applyStrokeToModel = false;
     applyStrokeToSelected = true;
@@ -174,10 +210,34 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     textToolHAlign = 'left';
     textToolVAlign = 'top';
     textToolText = 'Text Element Content';
+    textToolLetterSpacing = 0;
+    textToolLineHeight?: number;
+    textToolTextDecoration = '';
+    textToolContentMode: TextContentMode = 'inline';
+    textToolResourceMode: TextResourceMode = 'embedded';
+    textToolSourceKey = '';
+    textToolSourceLocale = '';
+    textToolSourceText = 'Text Element Content';
+    textToolSourceUri = '';
+    textToolRichText: TextModalRun[] = [];
 
     activeTool?: DesignTool;
     toolOpacity = 1;
     toolLockAspect = true;
+    appearanceOpacity = 255;
+    appearanceInteractive = true;
+    appearanceBlendMode: AppearanceBlendMode | '' = '';
+    appearanceFilter = '';
+    appearanceShadowEnabled = false;
+    appearanceShadowColor = '#00000055';
+    appearanceShadowBlur = 12;
+    appearanceShadowOffsetX = 6;
+    appearanceShadowOffsetY = 8;
+    applyAppearanceToModel = false;
+    applyAppearanceToSelected = true;
+    transformText = '';
+    applyTransformToModel = false;
+    applyTransformToSelected = true;
 
     _activeToolName = 'select';
 
@@ -234,11 +294,13 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             selectedElements.forEach(selectedElement => {
                 if (selectedElement.canStroke()) {
                     selectedElement.setStroke(this.activeStroke);
+                    this.applyStrokeStyleToElement(selectedElement);
                 }
             });
         }
         if (updateModel) {
             this.model.setStroke(this.activeStroke);
+            this.applyStrokeStyleToElement(this.model);
         }
         if (updateSelectedElements || updateModel) {
             this.controller.draw();
@@ -247,20 +309,141 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
     setNoStroke(updateSelectedElements: boolean, updateModel: boolean) {
         this.strokeType = 'none';
-        this.strokeTooltip = 'No Stroke';
+        this.updateStrokeTooltip();
         this.setStroke(null, updateSelectedElements, updateModel);
     }
 
-    setColorStroke(color: string, width: number, updateSelectedElements: boolean, updateModel: boolean) {
+    setColorStroke(color: string, width: number, updateSelectedElements: boolean, updateModel: boolean,
+        strokeStyle?: { strokeDash?: number[]; lineCap?: CanvasLineCap; lineJoin?: CanvasLineJoin; miterLimit?: number }) {
         this.strokeType = 'color';
         this.strokeColor = color;
         this.strokeWidth = width;
+        this.setStrokeStyleState(strokeStyle);
         let stroke = color;
         if (width !== 1) {
             stroke += ',' + width;
         }
-        this.strokeTooltip = color;
+        this.updateStrokeTooltip();
         this.setStroke(stroke, updateSelectedElements, updateModel);
+    }
+
+    private applyStrokeStyleToElement(element: ElementBase, strokeStyle?: { strokeDash?: number[]; lineCap?: CanvasLineCap; lineJoin?: CanvasLineJoin; miterLimit?: number }) {
+        const normalizedStrokeStyle = this.getNormalizedStrokeStyle(strokeStyle);
+        element.setStrokeDash(normalizedStrokeStyle.strokeDash);
+        element.setLineCap(normalizedStrokeStyle.lineCap);
+        element.setLineJoin(normalizedStrokeStyle.lineJoin);
+        element.setMiterLimit(normalizedStrokeStyle.miterLimit);
+    }
+
+    private getNormalizedStrokeStyle(strokeStyle?: { strokeDash?: number[]; lineCap?: CanvasLineCap; lineJoin?: CanvasLineJoin; miterLimit?: number }): {
+        strokeDash?: number[];
+        lineCap?: CanvasLineCap;
+        lineJoin?: CanvasLineJoin;
+        miterLimit?: number;
+    } {
+        const sourceStrokeStyle = strokeStyle ?? {
+            strokeDash: this.strokeDash,
+            lineCap: this.strokeLineCap,
+            lineJoin: this.strokeLineJoin,
+            miterLimit: this.strokeMiterLimit
+        };
+        const strokeDash = this.normalizeStrokeDash(sourceStrokeStyle.strokeDash);
+        const lineCap = sourceStrokeStyle.lineCap ?? 'butt';
+        const lineJoin = sourceStrokeStyle.lineJoin ?? 'miter';
+        const miterLimit = this.normalizeMiterLimit(sourceStrokeStyle.miterLimit ?? 10);
+
+        return {
+            strokeDash,
+            lineCap: lineCap === 'round' || lineCap === 'square' ? lineCap : undefined,
+            lineJoin: lineJoin === 'round' || lineJoin === 'bevel' ? lineJoin : undefined,
+            miterLimit: miterLimit !== 10 ? miterLimit : undefined
+        };
+    }
+
+    private setStrokeStyleState(strokeStyle?: { strokeDash?: number[]; lineCap?: CanvasLineCap; lineJoin?: CanvasLineJoin; miterLimit?: number }) {
+        const normalizedStrokeStyle = this.getStrokeStyleState(strokeStyle);
+        this.strokeDash = normalizedStrokeStyle.strokeDash;
+        this.strokeLineCap = normalizedStrokeStyle.lineCap;
+        this.strokeLineJoin = normalizedStrokeStyle.lineJoin;
+        this.strokeMiterLimit = normalizedStrokeStyle.miterLimit;
+    }
+
+    private getStrokeStyleState(strokeStyle?: { strokeDash?: number[]; lineCap?: CanvasLineCap; lineJoin?: CanvasLineJoin; miterLimit?: number }): {
+        strokeDash?: number[];
+        lineCap: CanvasLineCap;
+        lineJoin: CanvasLineJoin;
+        miterLimit: number;
+    } {
+        const sourceStrokeStyle = strokeStyle ?? {
+            strokeDash: this.strokeDash,
+            lineCap: this.strokeLineCap,
+            lineJoin: this.strokeLineJoin,
+            miterLimit: this.strokeMiterLimit
+        };
+
+        return {
+            strokeDash: this.normalizeStrokeDash(sourceStrokeStyle.strokeDash),
+            lineCap: sourceStrokeStyle.lineCap === 'round' || sourceStrokeStyle.lineCap === 'square' ? sourceStrokeStyle.lineCap : 'butt',
+            lineJoin: sourceStrokeStyle.lineJoin === 'round' || sourceStrokeStyle.lineJoin === 'bevel' ? sourceStrokeStyle.lineJoin : 'miter',
+            miterLimit: this.normalizeMiterLimit(sourceStrokeStyle.miterLimit ?? 10)
+        };
+    }
+
+    private normalizeStrokeDash(strokeDash?: number[]) {
+        if (!strokeDash || strokeDash.length === 0) {
+            return undefined;
+        }
+
+        const normalizedStrokeDash = strokeDash
+            .map((value) => Number(value))
+            .filter((value) => Number.isFinite(value) && value >= 0);
+        return normalizedStrokeDash.length > 0 ? normalizedStrokeDash : undefined;
+    }
+
+    private normalizeMiterLimit(miterLimit?: number) {
+        const normalizedMiterLimit = Number(miterLimit);
+        return Number.isFinite(normalizedMiterLimit) && normalizedMiterLimit > 0 ? normalizedMiterLimit : 10;
+    }
+
+    private parseStrokeDashText(dashPatternText?: string) {
+        if (!dashPatternText) {
+            return undefined;
+        }
+
+        const strokeDash = dashPatternText
+            .split(/[\s,]+/)
+            .map((value) => Number(value))
+            .filter((value) => Number.isFinite(value) && value >= 0);
+        return strokeDash.length > 0 ? strokeDash : undefined;
+    }
+
+    private formatStrokeDashText(strokeDash?: number[]) {
+        return strokeDash && strokeDash.length > 0 ? strokeDash.join(', ') : '';
+    }
+
+    private updateStrokeTooltip() {
+        if (this.strokeType !== 'color') {
+            this.strokeTooltip = 'No Stroke';
+            return;
+        }
+
+        const parts = [this.strokeColor];
+        if (this.strokeWidth !== 1) {
+            parts.push(this.strokeWidth + 'px');
+        }
+        if (this.strokeDash && this.strokeDash.length > 0) {
+            parts.push('dash ' + this.strokeDash.join(' '));
+        }
+        if (this.strokeLineCap !== 'butt') {
+            parts.push(this.strokeLineCap + ' cap');
+        }
+        if (this.strokeLineJoin !== 'miter') {
+            parts.push(this.strokeLineJoin + ' join');
+        }
+        if (this.strokeMiterLimit !== 10) {
+            parts.push('miter ' + this.strokeMiterLimit);
+        }
+        this.strokeTooltip = parts.join(' | ');
     }
 
     setFill(fill: string | RadialGradientFill | LinearGradientFill, fillScale: number | null,
@@ -399,6 +582,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             tool.stroke = this.activeStroke;
             tool.fill = this.activeFill;
             tool.fillScale = this.fillScale;
+            tool.opacity = Math.round(this.toolOpacity * 255);
             this.activeTool = tool;
             if (this.controller) {
                 this.controller.setActiveTool(tool);
@@ -535,16 +719,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     }
 
     showTextToolModal() {
-        const modalInfo = new TextElementModalInfo();
-        modalInfo.fonts = this.fontService.listFonts();
-
-        modalInfo.typeface = this.textToolTypeface;
-        modalInfo.typesize = this.textToolTypesize;
-        modalInfo.isBold = this.textToolIsBold;
-        modalInfo.isItalic = this.textToolIsItalic;
-        modalInfo.halign = this.textToolHAlign;
-        modalInfo.valign = this.textToolVAlign;
-        modalInfo.text = this.textToolText;
+        const modalInfo = this.createTextModalInfoFromToolState();
         const modal = this.modalService.open(TextElementModalComponent, {
             ariaLabelledBy: 'modal-basic-title',
             size: 'xl',
@@ -552,44 +727,263 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         });
         modal.componentInstance.modalInfo = modalInfo;
         modal.result.then((result: TextElementModalInfo) => {
-            this.textToolTypeface = result.typeface;
-            this.textToolTypesize = result.typesize;
-            this.textToolIsBold = result.isBold;
-            this.textToolIsItalic = result.isItalic;
-            this.textToolHAlign = result.halign;
-            this.textToolVAlign = result.valign;
-            this.textToolText = result.text;
+            this.setTextToolStateFromModal(result);
 
             const textTool = new TextTool();
             textTool.typeface = this.textToolTypeface;
-            textTool.text = this.textToolText;
+            textTool.text = this.getTextPreviewFromModal(result);
             textTool.typesize = this.textToolTypesize;
-            let style = '';
-            if (this.textToolIsBold) {
-                style += 'bold';
-            }
-            if (this.textToolIsItalic) {
-                if (style.length !== 0) {
-                    style += ',';
-                }
-                style += 'italic';
-            }
-            textTool.typestyle = style;
-            let alignment = '';
-            if (this.textToolHAlign !== 'left') {
-                alignment += this.textToolHAlign;
-            }
-            if (this.textToolVAlign !== 'top') {
-                if (alignment.length !== 0) {
-                    alignment += ',';
-                }
-                alignment += this.textToolVAlign;
-            }
-            textTool.alignment = alignment;
+            textTool.typestyle = this.buildTextStyle(this.textToolIsBold, this.textToolIsItalic);
+            textTool.alignment = this.buildTextAlignment(this.textToolHAlign, this.textToolVAlign);
             this.setActiveTool(textTool);
         }, (reason) => {
             this.setSelectTool();
         });
+    }
+
+    private createTextModalInfoFromToolState() {
+        const modalInfo = new TextElementModalInfo();
+        modalInfo.fonts = this.fontService.listFonts();
+        modalInfo.textResources = this.getTextResources();
+        modalInfo.typeface = this.textToolTypeface;
+        modalInfo.typesize = this.textToolTypesize;
+        modalInfo.isBold = this.textToolIsBold;
+        modalInfo.isItalic = this.textToolIsItalic;
+        modalInfo.halign = this.textToolHAlign;
+        modalInfo.valign = this.textToolVAlign;
+        modalInfo.text = this.textToolText;
+        modalInfo.letterSpacing = this.textToolLetterSpacing;
+        modalInfo.lineHeight = this.textToolLineHeight;
+        modalInfo.textDecoration = this.textToolTextDecoration;
+        modalInfo.contentMode = this.textToolContentMode;
+        modalInfo.resourceMode = this.textToolResourceMode;
+        modalInfo.sourceKey = this.textToolSourceKey;
+        modalInfo.sourceLocale = this.textToolSourceLocale;
+        modalInfo.sourceText = this.textToolSourceText;
+        modalInfo.sourceUri = this.textToolSourceUri;
+        modalInfo.richText = this.cloneTextRuns(this.textToolRichText.length > 0
+            ? this.textToolRichText
+            : [this.createDefaultTextRun(this.textToolText)]);
+        return modalInfo;
+    }
+
+    private createTextModalInfoFromTextElement(textElement: TextElement) {
+        const modalInfo = new TextElementModalInfo();
+        const style = this.parseTextStyle(textElement.typestyle);
+        const alignment = this.parseTextAlignment(textElement.alignment);
+        const resource = textElement.source ? this.findTextResource(textElement.source) : undefined;
+        modalInfo.fonts = this.fontService.listFonts();
+        modalInfo.textResources = this.getTextResources();
+        modalInfo.typeface = textElement.typeface ?? this.textToolTypeface;
+        modalInfo.typesize = textElement.typesize ?? this.textToolTypesize;
+        modalInfo.isBold = style.isBold;
+        modalInfo.isItalic = style.isItalic;
+        modalInfo.halign = alignment.halign;
+        modalInfo.valign = alignment.valign;
+        modalInfo.text = textElement.text ?? textElement.getResolvedText() ?? '';
+        modalInfo.letterSpacing = Number.isFinite(Number(textElement.letterSpacing)) ? Number(textElement.letterSpacing) : 0;
+        modalInfo.lineHeight = textElement.lineHeight;
+        modalInfo.textDecoration = textElement.textDecoration ?? '';
+        modalInfo.sourceKey = textElement.source ?? '';
+        modalInfo.sourceLocale = resource?.locale ?? '';
+        modalInfo.sourceText = resource?.text ?? '';
+        modalInfo.sourceUri = resource?.uri ?? '';
+        modalInfo.contentMode = textElement.richText && textElement.richText.length > 0
+            ? 'rich'
+            : textElement.source
+                ? 'resource'
+                : 'inline';
+        modalInfo.resourceMode = textElement.source ? 'existing' : resource?.uri ? 'uri' : 'embedded';
+        modalInfo.richText = this.mapDesignerRunsToModalRuns(textElement.richText, modalInfo);
+        if (modalInfo.contentMode === 'rich' && modalInfo.richText.length === 0) {
+            modalInfo.richText = [this.createDefaultTextRun(modalInfo.text)];
+        }
+        return modalInfo;
+    }
+
+    private setTextToolStateFromModal(result: TextElementModalInfo) {
+        this.textToolTypeface = result.typeface;
+        this.textToolTypesize = result.typesize;
+        this.textToolIsBold = result.isBold;
+        this.textToolIsItalic = result.isItalic;
+        this.textToolHAlign = result.halign;
+        this.textToolVAlign = result.valign;
+        this.textToolText = result.text;
+        this.textToolLetterSpacing = this.normalizeTextNumber(result.letterSpacing);
+        this.textToolLineHeight = this.normalizeOptionalPositiveNumber(result.lineHeight);
+        this.textToolTextDecoration = this.normalizeTextDecoration(result.textDecoration);
+        this.textToolContentMode = result.contentMode;
+        this.textToolResourceMode = result.resourceMode;
+        this.textToolSourceKey = result.sourceKey.trim();
+        this.textToolSourceLocale = result.sourceLocale.trim();
+        this.textToolSourceText = result.sourceText;
+        this.textToolSourceUri = result.sourceUri.trim();
+        this.textToolRichText = this.cloneTextRuns(result.richText);
+    }
+
+    private getTextResources(): TextModalResourceSummary[] {
+        if (!this.model?.resources) {
+            return [];
+        }
+
+        return this.model.resources
+            .filter((resource) => resource.type === 'text')
+            .map((resource) => {
+                const textResource = resource as TextResource;
+                return {
+                    key: textResource.key,
+                    locale: textResource.locale,
+                    text: textResource.text,
+                    uri: textResource.uri
+                };
+            })
+            .sort((left, right) => `${left.key}|${left.locale ?? ''}`.localeCompare(`${right.key}|${right.locale ?? ''}`));
+    }
+
+    private findTextResource(key: string, locale?: string) {
+        const normalizedKey = key.trim();
+        const normalizedLocale = locale?.trim() ?? '';
+        if (!normalizedKey) {
+            return undefined;
+        }
+
+        return this.getTextResources().find((resource) => resource.key === normalizedKey && (resource.locale ?? '') === normalizedLocale)
+            ?? this.getTextResources().find((resource) => resource.key === normalizedKey);
+    }
+
+    private createDefaultTextRun(text: string): TextModalRun {
+        return {
+            text,
+            typeface: this.textToolTypeface,
+            typesize: this.textToolTypesize,
+            isBold: this.textToolIsBold,
+            isItalic: this.textToolIsItalic,
+            letterSpacing: this.textToolLetterSpacing,
+            decoration: this.textToolTextDecoration
+        };
+    }
+
+    private cloneTextRuns(runs: TextModalRun[] = []) {
+        return runs.map((run) => ({
+            text: run.text,
+            typeface: run.typeface,
+            typesize: run.typesize,
+            isBold: run.isBold,
+            isItalic: run.isItalic,
+            letterSpacing: run.letterSpacing,
+            decoration: run.decoration
+        }));
+    }
+
+    private mapDesignerRunsToModalRuns(runs: DesignerTextRun[] | undefined, modalInfo: TextElementModalInfo) {
+        return (runs ?? []).map((run) => {
+            const style = this.parseTextStyle(run.typestyle);
+            return {
+                text: run.text ?? '',
+                typeface: run.typeface ?? modalInfo.typeface,
+                typesize: run.typesize ?? modalInfo.typesize,
+                isBold: style.isBold,
+                isItalic: style.isItalic,
+                letterSpacing: this.normalizeTextNumber(run.letterSpacing),
+                decoration: run.decoration ?? ''
+            };
+        });
+    }
+
+    private mapModalRunsToDesignerRuns(runs: TextModalRun[]) {
+        return runs.map((run) => ({
+            text: run.text,
+            typeface: run.typeface,
+            typesize: run.typesize,
+            typestyle: this.buildTextStyle(run.isBold, run.isItalic),
+            letterSpacing: this.normalizeTextNumber(run.letterSpacing),
+            decoration: this.normalizeTextDecoration(run.decoration)
+        }));
+    }
+
+    private parseTextStyle(style?: string) {
+        const normalizedStyle = (style ?? '').toLowerCase();
+        return {
+            isBold: normalizedStyle.indexOf('bold') !== -1,
+            isItalic: normalizedStyle.indexOf('italic') !== -1
+        };
+    }
+
+    private buildTextStyle(isBold: boolean, isItalic: boolean) {
+        const styleParts: string[] = [];
+        if (isBold) {
+            styleParts.push('bold');
+        }
+        if (isItalic) {
+            styleParts.push('italic');
+        }
+        return styleParts.join(',');
+    }
+
+    private parseTextAlignment(alignment?: string) {
+        const normalizedAlignment = (alignment ?? '').toLowerCase();
+        return {
+            halign: normalizedAlignment.indexOf('center') !== -1
+                ? 'center'
+                : normalizedAlignment.indexOf('right') !== -1
+                    ? 'right'
+                    : 'left',
+            valign: normalizedAlignment.indexOf('middle') !== -1
+                ? 'middle'
+                : normalizedAlignment.indexOf('bottom') !== -1
+                    ? 'bottom'
+                    : 'top'
+        };
+    }
+
+    private buildTextAlignment(halign: string, valign: string) {
+        const alignmentParts: string[] = [];
+        if (halign !== 'left') {
+            alignmentParts.push(halign);
+        }
+        if (valign !== 'top') {
+            alignmentParts.push(valign);
+        }
+        return alignmentParts.join(',');
+    }
+
+    private getTextPreviewFromModal(result: TextElementModalInfo) {
+        switch (result.contentMode) {
+            case 'resource': {
+                if (result.resourceMode === 'uri') {
+                    return result.sourceKey.trim() || 'Remote Text';
+                }
+
+                if (result.resourceMode === 'existing') {
+                    const resource = this.findTextResource(result.sourceKey, result.sourceLocale);
+                    return resource?.text || resource?.uri || result.sourceKey || 'Text Resource';
+                }
+
+                return result.sourceText || result.sourceKey || 'Text Resource';
+            }
+            case 'rich':
+                return result.richText.map((run) => run.text).join('');
+            default:
+                return result.text;
+        }
+    }
+
+    private normalizeTextNumber(value?: number) {
+        const normalized = Number(value);
+        return Number.isFinite(normalized) ? normalized : 0;
+    }
+
+    private normalizeOptionalPositiveNumber(value?: number) {
+        const normalized = Number(value);
+        return Number.isFinite(normalized) && normalized > 0 ? normalized : undefined;
+    }
+
+    private normalizeTextDecoration(value?: string) {
+        return (value ?? '')
+            .split(',')
+            .map((part) => part.trim())
+            .filter((part) => part.length > 0)
+            .join(',');
     }
 
     selectImageTool() {
@@ -684,7 +1078,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         }
         modalInfo.urlProxy = new ContainerUrlProxy(this.apiService, this.modelContainerID);
         modalInfo.lockAspect = this.toolLockAspect;
-        modalInfo.opacity = this.toolOpacity;
+        modalInfo.opacity = this.toolOpacity * 255;
         const modal = this.modalService.open(ModelElementModalComponent, {
             ariaLabelledBy: 'modal-basic-title',
             size: 'xl',
@@ -696,6 +1090,8 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             modelElementTool.source = result.selectedResource.key;
             modelElementTool.opacity = result.opacity;
             modelElementTool.aspectLocked = result.lockAspect;
+            this.toolOpacity = result.opacity / 255;
+            this.toolLockAspect = result.lockAspect;
             this.setActiveTool(modelElementTool);
         }, (reason) => {
             this.setSelectTool();
@@ -1404,6 +1800,305 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         return path.substr(index);
     }
 
+    canExportModel() {
+        return !!this.model && isPlatformBrowser(this.platformId);
+    }
+
+    exportCurrentModelAsSvg() {
+        this.showExportModelModal('svg');
+    }
+
+    exportCurrentModelAsPng() {
+        this.showExportModelModal('png');
+    }
+
+    exportCurrentModelAsJpeg() {
+        this.showExportModelModal('jpeg');
+    }
+
+    exportCurrentModelAsWebp() {
+        this.showExportModelModal('webp');
+    }
+
+    private showExportModelModal(format: ModelExportFormat) {
+        if (!this.canExportModel()) {
+            return;
+        }
+
+        const modalInfo = new ExportModelModalInfo();
+        modalInfo.format = format;
+        modalInfo.fileName = this.getExportFileName(this.getExportExtensionForFormat(format));
+        modalInfo.scale = 100;
+        modalInfo.quality = 92;
+        modalInfo.modelWidth = this.model.getSize().width;
+        modalInfo.modelHeight = this.model.getSize().height;
+
+        const modal = this.modalService.open(ExportModelModalComponent, {
+            ariaLabelledBy: 'modal-basic-title',
+            scrollable: true,
+            size: 'lg'
+        });
+        modal.componentInstance.modalInfo = modalInfo;
+        modal.result.then((result: ExportModelModalInfo) => {
+            this.exportCurrentModel(result);
+        }, () => {
+        });
+    }
+
+    private exportCurrentModel(exportInfo: ExportModelModalInfo) {
+        try {
+            if (exportInfo.format === 'svg') {
+                this.downloadTextFile(this.model.toSVG(), exportInfo.fileName, this.SVG_MIME_TYPE);
+                return;
+            }
+
+            const mimeType = this.getExportMimeType(exportInfo.format);
+            const quality = exportInfo.format === 'png' ? undefined : exportInfo.quality / 100;
+            const scale = exportInfo.scale / 100;
+            this.model.downloadAs(exportInfo.fileName, mimeType, quality, scale);
+        }
+        catch (error) {
+            this.onError(error, 'Model Export Error');
+        }
+    }
+
+    private getExportMimeType(format: ModelExportFormat) {
+        switch (format) {
+            case 'jpeg':
+                return this.JPEG_MIME_TYPE;
+            case 'webp':
+                return this.WEBP_MIME_TYPE;
+            default:
+                return this.PNG_MIME_TYPE;
+        }
+    }
+
+    private getExportExtensionForFormat(format: ModelExportFormat) {
+        switch (format) {
+            case 'svg':
+                return '.svg';
+            case 'jpeg':
+                return '.jpg';
+            case 'webp':
+                return '.webp';
+            default:
+                return '.png';
+        }
+    }
+
+    private downloadTextFile(content: string, fileName: string, mimeType: string) {
+        if (!isPlatformBrowser(this.platformId)) {
+            return;
+        }
+
+        const blob = new Blob([content], { type: `${mimeType};charset=utf-8` });
+        const link = this.document.createElement('a');
+        const urlApi = typeof URL === 'undefined' ? undefined : URL;
+
+        link.download = fileName;
+        if (urlApi && typeof urlApi.createObjectURL === 'function' && typeof urlApi.revokeObjectURL === 'function') {
+            const objectUrl = urlApi.createObjectURL(blob);
+            link.href = objectUrl;
+            link.click();
+            urlApi.revokeObjectURL(objectUrl);
+            return;
+        }
+
+        link.href = `data:${mimeType};charset=utf-8,${encodeURIComponent(content)}`;
+        link.click();
+    }
+
+    private getExportFileName(extension: string) {
+        const baseName = this.modelPath
+            ? this.getFileNameWithoutExtension(this.getPathFileName(this.modelPath))
+            : 'model';
+        return this.ensureExtension(baseName, extension);
+    }
+
+    showAppearanceModal() {
+        const modalInfo = new AppearanceModalInfo();
+        modalInfo.opacity = this.appearanceOpacity;
+        modalInfo.interactive = this.appearanceInteractive;
+        modalInfo.blendMode = this.appearanceBlendMode;
+        modalInfo.filter = this.appearanceFilter;
+        modalInfo.shadowEnabled = this.appearanceShadowEnabled;
+        modalInfo.shadowColor = this.appearanceShadowColor;
+        modalInfo.shadowBlur = this.appearanceShadowBlur;
+        modalInfo.shadowOffsetX = this.appearanceShadowOffsetX;
+        modalInfo.shadowOffsetY = this.appearanceShadowOffsetY;
+        modalInfo.applyToModel = this.applyAppearanceToModel;
+        modalInfo.applyToSelected = this.applyAppearanceToSelected;
+        modalInfo.selectedElementCount = this.selectedElementCount;
+
+        const modal = this.modalService.open(AppearanceModalComponent, {
+            ariaLabelledBy: 'modal-basic-title',
+            scrollable: true,
+            size: 'xl',
+            windowClass: 'appearance-modal-window'
+        });
+        modal.componentInstance.modalInfo = modalInfo;
+        modal.result.then((result: AppearanceModalInfo) => {
+            this.applyAppearanceToSelected = result.applyToSelected;
+            this.applyAppearanceToModel = result.applyToModel;
+            this.setAppearanceState({
+                opacity: result.opacity / 255,
+                interactive: result.interactive,
+                blendMode: result.blendMode || undefined,
+                filter: result.filter || undefined,
+                shadow: result.shadowEnabled
+                    ? {
+                        color: result.shadowColor,
+                        blur: result.shadowBlur,
+                        offsetX: result.shadowOffsetX,
+                        offsetY: result.shadowOffsetY
+                    }
+                    : undefined
+            }, result.applyToSelected, result.applyToModel);
+        }, () => {
+        });
+    }
+
+    private setAppearanceState(appearance: AppearanceState, updateSelectedElements: boolean, updateModel: boolean) {
+        this.setAppearanceUiState(appearance);
+        this.toolOpacity = appearance.opacity;
+
+        if (this.activeTool) {
+            this.activeTool.opacity = Math.round(appearance.opacity * 255);
+        }
+
+        if (updateSelectedElements && this.controller?.selectedElementCount() > 0) {
+            this.controller.selectedElements.forEach((selectedElement) => {
+                this.applyAppearanceToElement(selectedElement, appearance, true);
+            });
+        }
+
+        if (updateModel) {
+            this.applyAppearanceToElement(this.model, appearance, false);
+        }
+
+        if (updateSelectedElements || updateModel) {
+            this.controller.draw();
+        }
+    }
+
+    private setAppearanceUiState(appearance: AppearanceState) {
+        this.appearanceOpacity = Math.round(this.normalizeAppearanceOpacity(appearance.opacity) * 255);
+        this.appearanceInteractive = appearance.interactive;
+        this.appearanceBlendMode = appearance.blendMode ?? '';
+        this.appearanceFilter = appearance.filter ?? '';
+        this.appearanceShadowEnabled = !!appearance.shadow;
+        this.appearanceShadowColor = appearance.shadow?.color ?? '#00000055';
+        this.appearanceShadowBlur = appearance.shadow?.blur ?? 12;
+        this.appearanceShadowOffsetX = appearance.shadow?.offsetX ?? 6;
+        this.appearanceShadowOffsetY = appearance.shadow?.offsetY ?? 8;
+    }
+
+    private getAppearanceStateFromElement(element: ElementBase): AppearanceState {
+        return {
+            opacity: this.normalizeAppearanceOpacity(element.opacity),
+            interactive: element.interactive !== false,
+            blendMode: element.blendMode,
+            filter: element.filter,
+            shadow: element.shadow
+                ? {
+                    color: element.shadow.color,
+                    blur: element.shadow.blur,
+                    offsetX: element.shadow.offsetX,
+                    offsetY: element.shadow.offsetY
+                }
+                : undefined
+        };
+    }
+
+    private applyAppearanceToElement(element: ElementBase, appearance: AppearanceState = this.getCurrentAppearanceState(), includeInteractive = true) {
+        element.setOpacity(appearance.opacity);
+        element.setShadow(appearance.shadow);
+        element.setBlendMode(appearance.blendMode);
+        element.setFilter(appearance.filter);
+        if (includeInteractive) {
+            element.setInteractive(appearance.interactive);
+        }
+    }
+
+    private getCurrentAppearanceState(): AppearanceState {
+        return {
+            opacity: this.appearanceOpacity / 255,
+            interactive: this.appearanceInteractive,
+            blendMode: this.appearanceBlendMode || undefined,
+            filter: this.appearanceFilter.trim() || undefined,
+            shadow: this.appearanceShadowEnabled
+                ? {
+                    color: this.appearanceShadowColor,
+                    blur: this.appearanceShadowBlur,
+                    offsetX: this.appearanceShadowOffsetX,
+                    offsetY: this.appearanceShadowOffsetY
+                }
+                : undefined
+        };
+    }
+
+    private normalizeAppearanceOpacity(opacity?: number) {
+        const normalized = Number(opacity);
+        if (!Number.isFinite(normalized)) {
+            return 1;
+        }
+        return Math.max(0, Math.min(1, normalized));
+    }
+
+    showTransformModal() {
+        const modalInfo = new TransformModalInfo();
+        modalInfo.transformText = this.transformText;
+        modalInfo.applyToModel = this.applyTransformToModel;
+        modalInfo.applyToSelected = this.applyTransformToSelected;
+        modalInfo.selectedElementCount = this.selectedElementCount;
+
+        const modal = this.modalService.open(TransformModalComponent, {
+            ariaLabelledBy: 'modal-basic-title',
+            scrollable: true,
+            size: 'xl',
+            windowClass: 'transform-modal-window'
+        });
+        modal.componentInstance.modalInfo = modalInfo;
+        modal.result.then((result: TransformModalInfo) => {
+            this.applyTransformToSelected = result.applyToSelected;
+            this.applyTransformToModel = result.applyToModel;
+            this.setTransformState(result.transformText, result.applyToSelected, result.applyToModel);
+        }, () => {
+        });
+    }
+
+    private setTransformState(transformText: string, updateSelectedElements: boolean, updateModel: boolean) {
+        this.transformText = this.normalizeTransformText(transformText);
+
+        if (updateSelectedElements && this.controller?.selectedElementCount() > 0) {
+            this.controller.selectedElements.forEach((selectedElement) => {
+                this.applyTransformToElement(selectedElement, this.transformText);
+            });
+        }
+
+        if (updateModel) {
+            this.applyTransformToElement(this.model, this.transformText);
+        }
+
+        if (updateSelectedElements || updateModel) {
+            this.controller.draw();
+        }
+    }
+
+    private applyTransformToElement(element: ElementBase, transformText: string = this.transformText) {
+        const normalizedTransform = this.normalizeTransformText(transformText);
+        if (normalizedTransform.length === 0) {
+            element.transform = undefined;
+            return;
+        }
+
+        element.setTransform(normalizedTransform);
+    }
+
+    private normalizeTransformText(transformText?: string) {
+        return (transformText ?? '').trim();
+    }
+
     showStrokeModal() {
         const modalInfo = new StrokeModalInfo();
         modalInfo.width = this.strokeWidth;
@@ -1414,14 +2109,30 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             modalInfo.namedColor = namedColor;
         }
         modalInfo.strokeType = this.strokeType;
+        modalInfo.dashPatternText = this.formatStrokeDashText(this.strokeDash);
+        modalInfo.lineCap = this.strokeLineCap;
+        modalInfo.lineJoin = this.strokeLineJoin;
+        modalInfo.miterLimit = this.strokeMiterLimit;
         modalInfo.applyToModel = this.applyStrokeToModel;
         modalInfo.applyToSelected = this.applyStrokeToSelected;
         modalInfo.selectedElementCount = this.selectedElementCount;
-        const modal = this.modalService.open(StrokeModalComponent);
+        const modal = this.modalService.open(StrokeModalComponent, {
+            ariaLabelledBy: 'modal-basic-title',
+            scrollable: true,
+            size: 'xl',
+            windowClass: 'stroke-modal-window'
+        });
         modal.componentInstance.modalInfo = modalInfo;
         modal.result.then((result: StrokeModalInfo) => {
+            this.applyStrokeToSelected = result.applyToSelected;
+            this.applyStrokeToModel = result.applyToModel;
             if (result.strokeType === 'color') {
-                this.setColorStroke(result.color, result.width, result.applyToSelected, result.applyToModel);
+                this.setColorStroke(result.color, result.width, result.applyToSelected, result.applyToModel, {
+                    strokeDash: this.parseStrokeDashText(result.dashPatternText),
+                    lineCap: result.lineCap,
+                    lineJoin: result.lineJoin,
+                    miterLimit: result.miterLimit
+                });
             }
             else {
                 this.setNoStroke(result.applyToSelected, result.applyToModel);
@@ -1510,7 +2221,9 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
         const modal = this.modalService.open(FillModalComponent, {
             ariaLabelledBy: 'modal-basic-title',
-            scrollable: true
+            scrollable: true,
+            size: 'xl',
+            windowClass: 'fill-modal-window'
         });
         modal.componentInstance.modalInfo = modalInfo;
         modal.result.then((result: FillModalInfo) => {
@@ -1858,7 +2571,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
         this.syncUndoState();
 
-        if (this.selectedElementCount === 1) {
+        if (this.selectedElementCount > 0) {
             selectedElement = this.controller.selectedElements[0];
         }
         else if (this.selectedElementCount === 0) {
@@ -1906,6 +2619,8 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         if (!selectedElement) {
             this.setNoStroke(false, false);
             this.setNoFill(false, false);
+            this.applyAppearanceToSelected = this.selectedElementCount > 0;
+            this.applyAppearanceToModel = this.selectedElementCount === 0;
             return;
         }
 
@@ -1916,7 +2631,12 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                 this.strokeColor = strokeInfo.strokeColor;
                 this.strokeWidth = strokeInfo.strokeWidth;
                 this.activeStroke = selectedElement.stroke;
-                this.setColorStroke(this.strokeColor, this.strokeWidth, false, false);
+                this.setColorStroke(this.strokeColor, this.strokeWidth, false, false, {
+                    strokeDash: selectedElement.strokeDash,
+                    lineCap: selectedElement.lineCap,
+                    lineJoin: selectedElement.lineJoin,
+                    miterLimit: selectedElement.miterLimit
+                });
             }
             else if (strokeInfo.strokeType === 'none') {
                 // this.setNoStroke(false, false);
@@ -1989,18 +2709,35 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             }
         }
 
+        if (this.selectedElementCount === 1) {
+            this.setAppearanceUiState(this.getAppearanceStateFromElement(selectedElement));
+        }
+        else if (this.selectedElementCount > 1) {
+            this.setAppearanceUiState(this.getAppearanceStateFromElement(selectedElement));
+        }
+
+        this.transformText = this.normalizeTransformText(selectedElement.transform);
+
         if (this.selectedElementCount > 0) {
             this.setSelectedIndexes();
             this.applyFillToSelected = true;
             this.applyFillToModel = false;
             this.applyStrokeToSelected = true;
             this.applyStrokeToModel = false;
+            this.applyAppearanceToSelected = true;
+            this.applyAppearanceToModel = false;
+            this.applyTransformToSelected = true;
+            this.applyTransformToModel = false;
         }
         else {
             this.applyFillToSelected = false;
             this.applyFillToModel = true;
             this.applyStrokeToSelected = false;
             this.applyStrokeToModel = true;
+            this.applyAppearanceToSelected = false;
+            this.applyAppearanceToModel = true;
+            this.applyTransformToSelected = false;
+            this.applyTransformToModel = true;
         }
 
         this.log(`Selection Changed: ${c} items`);
@@ -2086,85 +2823,14 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
     onTextElementSelected(textElement: TextElement) {
         this.singleElementType = textElement.type;
-        this.textToolTypeface = textElement.typeface;
-        this.textToolTypesize = textElement.typesize;
-        if(textElement.typestyle) {
-            this.textToolIsBold = textElement.typestyle.toLowerCase().indexOf('bold') !== -1;
-            this.textToolIsItalic = textElement.typestyle.toLowerCase().indexOf('italic') !== -1;
-        }
-        else {
-            this.textToolIsBold = false;
-            this.textToolIsItalic = false;
-        }
-        this.textToolText = textElement.text;
-        if(textElement.alignment) {
-            if(textElement.alignment.indexOf('center') !== -1) {
-                this.textToolHAlign = 'center';
-            }
-            else if(textElement.alignment.indexOf('right') !== -1) {
-                this.textToolHAlign = 'right';
-            }
-            else {
-                this.textToolHAlign = 'left';
-            }
-            if(textElement.alignment.indexOf('middle') !== -1) {
-                this.textToolVAlign = 'middle';
-            }
-            else if(textElement.alignment.indexOf('bottom') !== -1) {
-                this.textToolVAlign = 'bottom';
-            }
-            else {
-                this.textToolVAlign = 'top';
-            }
-        }
-        else {
-            this.textToolHAlign = 'left';
-            this.textToolVAlign = 'top';
-        }
+        this.setTextToolStateFromModal(this.createTextModalInfoFromTextElement(textElement));
     }
 
     showTextElementModal() {
 
         const textElement = this.controller.selectedElements[0] as TextElement;
 
-        const modalInfo = new TextElementModalInfo();
-        modalInfo.fonts = this.fontService.listFonts();
-
-        modalInfo.typeface = textElement.typeface;
-        modalInfo.typesize = textElement.typesize;
-        if(textElement.typestyle) {
-            modalInfo.isBold = textElement.typestyle.toLowerCase().indexOf('bold') !== -1;
-            modalInfo.isItalic = textElement.typestyle.toLowerCase().indexOf('italic') !== -1;
-        }
-        else {
-            modalInfo.isBold = false;
-            modalInfo.isItalic = false;
-        }
-        if(textElement.alignment) {
-            if(textElement.alignment.indexOf('center') !== -1) {
-                modalInfo.halign = 'center';
-            }
-            else if(textElement.alignment.indexOf('right') !== -1) {
-                modalInfo.halign = 'right';
-            }
-            else {
-                modalInfo.halign = 'left';
-            }
-            if(textElement.alignment.indexOf('middle') !== -1) {
-                modalInfo.valign = 'middle';
-            }
-            else if(textElement.alignment.indexOf('bottom') !== -1) {
-                modalInfo.valign = 'bottom';
-            }
-            else {
-                modalInfo.valign = 'top';
-            }
-        }
-        else {
-            modalInfo.halign = 'left';
-            modalInfo.valign = 'top';
-        }
-        modalInfo.text = textElement.text;
+        const modalInfo = this.createTextModalInfoFromTextElement(textElement);
         const modal = this.modalService.open(TextElementModalComponent, {
             ariaLabelledBy: 'modal-basic-title',
             size: 'xl',
@@ -2172,33 +2838,102 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         });
         modal.componentInstance.modalInfo = modalInfo;
         modal.result.then((result: TextElementModalInfo) => {
-            textElement.typeface = result.typeface;
-            textElement.typesize = result.typesize;
-            textElement.text = result.text;
-            let style = '';
-            if (result.isBold) {
-                style += 'bold';
+            if (!this.applyTextModalResultToElement(textElement, result)) {
+                return;
             }
-            if (result.isItalic) {
-                if (style.length !== 0) {
-                    style += ',';
-                }
-                style += 'italic';
-            }
-            textElement.typestyle = style;
-            let alignment = '';
-            if (result.halign !== 'left') {
-                alignment += result.halign;
-            }
-            if (result.valign !== 'top') {
-                if (alignment.length !== 0) {
-                    alignment += ',';
-                }
-                alignment += result.valign;
-            }
-            textElement.alignment = alignment;
+
+            this.setTextToolStateFromModal(result);
             this.controller.draw();
         }, (reason) => {
+        });
+    }
+
+    private applyTextModalResultToElement(textElement: TextElement, result: TextElementModalInfo) {
+        textElement.typeface = result.typeface;
+        textElement.typesize = result.typesize;
+        textElement.typestyle = this.buildTextStyle(result.isBold, result.isItalic);
+        textElement.alignment = this.buildTextAlignment(result.halign, result.valign);
+        textElement.setLetterSpacing(this.normalizeTextNumber(result.letterSpacing));
+        textElement.setLineHeight(this.normalizeOptionalPositiveNumber(result.lineHeight));
+        textElement.setTextDecoration(this.normalizeTextDecoration(result.textDecoration) || undefined);
+
+        if (result.contentMode === 'resource') {
+            if (!this.ensureTextResource(result)) {
+                return false;
+            }
+
+            textElement.richText = undefined;
+            textElement.setSource(result.sourceKey.trim());
+            this.prepareRemoteTextResourcesIfNeeded(result);
+            return true;
+        }
+
+        if (result.contentMode === 'rich') {
+            textElement.source = undefined;
+            textElement.text = undefined;
+            textElement.setRichText(this.mapModalRunsToDesignerRuns(result.richText));
+            return true;
+        }
+
+        textElement.richText = undefined;
+        textElement.setText(result.text);
+        return true;
+    }
+
+    private ensureTextResource(result: TextElementModalInfo) {
+        if (!this.model) {
+            return false;
+        }
+
+        const key = result.sourceKey.trim();
+        const locale = result.sourceLocale.trim() || undefined;
+
+        if (!key) {
+            this.toasterService.warning('Text resources require a key.');
+            return false;
+        }
+
+        const hasConflictingResource = this.model.resources.some((resource) => {
+            if (resource.type === 'text') {
+                return false;
+            }
+            return resource.key === key && ((resource.locale ?? '') === (locale ?? ''));
+        });
+        if (hasConflictingResource) {
+            this.toasterService.warning(`Resource key ${key} is already used by another resource type.`);
+            return false;
+        }
+
+        if (result.resourceMode === 'existing') {
+            const existingResource = this.findTextResource(key, locale);
+            if (!existingResource) {
+                this.toasterService.warning(`Text resource ${key} was not found in the model.`);
+                return false;
+            }
+            return true;
+        }
+
+        for (let index = this.model.resources.length - 1; index >= 0; index--) {
+            const resource = this.model.resources[index];
+            if (resource.type === 'text' && resource.key === key && ((resource.locale ?? '') === (locale ?? ''))) {
+                this.model.resources.splice(index, 1);
+            }
+        }
+
+        const textResource = result.resourceMode === 'uri'
+            ? TextResource.createFromUri(key, result.sourceUri.trim(), locale)
+            : TextResource.createFromText(key, result.sourceText ?? '', locale);
+        this.model.resourceManager.add(textResource);
+        return true;
+    }
+
+    private prepareRemoteTextResourcesIfNeeded(result: TextElementModalInfo) {
+        if (result.contentMode !== 'resource' || result.resourceMode !== 'uri' || !this.model) {
+            return;
+        }
+
+        this.model.prepareResources(undefined, () => {
+            this.controller?.draw();
         });
     }
 
@@ -2265,6 +3000,34 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     }
 
     elementCreated(r: Region) {
+        let requiresDraw = false;
+        if (this.strokeType === 'color' && this.controller?.selectedElements?.length) {
+            this.controller.selectedElements.forEach((selectedElement) => {
+                if (selectedElement.canStroke()) {
+                    this.applyStrokeStyleToElement(selectedElement);
+                }
+                this.applyAppearanceToElement(selectedElement);
+                this.applyTransformToElement(selectedElement);
+                if (selectedElement instanceof TextElement) {
+                    this.applyTextModalResultToElement(selectedElement, this.createTextModalInfoFromToolState());
+                }
+            });
+            requiresDraw = true;
+        }
+        else if (this.controller?.selectedElements?.length) {
+            this.controller.selectedElements.forEach((selectedElement) => {
+                this.applyAppearanceToElement(selectedElement);
+                this.applyTransformToElement(selectedElement);
+                if (selectedElement instanceof TextElement) {
+                    this.applyTextModalResultToElement(selectedElement, this.createTextModalInfoFromToolState());
+                }
+            });
+            requiresDraw = true;
+        }
+
+        if (requiresDraw) {
+            this.controller.draw();
+        }
         this.log(`Element created (${r.x},${r.y}) ${r.width}x${r.height}`);
     }
 

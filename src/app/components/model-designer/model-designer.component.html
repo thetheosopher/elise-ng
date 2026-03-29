@@ -50,6 +50,23 @@
                 <span placement="bottom" ngbTooltip="Import Local SVG"
                     class='fas fa-file-import fa-lg'></span>
             </button>
+            <div ngbDropdown class="d-inline-block">
+                <button class='btn btn-light btn-sm' [disabled]='!canExportModel()'
+                    id="exportModelDropdown" ngbDropdownToggle aria-label="Export Model">
+                    <span placement="bottom" ngbTooltip="Export Model"
+                        class='fas fa-file-export fa-lg'></span>
+                </button>
+                <div ngbDropdownMenu aria-labelledby="exportModelDropdown" class="edit-dropdown-menu">
+                    <button ngbDropdownItem class="edit-dropdown-item" [disabled]='!canExportModel()'
+                        (click)="exportCurrentModelAsSvg()">Export as SVG</button>
+                    <button ngbDropdownItem class="edit-dropdown-item" [disabled]='!canExportModel()'
+                        (click)="exportCurrentModelAsPng()">Export as PNG</button>
+                    <button ngbDropdownItem class="edit-dropdown-item" [disabled]='!canExportModel()'
+                        (click)="exportCurrentModelAsJpeg()">Export as JPEG</button>
+                    <button ngbDropdownItem class="edit-dropdown-item" [disabled]='!canExportModel()'
+                        (click)="exportCurrentModelAsWebp()">Export as WebP</button>
+                </div>
+            </div>
             <input #svgImportInput type="file" accept=".svg,image/svg+xml" style="display: none"
                 (change)="importLocalSvg(svgImportInput.files, svgImportInput)">
         </div>
@@ -154,6 +171,8 @@
                                                 <div class="dropdown-divider"></div>
 
                                                 <button ngbDropdownItem class="edit-dropdown-item" (click)="showModelSizeModal()">Model Size...</button>
+                                                <button ngbDropdownItem class="edit-dropdown-item" (click)="showAppearanceModal()">Appearance...</button>
+                                                <button ngbDropdownItem class="edit-dropdown-item" (click)="showTransformModal()">Transform...</button>
 
                                                 <button *ngIf="selectedElementCount === 1" ngbDropdownItem class="edit-dropdown-item" (click)="showElementSizeModal()">Element Size...</button>
 
@@ -224,6 +243,10 @@
                                 </div>
                                 <button class='btn btn-sm btn-outline-primary' (click)="showFillModal()"
                                     ngbTooltip="Set Fill">Fill</button>
+                                <button class='btn btn-sm btn-outline-primary' (click)="showAppearanceModal()"
+                                    ngbTooltip="Set Appearance">Appearance</button>
+                                <button class='btn btn-sm btn-outline-primary' (click)="showTransformModal()"
+                                    ngbTooltip="Set Transform">Transform</button>
                             </div>
                         </div>
                         <div>
@@ -262,6 +285,8 @@
                                         <div class="surface-context-menu-divider"></div>
 
                                         <button class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showModelSizeModal()">Model Size...</button>
+                                        <button class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showAppearanceModal()">Appearance...</button>
+                                        <button class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showTransformModal()">Transform...</button>
                                         <button class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showGridSettingsModal()">Grid and Snap Settings...</button>
                                         <button *ngIf="selectedElementCount === 1" class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showElementSizeModal()">Element Size...</button>
                                         <button *ngIf="singleElementType=='text'" class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showTextElementModal()">Element Properties...</button>

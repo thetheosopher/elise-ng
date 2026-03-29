@@ -1,0 +1,159 @@
+<div class="modal-header">
+    <h4 class="modal-title">Appearance</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('X')"></button>
+</div>
+
+<form>
+    <div class="modal-body appearance-modal-body">
+        <div class="appearance-modal-layout">
+            <div class="appearance-modal-main">
+                <section class="appearance-modal-panel appearance-modal-panel-hero">
+                    <div class="appearance-modal-section-heading">
+                        <h5>Visual Effects</h5>
+                        <p>Control opacity, blending, filters, and shadow styling for the model or the current selection.</p>
+                    </div>
+                    <div *ngIf="modalInfo.selectedElementCount > 1" class="appearance-modal-selection-note">
+                        Multiple elements are selected. Current values are rehydrated from the first selected element and can be applied across the full selection.
+                    </div>
+
+                    <div class="appearance-modal-grid appearance-modal-grid-hero">
+                        <div class="appearance-modal-card">
+                            <div class="appearance-modal-range-header">
+                                <label class="appearance-modal-label" for="appearanceOpacity">Opacity</label>
+                                <strong>{{modalInfo.opacity}}</strong>
+                            </div>
+                            <input type="range" class="form-range" min="0" max="255" [(ngModel)]="modalInfo.opacity"
+                                name="appearanceOpacity" id="appearanceOpacity">
+                        </div>
+
+                        <div class="appearance-modal-card appearance-modal-preview-card">
+                            <div class="appearance-modal-subheading">Preview</div>
+                            <div class="appearance-modal-preview-shell">
+                                <div class="appearance-modal-preview-swatch" [ngStyle]="previewShadowStyle">
+                                    <div class="appearance-modal-preview-chip"
+                                        [style.opacity]="modalInfo.opacity / 255"
+                                        [style.mixBlendMode]="modalInfo.blendMode || null"
+                                        [style.filter]="modalInfo.filter || null">
+                                        Elise
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="appearance-modal-panel">
+                    <div class="appearance-modal-grid appearance-modal-grid-controls">
+                        <div class="appearance-modal-card">
+                            <label class="appearance-modal-label" for="blendMode">Blend Mode</label>
+                            <select class="form-select appearance-modal-select" id="blendMode" name="blendMode" [(ngModel)]="modalInfo.blendMode">
+                                <option *ngFor="let option of blendModeOptions" [ngValue]="option.value">{{option.label}}</option>
+                            </select>
+                            <div class="appearance-modal-preset-row">
+                                <button *ngFor="let preset of blendModePresets" type="button" class="btn btn-sm btn-outline-secondary appearance-modal-preset-button"
+                                    (click)="applyBlendModePreset(preset.value)">{{preset.label}}</button>
+                            </div>
+                        </div>
+
+                        <div class="appearance-modal-card">
+                            <label class="appearance-modal-label" for="appearanceFilter">Filter</label>
+                            <input class="form-control appearance-modal-input" id="appearanceFilter" name="appearanceFilter"
+                                [(ngModel)]="modalInfo.filter" placeholder="Examples: blur(3px) saturate(120%)">
+                            <p class="appearance-modal-help">Uses the browser canvas filter syntax. Leave blank for no filter.</p>
+                            <div class="appearance-modal-preset-row">
+                                <button *ngFor="let preset of filterPresets" type="button" class="btn btn-sm btn-outline-secondary appearance-modal-preset-button"
+                                    (click)="applyFilterPreset(preset.value)">{{preset.label}}</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <label class="appearance-modal-checkbox-card appearance-modal-checkbox-card-inline">
+                        <input type="checkbox" [(ngModel)]="modalInfo.interactive" name="interactive" class="form-check-input">
+                        <span>
+                            <strong>Interactive</strong>
+                            <small>Keep the affected elements available for hit testing and pointer interaction.</small>
+                        </span>
+                    </label>
+                </section>
+
+                <section class="appearance-modal-panel">
+                    <div class="appearance-modal-section-heading appearance-modal-section-heading-inline">
+                        <h5>Shadow</h5>
+                        <p>Use a soft shadow to separate important elements from the background.</p>
+                    </div>
+
+                    <label class="appearance-modal-checkbox-card appearance-modal-checkbox-card-inline">
+                        <input type="checkbox" [(ngModel)]="modalInfo.shadowEnabled" name="shadowEnabled" class="form-check-input">
+                        <span>
+                            <strong>Enable Shadow</strong>
+                            <small>Turn the shadow block on or off without losing the current settings.</small>
+                        </span>
+                    </label>
+
+                    <div class="appearance-modal-grid appearance-modal-grid-shadow" [class.appearance-modal-grid-disabled]="!modalInfo.shadowEnabled">
+                        <div class="appearance-modal-card appearance-modal-color-card">
+                            <label class="appearance-modal-label">Shadow Color</label>
+                            <div class="appearance-modal-picker-shell">
+                                <span
+                                    [cpDialogDisplay]="'inline'"
+                                    [cpToggle]="true"
+                                    [colorPicker]="modalInfo.shadowColor"
+                                    [cpAlphaChannel]="'forced'"
+                                    (colorPickerChange)="colorPickerChange($event)"
+                                    [cpOutputFormat]="'hex'"></span>
+                            </div>
+                        </div>
+
+                        <div class="appearance-modal-card">
+                            <label class="appearance-modal-label" for="shadowBlur">Blur</label>
+                            <input class="form-control appearance-modal-input" id="shadowBlur" name="shadowBlur" type="number"
+                                min="0" step="1" [(ngModel)]="modalInfo.shadowBlur" [disabled]="!modalInfo.shadowEnabled">
+                        </div>
+
+                        <div class="appearance-modal-card">
+                            <label class="appearance-modal-label" for="shadowOffsetX">Offset X</label>
+                            <input class="form-control appearance-modal-input" id="shadowOffsetX" name="shadowOffsetX" type="number"
+                                step="1" [(ngModel)]="modalInfo.shadowOffsetX" [disabled]="!modalInfo.shadowEnabled">
+                        </div>
+
+                        <div class="appearance-modal-card">
+                            <label class="appearance-modal-label" for="shadowOffsetY">Offset Y</label>
+                            <input class="form-control appearance-modal-input" id="shadowOffsetY" name="shadowOffsetY" type="number"
+                                step="1" [(ngModel)]="modalInfo.shadowOffsetY" [disabled]="!modalInfo.shadowEnabled">
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <aside class="appearance-modal-side">
+                <section class="appearance-modal-panel appearance-modal-panel-actions">
+                    <div class="appearance-modal-section-heading appearance-modal-section-heading-inline">
+                        <h5>Apply</h5>
+                        <p>Choose whether to update the whole model state, the current selection, or both.</p>
+                    </div>
+                    <div class="appearance-modal-apply-grid">
+                        <label class="appearance-modal-checkbox-card">
+                            <input type="checkbox" [(ngModel)]="modalInfo.applyToModel" name="applyToModel" class="form-check-input">
+                            <span>
+                                <strong>Apply To Model</strong>
+                                <small>Use this appearance as the model-level style and new-element default.</small>
+                            </span>
+                        </label>
+                        <label *ngIf="modalInfo.selectedElementCount > 0" class="appearance-modal-checkbox-card">
+                            <input type="checkbox" [(ngModel)]="modalInfo.applyToSelected" name="applyToSelected" class="form-check-input">
+                            <span>
+                                <strong>Apply To Selected Elements</strong>
+                                <small>Update only the elements in the current selection.</small>
+                            </span>
+                        </label>
+                    </div>
+                </section>
+            </aside>
+        </div>
+    </div>
+</form>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="commit()" ngbAutofocus>OK</button>
+    <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss('Cancel')">Cancel</button>
+</div>

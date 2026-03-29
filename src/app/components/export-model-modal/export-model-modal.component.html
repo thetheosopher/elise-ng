@@ -1,0 +1,89 @@
+<div class="modal-header">
+    <h4 class="modal-title">Export Model</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('X')"></button>
+</div>
+
+<form>
+    <div class="modal-body export-model-modal-body">
+        <div class="export-model-modal-layout">
+            <div class="export-model-modal-main">
+                <section class="export-model-modal-panel export-model-modal-panel-hero">
+                    <div class="export-model-modal-section-heading">
+                        <h5>Export Settings</h5>
+                        <p>Choose the output format, file name, and raster rendering settings before downloading.</p>
+                    </div>
+
+                    <div class="export-model-modal-grid export-model-modal-grid-primary">
+                        <div class="export-model-modal-card">
+                            <label class="export-model-modal-label" for="format">Format</label>
+                            <select class="form-select export-model-modal-select" id="format" name="format"
+                                [(ngModel)]="modalInfo.format" (ngModelChange)="onFormatChanged()">
+                                <option *ngFor="let option of formatOptions" [ngValue]="option.value">{{option.label}}</option>
+                            </select>
+                        </div>
+
+                        <div class="export-model-modal-card">
+                            <label class="export-model-modal-label" for="fileName">File Name</label>
+                            <input class="form-control export-model-modal-input" id="fileName" name="fileName"
+                                [(ngModel)]="modalInfo.fileName">
+                        </div>
+                    </div>
+                </section>
+
+                <section *ngIf="isRasterFormat" class="export-model-modal-panel">
+                    <div class="export-model-modal-grid export-model-modal-grid-primary">
+                        <div class="export-model-modal-card">
+                            <div class="export-model-modal-range-header">
+                                <label class="export-model-modal-label" for="exportScale">Scale</label>
+                                <strong>{{modalInfo.scale}}%</strong>
+                            </div>
+                            <input type="range" class="form-range" min="10" max="800" step="10" id="exportScale" name="exportScale"
+                                [(ngModel)]="modalInfo.scale">
+                        </div>
+
+                        <div *ngIf="supportsQuality" class="export-model-modal-card">
+                            <div class="export-model-modal-range-header">
+                                <label class="export-model-modal-label" for="exportQuality">Quality</label>
+                                <strong>{{modalInfo.quality}}%</strong>
+                            </div>
+                            <input type="range" class="form-range" min="1" max="100" step="1" id="exportQuality" name="exportQuality"
+                                [(ngModel)]="modalInfo.quality">
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <aside class="export-model-modal-side">
+                <section class="export-model-modal-panel export-model-modal-panel-summary">
+                    <div class="export-model-modal-section-heading export-model-modal-section-heading-inline">
+                        <h5>Output</h5>
+                        <p>Review the resulting download characteristics before exporting.</p>
+                    </div>
+
+                    <div class="export-model-modal-summary-card">
+                        <div class="export-model-modal-summary-row">
+                            <span>Format</span>
+                            <strong>{{modalInfo.format | uppercase}}</strong>
+                        </div>
+                        <div *ngIf="isRasterFormat" class="export-model-modal-summary-row">
+                            <span>Canvas Size</span>
+                            <strong>{{estimatedWidth}} x {{estimatedHeight}}</strong>
+                        </div>
+                        <div *ngIf="supportsQuality" class="export-model-modal-summary-row">
+                            <span>Quality</span>
+                            <strong>{{modalInfo.quality}}%</strong>
+                        </div>
+                        <div *ngIf="!isRasterFormat" class="export-model-modal-summary-note">
+                            SVG export keeps vectors editable and ignores raster-only scale and quality controls.
+                        </div>
+                    </div>
+                </section>
+            </aside>
+        </div>
+    </div>
+</form>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="commit()" ngbAutofocus>Export</button>
+    <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss('Cancel')">Cancel</button>
+</div>

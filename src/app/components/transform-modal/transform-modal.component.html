@@ -1,0 +1,214 @@
+<div class="modal-header">
+    <h4 class="modal-title">Transform</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('X')"></button>
+</div>
+
+<form>
+    <div class="modal-body transform-modal-body">
+        <div class="transform-modal-layout">
+            <div class="transform-modal-main">
+                <section class="transform-modal-panel transform-modal-panel-hero">
+                    <div class="transform-modal-section-heading">
+                        <h5>Geometry Transform</h5>
+                        <p>Apply one supported transform command at a time. The current engine accepts translate, scale, rotate, skew, or matrix definitions.</p>
+                    </div>
+
+                    <div class="transform-modal-grid transform-modal-grid-primary">
+                        <div class="transform-modal-card">
+                            <label class="transform-modal-label" for="transformMode">Mode</label>
+                            <select class="form-select transform-modal-select" id="transformMode" name="transformMode" [(ngModel)]="modalInfo.mode" (ngModelChange)="onModeChanged()">
+                                <option *ngFor="let option of modeOptions" [ngValue]="option.value">{{option.label}}</option>
+                            </select>
+                        </div>
+
+                        <div class="transform-modal-card transform-modal-preview-card">
+                            <div class="transform-modal-subheading">Preview String</div>
+                            <code class="transform-modal-preview-code">{{previewTransformText}}</code>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="transform-modal-panel">
+                    <div class="transform-modal-section-heading transform-modal-section-heading-inline">
+                        <h5>Quick Presets</h5>
+                        <p>Start from a common transform and then fine-tune the numeric fields below.</p>
+                    </div>
+                    <div class="transform-modal-preset-grid">
+                        <button *ngFor="let preset of presets" type="button" class="transform-modal-preset-button" (click)="applyPreset(preset)">
+                            <strong>{{preset.label}}</strong>
+                            <span>{{preset.description}}</span>
+                        </button>
+                    </div>
+                </section>
+
+                <section *ngIf="modalInfo.mode === 'translate'" class="transform-modal-panel">
+                    <div class="transform-modal-grid transform-modal-grid-primary">
+                        <div class="transform-modal-card">
+                            <label class="transform-modal-label" for="translateX">Translate X</label>
+                            <input class="form-control transform-modal-input" id="translateX" name="translateX" type="number" step="1" [(ngModel)]="modalInfo.translateX" (ngModelChange)="onTransformTextChanged()">
+                        </div>
+                        <div class="transform-modal-card">
+                            <label class="transform-modal-label" for="translateY">Translate Y</label>
+                            <input class="form-control transform-modal-input" id="translateY" name="translateY" type="number" step="1" [(ngModel)]="modalInfo.translateY" (ngModelChange)="onTransformTextChanged()">
+                        </div>
+                    </div>
+                </section>
+
+                <section *ngIf="modalInfo.mode === 'scale'" class="transform-modal-panel">
+                    <div class="transform-modal-grid transform-modal-grid-primary">
+                        <div class="transform-modal-card">
+                            <label class="transform-modal-label" for="scaleX">Scale X</label>
+                            <input class="form-control transform-modal-input" id="scaleX" name="scaleX" type="number" step="0.1" [(ngModel)]="modalInfo.scaleX" (ngModelChange)="onTransformTextChanged()">
+                        </div>
+                        <div class="transform-modal-card">
+                            <label class="transform-modal-label" for="scaleY">Scale Y</label>
+                            <input class="form-control transform-modal-input" id="scaleY" name="scaleY" type="number" step="0.1" [(ngModel)]="modalInfo.scaleY" (ngModelChange)="onTransformTextChanged()">
+                        </div>
+                    </div>
+                </section>
+
+                <section *ngIf="modalInfo.mode === 'rotate'" class="transform-modal-panel">
+                    <div class="transform-modal-grid transform-modal-grid-primary">
+                        <div class="transform-modal-card">
+                            <label class="transform-modal-label" for="rotateAngle">Rotation</label>
+                            <input class="form-control transform-modal-input" id="rotateAngle" name="rotateAngle" type="number" step="1" [(ngModel)]="modalInfo.rotateAngle" (ngModelChange)="onTransformTextChanged()">
+                            <p class="transform-modal-help">Angle in degrees.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section *ngIf="modalInfo.mode === 'skew'" class="transform-modal-panel">
+                    <div class="transform-modal-grid transform-modal-grid-primary">
+                        <div class="transform-modal-card">
+                            <label class="transform-modal-label" for="skewX">Skew X</label>
+                            <input class="form-control transform-modal-input" id="skewX" name="skewX" type="number" step="1" [(ngModel)]="modalInfo.skewX" (ngModelChange)="onTransformTextChanged()">
+                        </div>
+                        <div class="transform-modal-card">
+                            <label class="transform-modal-label" for="skewY">Skew Y</label>
+                            <input class="form-control transform-modal-input" id="skewY" name="skewY" type="number" step="1" [(ngModel)]="modalInfo.skewY" (ngModelChange)="onTransformTextChanged()">
+                        </div>
+                    </div>
+                </section>
+
+                <section *ngIf="modalInfo.mode === 'matrix'" class="transform-modal-panel">
+                    <div class="transform-modal-grid transform-modal-grid-matrix">
+                        <div class="transform-modal-card">
+                            <label class="transform-modal-label" for="matrixM11">m11</label>
+                            <input class="form-control transform-modal-input" id="matrixM11" name="matrixM11" type="number" step="0.01" [(ngModel)]="modalInfo.matrixM11" (ngModelChange)="onTransformTextChanged()">
+                        </div>
+                        <div class="transform-modal-card">
+                            <label class="transform-modal-label" for="matrixM12">m12</label>
+                            <input class="form-control transform-modal-input" id="matrixM12" name="matrixM12" type="number" step="0.01" [(ngModel)]="modalInfo.matrixM12" (ngModelChange)="onTransformTextChanged()">
+                        </div>
+                        <div class="transform-modal-card">
+                            <label class="transform-modal-label" for="matrixM21">m21</label>
+                            <input class="form-control transform-modal-input" id="matrixM21" name="matrixM21" type="number" step="0.01" [(ngModel)]="modalInfo.matrixM21" (ngModelChange)="onTransformTextChanged()">
+                        </div>
+                        <div class="transform-modal-card">
+                            <label class="transform-modal-label" for="matrixM22">m22</label>
+                            <input class="form-control transform-modal-input" id="matrixM22" name="matrixM22" type="number" step="0.01" [(ngModel)]="modalInfo.matrixM22" (ngModelChange)="onTransformTextChanged()">
+                        </div>
+                        <div class="transform-modal-card">
+                            <label class="transform-modal-label" for="matrixOffsetX">Offset X</label>
+                            <input class="form-control transform-modal-input" id="matrixOffsetX" name="matrixOffsetX" type="number" step="1" [(ngModel)]="modalInfo.matrixOffsetX" (ngModelChange)="onTransformTextChanged()">
+                        </div>
+                        <div class="transform-modal-card">
+                            <label class="transform-modal-label" for="matrixOffsetY">Offset Y</label>
+                            <input class="form-control transform-modal-input" id="matrixOffsetY" name="matrixOffsetY" type="number" step="1" [(ngModel)]="modalInfo.matrixOffsetY" (ngModelChange)="onTransformTextChanged()">
+                        </div>
+                    </div>
+                    <div *ngIf="hasMatrixDecomposition" class="transform-modal-matrix-summary">
+                        <div class="transform-modal-section-heading transform-modal-section-heading-inline">
+                            <h5>Derived Breakdown</h5>
+                            <p>Approximate structured values inferred from the current matrix.</p>
+                        </div>
+                        <div class="transform-modal-summary-grid">
+                            <div class="transform-modal-summary-card">
+                                <span>Rotation</span>
+                                <strong>{{matrixDecomposition?.rotation | number:'1.0-2'}}deg</strong>
+                            </div>
+                            <div class="transform-modal-summary-card">
+                                <span>Scale X</span>
+                                <strong>{{matrixDecomposition?.scaleX | number:'1.0-3'}}</strong>
+                            </div>
+                            <div class="transform-modal-summary-card">
+                                <span>Scale Y</span>
+                                <strong>{{matrixDecomposition?.scaleY | number:'1.0-3'}}</strong>
+                            </div>
+                            <div class="transform-modal-summary-card">
+                                <span>Skew X</span>
+                                <strong>{{matrixDecomposition?.skewX | number:'1.0-2'}}deg</strong>
+                            </div>
+                            <div class="transform-modal-summary-card">
+                                <span>Translate X</span>
+                                <strong>{{matrixDecomposition?.translationX | number:'1.0-2'}}</strong>
+                            </div>
+                            <div class="transform-modal-summary-card">
+                                <span>Translate Y</span>
+                                <strong>{{matrixDecomposition?.translationY | number:'1.0-2'}}</strong>
+                            </div>
+                            <div class="transform-modal-summary-card transform-modal-summary-card-wide">
+                                <span>Determinant</span>
+                                <strong>{{matrixDecomposition?.determinant | number:'1.0-4'}}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section *ngIf="supportsOrigin" class="transform-modal-panel">
+                    <div class="transform-modal-section-heading transform-modal-section-heading-inline">
+                        <h5>Origin</h5>
+                        <p>Optional local origin used for scale, rotate, skew, and matrix transforms.</p>
+                    </div>
+                    <div class="transform-modal-grid transform-modal-grid-primary">
+                        <div class="transform-modal-card">
+                            <label class="transform-modal-label" for="originX">Origin X</label>
+                            <input class="form-control transform-modal-input" id="originX" name="originX" type="number" step="1" [(ngModel)]="modalInfo.originX" (ngModelChange)="onTransformTextChanged()">
+                        </div>
+                        <div class="transform-modal-card">
+                            <label class="transform-modal-label" for="originY">Origin Y</label>
+                            <input class="form-control transform-modal-input" id="originY" name="originY" type="number" step="1" [(ngModel)]="modalInfo.originY" (ngModelChange)="onTransformTextChanged()">
+                        </div>
+                    </div>
+                </section>
+
+                <section *ngIf="modalInfo.mode === 'custom'" class="transform-modal-panel">
+                    <label class="transform-modal-label" for="transformText">Transform Text</label>
+                    <textarea class="form-control transform-modal-input transform-modal-textarea" id="transformText" name="transformText" [(ngModel)]="modalInfo.transformText" rows="4"></textarea>
+                    <p class="transform-modal-help">Examples: <code>translate(12,24)</code>, <code>rotate(30(50,50))</code>, <code>matrix(1,0,0,1,10,20)</code>.</p>
+                    <div *ngIf="validationMessage" class="alert alert-warning py-2 mb-0">{{validationMessage}}</div>
+                </section>
+            </div>
+
+            <aside class="transform-modal-side">
+                <section class="transform-modal-panel transform-modal-panel-actions">
+                    <div class="transform-modal-section-heading transform-modal-section-heading-inline">
+                        <h5>Apply</h5>
+                        <p>Choose whether the transform updates the current selection, the model root, or both.</p>
+                    </div>
+                    <div class="transform-modal-apply-grid">
+                        <label class="transform-modal-checkbox-card">
+                            <input type="checkbox" [(ngModel)]="modalInfo.applyToModel" name="applyToModel" class="form-check-input">
+                            <span>
+                                <strong>Apply To Model</strong>
+                                <small>Set the transform on the model itself.</small>
+                            </span>
+                        </label>
+                        <label *ngIf="modalInfo.selectedElementCount > 0" class="transform-modal-checkbox-card">
+                            <input type="checkbox" [(ngModel)]="modalInfo.applyToSelected" name="applyToSelected" class="form-check-input">
+                            <span>
+                                <strong>Apply To Selected Elements</strong>
+                                <small>Update the selected elements using the same transform string.</small>
+                            </span>
+                        </label>
+                    </div>
+                </section>
+            </aside>
+        </div>
+    </div>
+</form>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="commit()" ngbAutofocus>OK</button>
+    <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss('Cancel')">Cancel</button>
+</div>

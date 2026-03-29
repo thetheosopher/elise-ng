@@ -1,101 +1,259 @@
-<!-- Image Resource Modal -->
-<!-- Modal Header -->
 <div class="modal-header">
     <h4 class="modal-title">Text Element</h4>
     <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('X')"></button>
 </div>
 
-<!-- Modal body -->
-<div class="modal-body">
+<div class="modal-body text-modal-body">
     <form>
-        <div class="row">
-            <div class="mb-3 col-md-2">
-                <label for="selectedFont">Font</label>
-                <select class='form-select form-select-sm form-control' [(ngModel)]='modalInfo.typeface'
-                    id="typeface" name="typeface">
-                    <option *ngFor='let font of modalInfo.fonts' [ngValue]='font'>
-                        {{font}}
-                    </option>
-                </select>
+        <div class="text-modal-layout">
+            <div class="text-modal-main">
+                <section class="text-modal-panel text-modal-panel-hero">
+                    <div class="text-modal-section-heading">
+                        <h5>Text Authoring</h5>
+                        <p>Choose whether the element stores inline text, binds to a reusable text resource, or carries rich per-run typography.</p>
+                    </div>
+
+                    <div class="text-modal-mode-grid">
+                        <button *ngFor="let mode of contentModes" type="button" class="text-modal-mode-button" [class.is-active]="modalInfo.contentMode === mode.value" (click)="setContentMode(mode.value)">
+                            <strong>{{mode.label}}</strong>
+                            <span>{{mode.description}}</span>
+                        </button>
+                    </div>
+
+                    <div class="text-modal-preview-card">
+                        <div class="text-modal-subheading">Preview</div>
+                        <div class="text-modal-preview-text"
+                            [style.font-family]="modalInfo.typeface"
+                            [style.font-size.px]="modalInfo.typesize"
+                            [style.font-weight]="previewFontWeight"
+                            [style.font-style]="previewFontStyle"
+                            [style.text-align]="modalInfo.halign"
+                            [style.letter-spacing.px]="modalInfo.letterSpacing"
+                            [style.line-height]="modalInfo.lineHeight || 1.25"
+                            [style.text-decoration]="previewTextDecoration">
+                            {{previewText || 'Text preview'}}
+                        </div>
+                    </div>
+                </section>
+
+                <section class="text-modal-panel">
+                    <div class="text-modal-section-heading text-modal-section-heading-inline">
+                        <h5>Typography</h5>
+                        <p>Base typography is used directly for inline and resource-backed text, and as the default style for new rich runs.</p>
+                    </div>
+
+                    <div class="text-modal-grid text-modal-grid-primary">
+                        <div class="text-modal-card">
+                            <label class="text-modal-label" for="typeface">Font</label>
+                            <select class="form-select text-modal-input" [(ngModel)]="modalInfo.typeface" id="typeface" name="typeface">
+                                <option *ngFor="let font of modalInfo.fonts" [ngValue]="font">{{font}}</option>
+                            </select>
+                        </div>
+
+                        <div class="text-modal-card">
+                            <label class="text-modal-label" for="typesize">Size</label>
+                            <input type="range" class="form-range" min="2" max="256" [(ngModel)]="modalInfo.typesize" name="typesize" id="typesize">
+                            <div class="text-modal-metric">{{modalInfo.typesize}}px</div>
+                        </div>
+
+                        <div class="text-modal-card">
+                            <label class="text-modal-label">Style</label>
+                            <label class="text-modal-check-row">
+                                <input type="checkbox" class="form-check-input" [(ngModel)]="modalInfo.isBold" name="isBold">
+                                <span>Bold</span>
+                            </label>
+                            <label class="text-modal-check-row">
+                                <input type="checkbox" class="form-check-input" [(ngModel)]="modalInfo.isItalic" name="isItalic">
+                                <span>Italic</span>
+                            </label>
+                        </div>
+
+                        <div class="text-modal-card">
+                            <label class="text-modal-label">Decoration</label>
+                            <div class="text-modal-chip-row">
+                                <button type="button" class="text-modal-chip" [class.is-active]="hasDecoration('underline')" (click)="toggleDecoration('underline')">Underline</button>
+                                <button type="button" class="text-modal-chip" [class.is-active]="hasDecoration('overline')" (click)="toggleDecoration('overline')">Overline</button>
+                                <button type="button" class="text-modal-chip" [class.is-active]="hasDecoration('line-through')" (click)="toggleDecoration('line-through')">Line Through</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-modal-grid text-modal-grid-primary">
+                        <div class="text-modal-card">
+                            <label class="text-modal-label" for="letterSpacing">Letter Spacing</label>
+                            <input class="form-control text-modal-input" type="number" step="0.1" [(ngModel)]="modalInfo.letterSpacing" id="letterSpacing" name="letterSpacing">
+                        </div>
+
+                        <div class="text-modal-card">
+                            <label class="text-modal-label" for="lineHeight">Line Height</label>
+                            <input class="form-control text-modal-input" type="number" step="0.05" [(ngModel)]="modalInfo.lineHeight" id="lineHeight" name="lineHeight">
+                            <p class="text-modal-help">Leave blank to use the renderer default.</p>
+                        </div>
+
+                        <div class="text-modal-card">
+                            <label class="text-modal-label">Horizontal Align</label>
+                            <div class="text-modal-chip-row">
+                                <button *ngFor="let alignment of horizontalAlignments" type="button" class="text-modal-chip" [class.is-active]="modalInfo.halign === alignment" (click)="modalInfo.halign = alignment">{{alignment}}</button>
+                            </div>
+                        </div>
+
+                        <div class="text-modal-card">
+                            <label class="text-modal-label">Vertical Align</label>
+                            <div class="text-modal-chip-row">
+                                <button *ngFor="let alignment of verticalAlignments" type="button" class="text-modal-chip" [class.is-active]="modalInfo.valign === alignment" (click)="modalInfo.valign = alignment">{{alignment}}</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section *ngIf="modalInfo.contentMode === 'inline'" class="text-modal-panel">
+                    <div class="text-modal-section-heading text-modal-section-heading-inline">
+                        <h5>Inline Content</h5>
+                        <p>Text is stored directly on the element and travels with the element itself.</p>
+                    </div>
+                    <label class="text-modal-label" for="text">Text</label>
+                    <textarea [(ngModel)]="modalInfo.text" name="text" id="text" class="form-control text-modal-input text-modal-textarea" rows="10"></textarea>
+                </section>
+
+                <section *ngIf="modalInfo.contentMode === 'resource'" class="text-modal-panel">
+                    <div class="text-modal-section-heading text-modal-section-heading-inline">
+                        <h5>Text Resource Binding</h5>
+                        <p>Bind the element to a model-level text resource so multiple elements can share the same copy.</p>
+                    </div>
+
+                    <div class="text-modal-mode-grid text-modal-mode-grid-compact">
+                        <button *ngFor="let mode of resourceModes" type="button" class="text-modal-mode-button" [class.is-active]="modalInfo.resourceMode === mode.value" (click)="setResourceMode(mode.value)">
+                            <strong>{{mode.label}}</strong>
+                            <span>{{mode.description}}</span>
+                        </button>
+                    </div>
+
+                    <div *ngIf="modalInfo.resourceMode === 'existing'" class="text-modal-grid text-modal-grid-primary">
+                        <div class="text-modal-card">
+                            <label class="text-modal-label" for="sourceKeyExisting">Existing Resource</label>
+                            <select class="form-select text-modal-input" [(ngModel)]="modalInfo.sourceKey" id="sourceKeyExisting" name="sourceKeyExisting" (ngModelChange)="selectExistingResource($event)">
+                                <option [ngValue]="''">Select a text resource</option>
+                                <option *ngFor="let resource of modalInfo.textResources" [ngValue]="resource.key">{{resource.key}}{{resource.locale ? ' [' + resource.locale + ']' : ''}}</option>
+                            </select>
+                        </div>
+
+                        <div class="text-modal-card">
+                            <label class="text-modal-label" for="sourceLocaleExisting">Locale</label>
+                            <input class="form-control text-modal-input" [(ngModel)]="modalInfo.sourceLocale" id="sourceLocaleExisting" name="sourceLocaleExisting">
+                        </div>
+                    </div>
+
+                    <div *ngIf="modalInfo.resourceMode !== 'existing'" class="text-modal-grid text-modal-grid-primary">
+                        <div class="text-modal-card">
+                            <label class="text-modal-label" for="sourceKey">Resource Key</label>
+                            <input class="form-control text-modal-input" [(ngModel)]="modalInfo.sourceKey" id="sourceKey" name="sourceKey">
+                        </div>
+
+                        <div class="text-modal-card">
+                            <label class="text-modal-label" for="sourceLocale">Locale</label>
+                            <input class="form-control text-modal-input" [(ngModel)]="modalInfo.sourceLocale" id="sourceLocale" name="sourceLocale" placeholder="Optional, for example en-US">
+                        </div>
+                    </div>
+
+                    <div *ngIf="modalInfo.resourceMode === 'embedded'" class="text-modal-card text-modal-card-block">
+                        <label class="text-modal-label" for="sourceText">Embedded Resource Text</label>
+                        <textarea class="form-control text-modal-input text-modal-textarea" [(ngModel)]="modalInfo.sourceText" id="sourceText" name="sourceText" rows="8"></textarea>
+                    </div>
+
+                    <div *ngIf="modalInfo.resourceMode === 'uri'" class="text-modal-card text-modal-card-block">
+                        <label class="text-modal-label" for="sourceUri">Remote URI</label>
+                        <input class="form-control text-modal-input" [(ngModel)]="modalInfo.sourceUri" id="sourceUri" name="sourceUri" placeholder="https://...">
+                    </div>
+                </section>
+
+                <section *ngIf="modalInfo.contentMode === 'rich'" class="text-modal-panel">
+                    <div class="text-modal-section-heading text-modal-section-heading-inline">
+                        <h5>Rich Text Runs</h5>
+                        <p>Each run can override typography, spacing, and decoration while still using the shared alignment and line-height settings above.</p>
+                    </div>
+
+                    <div class="text-modal-run-list">
+                        <article *ngFor="let run of modalInfo.richText; let index = index" class="text-modal-run-card">
+                            <div class="text-modal-run-header">
+                                <h6>Run {{index + 1}}</h6>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" (click)="removeRun(index)">Remove</button>
+                            </div>
+
+                            <label class="text-modal-label" [for]="'runText' + index">Text</label>
+                            <textarea class="form-control text-modal-input text-modal-run-textarea" [(ngModel)]="run.text" [id]="'runText' + index" [name]="'runText' + index" rows="3"></textarea>
+
+                            <div class="text-modal-grid text-modal-grid-rich">
+                                <div class="text-modal-card">
+                                    <label class="text-modal-label" [for]="'runFont' + index">Font</label>
+                                    <select class="form-select text-modal-input" [(ngModel)]="run.typeface" [id]="'runFont' + index" [name]="'runFont' + index">
+                                        <option *ngFor="let font of modalInfo.fonts" [ngValue]="font">{{font}}</option>
+                                    </select>
+                                </div>
+
+                                <div class="text-modal-card">
+                                    <label class="text-modal-label" [for]="'runSize' + index">Size</label>
+                                    <input class="form-control text-modal-input" type="number" step="1" [(ngModel)]="run.typesize" [id]="'runSize' + index" [name]="'runSize' + index">
+                                </div>
+
+                                <div class="text-modal-card">
+                                    <label class="text-modal-label">Style</label>
+                                    <label class="text-modal-check-row">
+                                        <input type="checkbox" class="form-check-input" [(ngModel)]="run.isBold" [name]="'runBold' + index">
+                                        <span>Bold</span>
+                                    </label>
+                                    <label class="text-modal-check-row">
+                                        <input type="checkbox" class="form-check-input" [(ngModel)]="run.isItalic" [name]="'runItalic' + index">
+                                        <span>Italic</span>
+                                    </label>
+                                </div>
+
+                                <div class="text-modal-card">
+                                    <label class="text-modal-label" [for]="'runSpacing' + index">Letter Spacing</label>
+                                    <input class="form-control text-modal-input" type="number" step="0.1" [(ngModel)]="run.letterSpacing" [id]="'runSpacing' + index" [name]="'runSpacing' + index">
+                                </div>
+                            </div>
+
+                            <div class="text-modal-chip-row">
+                                <button type="button" class="text-modal-chip" [class.is-active]="runHasDecoration(run, 'underline')" (click)="toggleRunDecoration(run, 'underline')">Underline</button>
+                                <button type="button" class="text-modal-chip" [class.is-active]="runHasDecoration(run, 'overline')" (click)="toggleRunDecoration(run, 'overline')">Overline</button>
+                                <button type="button" class="text-modal-chip" [class.is-active]="runHasDecoration(run, 'line-through')" (click)="toggleRunDecoration(run, 'line-through')">Line Through</button>
+                            </div>
+                        </article>
+                    </div>
+
+                    <button type="button" class="btn btn-outline-secondary" (click)="addRun()">Add Run</button>
+                </section>
+
+                <div *ngIf="validationMessage" class="alert alert-warning py-2 mb-0">{{validationMessage}}</div>
             </div>
-            <div class="mb-3 col-md-2">
-                <label>Size</label>
-                <span style="float: right;"><strong>{{modalInfo.typesize}}</strong></span>
-                <input type="range" class="form-range" min="2" max="256" [(ngModel)]="modalInfo.typesize"
-                    name="typesize" id="typesize">
-            </div>
-            <div class="mb-3 col-md-2">
-                <div>
-                    <label>Style</label>
-                </div>
-                <div style="margin-left: 24px;">
-                    <input type="checkbox" class="form-check-input" [(ngModel)]="modalInfo.isBold" name="isBold"
-                        id="isBold">
-                    <label for="isBold" class="form-check-label">Bold</label>
-                </div>
-                <div style="margin-left: 24px;">
-                    <input type="checkbox" class="form-check-input" [(ngModel)]="modalInfo.isItalic" name="isItalic"
-                        id="isItalic">
-                    <label for="isItalic" class="form-check-label">Italic</label>
-                </div>
-            </div>
-            <div class="mb-3 col-md-2">
-                <div>
-                    <label>Horizontal Alignment</label>
-                </div>
-                <div style="margin-left: 24px;">
-                    <input type="radio" class="form-check-input" [(ngModel)]="modalInfo.halign" name="halign"
-                        id="halign-left" value="left">
-                    <label for="halign-left" class="form-check-label">Left</label>
-                </div>
-                <div style="margin-left: 24px;">
-                    <input type="radio" class="form-check-input" [(ngModel)]="modalInfo.halign" name="halign"
-                        id="halign-center" value="center">
-                    <label for="halign-center" class="form-check-label">Center</label>
-                </div>
-                <div style="margin-left: 24px;">
-                    <input type="radio" class="form-check-input" [(ngModel)]="modalInfo.halign" name="halign"
-                        id="halign-right" value="right">
-                    <label for="halign-right" class="form-check-label">Right</label>
-                </div>
-            </div>
-            <div class="mb-3 col-md-2">
-                <div>
-                    <label>Vertical Alignment</label>
-                </div>
-                <div style="margin-left: 24px;">
-                    <input type="radio" class="form-check-input" [(ngModel)]="modalInfo.valign" name="valign"
-                        id="valign-top" value="top">
-                    <label for="valign-top" class="form-check-label">Top</label>
-                </div>
-                <div style="margin-left: 24px;">
-                    <input type="radio" class="form-check-input" [(ngModel)]="modalInfo.valign" name="valign"
-                        id="valign-middle" value="middle">
-                    <label for="valign-middle" class="form-check-label">Middle</label>
-                </div>
-                <div style="margin-left: 24px;">
-                    <input type="radio" class="form-check-input" [(ngModel)]="modalInfo.valign" name="valign"
-                        id="valign-bottom" value="bottom">
-                    <label for="valign-bottom" class="form-check-label">Bottom</label>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="mb-3 col-md-12">
-                <label for="text">Text</label>
-                <textarea [(ngModel)]="modalInfo.text" name="text" id="text"
-                  class="form-control" [style.font-family]="modalInfo.typeface"
-                    [style.font-size]="modalInfo.typesize+'px'"
-                    [style.font-weight]="modalInfo.isBold?'Bold':'Normal'"
-                    [style.font-style]="modalInfo.isItalic?'Italic':'Normal'"
-                    [style.text-align]="modalInfo.halign"
-                    rows="12" style="max-height: calc(100vh - 480px);"></textarea>
-            </div>
+
+            <aside class="text-modal-side">
+                <section class="text-modal-panel text-modal-panel-side">
+                    <div class="text-modal-section-heading text-modal-section-heading-inline">
+                        <h5>Authoring Notes</h5>
+                        <p>New text elements still start from the library text tool, so advanced resource and rich-run settings are stamped onto freshly created elements after creation.</p>
+                    </div>
+
+                    <div class="text-modal-note-grid">
+                        <div class="text-modal-note-card">
+                            <span>Inline</span>
+                            <strong>Best for one-off copy</strong>
+                        </div>
+                        <div class="text-modal-note-card">
+                            <span>Resource</span>
+                            <strong>Best for shared labels</strong>
+                        </div>
+                        <div class="text-modal-note-card">
+                            <span>Rich Runs</span>
+                            <strong>Best for mixed typography</strong>
+                        </div>
+                    </div>
+                </section>
+            </aside>
         </div>
     </form>
 </div>
 
-<!-- Modal footer -->
 <div class="modal-footer">
     <button type="button" class="btn btn-primary" (click)="commit()">OK</button>
     <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss('Cancel')" ngbAutofocus>Cancel</button>
