@@ -8,21 +8,19 @@
         <div class="geometry-modal-layout">
             <section class="geometry-modal-panel geometry-modal-panel-main">
                 <div class="geometry-modal-section-heading">
-                    <h5>{{ isRectangle ? 'Rectangle Geometry' : 'Fill Rule' }}</h5>
+                    <h5>{{ geometryHeading }}</h5>
                     <p *ngIf="modalInfo.elementDescription">Editing {{modalInfo.elementDescription}}.</p>
-                    <p *ngIf="!modalInfo.elementDescription">
-                        {{ isRectangle ? 'Tune each corner radius independently or start from a quick preset.' : 'Choose how overlapping segments determine the filled interior.' }}
-                    </p>
+                    <p *ngIf="!modalInfo.elementDescription">{{ geometryDescription }}</p>
                 </div>
 
                 <div *ngIf="isRectangle" class="geometry-modal-stack">
                     <div class="geometry-modal-card">
                         <div class="geometry-modal-subheading">Quick Radii</div>
                         <div class="geometry-modal-preset-grid">
-                            <button type="button" class="btn btn-outline-secondary btn-sm" (click)="applyUniformCornerRadius(0)">Square</button>
-                            <button type="button" class="btn btn-outline-secondary btn-sm" (click)="applyUniformCornerRadius(12)">Soft</button>
-                            <button type="button" class="btn btn-outline-secondary btn-sm" (click)="applyUniformCornerRadius(24)">Rounded</button>
-                            <button type="button" class="btn btn-outline-secondary btn-sm" (click)="applyUniformCornerRadius(9999)">Capsule</button>
+                            <button *ngFor="let preset of cornerPresets" type="button" class="geometry-modal-preset-card" (click)="applyCornerPreset(preset)">
+                                <strong>{{preset.label}}</strong>
+                                <small>{{preset.description}}</small>
+                            </button>
                         </div>
                     </div>
 
@@ -50,6 +48,11 @@
                                     type="number" min="0" step="1" [(ngModel)]="modalInfo.cornerRadiusBottomLeft">
                             </div>
                         </div>
+                        <div class="geometry-modal-inline-toolbar">
+                            <button type="button" class="btn btn-outline-secondary btn-sm" (click)="applyUniformCornerRadius(0)">All 0</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" (click)="applyUniformCornerRadius(12)">All 12</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" (click)="applyUniformCornerRadius(24)">All 24</button>
+                        </div>
                     </div>
                 </div>
 
@@ -66,13 +69,159 @@
                         </label>
                     </div>
                 </div>
+
+                <div *ngIf="isRegularPolygon" class="geometry-modal-card">
+                    <div class="geometry-modal-subheading">Polygon Profile</div>
+                    <div class="geometry-modal-grid geometry-modal-grid-four">
+                        <div>
+                            <label class="geometry-modal-label" for="regularPolygonSides">Sides</label>
+                            <input class="form-control geometry-modal-input" id="regularPolygonSides" name="regularPolygonSides"
+                                type="number" min="3" step="1" [(ngModel)]="modalInfo.regularPolygonSides">
+                        </div>
+                        <div>
+                            <label class="geometry-modal-label" for="regularPolygonInnerRadiusScale">Inner Radius Scale</label>
+                            <input class="form-control geometry-modal-input" id="regularPolygonInnerRadiusScale" name="regularPolygonInnerRadiusScale"
+                                type="number" min="0.05" max="1" step="0.05" [(ngModel)]="modalInfo.regularPolygonInnerRadiusScale">
+                        </div>
+                        <div>
+                            <label class="geometry-modal-label" for="regularPolygonRotation">Rotation</label>
+                            <input class="form-control geometry-modal-input" id="regularPolygonRotation" name="regularPolygonRotation"
+                                type="number" step="1" [(ngModel)]="modalInfo.regularPolygonRotation">
+                        </div>
+                    </div>
+                </div>
+
+                <div *ngIf="isArrow" class="geometry-modal-card">
+                    <div class="geometry-modal-subheading">Arrow Proportions</div>
+                    <div class="geometry-modal-grid geometry-modal-grid-four">
+                        <div>
+                            <label class="geometry-modal-label" for="arrowHeadLengthScale">Head Length Scale</label>
+                            <input class="form-control geometry-modal-input" id="arrowHeadLengthScale" name="arrowHeadLengthScale"
+                                type="number" min="0.1" max="0.9" step="0.05" [(ngModel)]="modalInfo.arrowHeadLengthScale">
+                        </div>
+                        <div>
+                            <label class="geometry-modal-label" for="arrowHeadWidthScale">Head Width Scale</label>
+                            <input class="form-control geometry-modal-input" id="arrowHeadWidthScale" name="arrowHeadWidthScale"
+                                type="number" min="0.1" max="1" step="0.05" [(ngModel)]="modalInfo.arrowHeadWidthScale">
+                        </div>
+                        <div>
+                            <label class="geometry-modal-label" for="arrowShaftWidthScale">Shaft Width Scale</label>
+                            <input class="form-control geometry-modal-input" id="arrowShaftWidthScale" name="arrowShaftWidthScale"
+                                type="number" min="0.05" max="1" step="0.05" [(ngModel)]="modalInfo.arrowShaftWidthScale">
+                        </div>
+                    </div>
+                </div>
+
+                <div *ngIf="isRing" class="geometry-modal-card">
+                    <div class="geometry-modal-subheading">Ring Thickness</div>
+                    <div class="geometry-modal-grid geometry-modal-grid-four">
+                        <div>
+                            <label class="geometry-modal-label" for="ringInnerRadiusScale">Inner Radius Scale</label>
+                            <input class="form-control geometry-modal-input" id="ringInnerRadiusScale" name="ringInnerRadiusScale"
+                                type="number" min="0.05" max="0.95" step="0.05" [(ngModel)]="modalInfo.ringInnerRadiusScale">
+                        </div>
+                    </div>
+                </div>
+
+                <div *ngIf="supportsAngles" class="geometry-modal-card">
+                    <div class="geometry-modal-subheading">{{ angleSectionTitle }}</div>
+                    <div class="geometry-modal-grid geometry-modal-grid-four">
+                        <div>
+                            <label class="geometry-modal-label" for="shapeStartAngle">{{ angleStartLabel }}</label>
+                            <input *ngIf="isArc" class="form-control geometry-modal-input" id="shapeStartAngle" name="arcStartAngle"
+                                type="number" step="1" [(ngModel)]="modalInfo.arcStartAngle">
+                            <input *ngIf="isWedge" class="form-control geometry-modal-input" id="shapeStartAngle" name="wedgeStartAngle"
+                                type="number" step="1" [(ngModel)]="modalInfo.wedgeStartAngle">
+                        </div>
+                        <div>
+                            <label class="geometry-modal-label" for="shapeEndAngle">{{ angleEndLabel }}</label>
+                            <input *ngIf="isArc" class="form-control geometry-modal-input" id="shapeEndAngle" name="arcEndAngle"
+                                type="number" step="1" [(ngModel)]="modalInfo.arcEndAngle">
+                            <input *ngIf="isWedge" class="form-control geometry-modal-input" id="shapeEndAngle" name="wedgeEndAngle"
+                                type="number" step="1" [(ngModel)]="modalInfo.wedgeEndAngle">
+                        </div>
+                    </div>
+                </div>
             </section>
 
             <aside class="geometry-modal-panel geometry-modal-panel-side">
                 <div class="geometry-modal-section-heading geometry-modal-section-heading-inline">
                     <h5>What Changes</h5>
-                    <p *ngIf="isRectangle">Corner radii reshape the selected rectangle without changing its bounds.</p>
-                    <p *ngIf="supportsWinding">The winding rule affects how fills behave in nested or overlapping contours.</p>
+                    <p>{{ impactDescription }}</p>
+                </div>
+
+                <div *ngIf="isRectangle" class="geometry-modal-summary-grid">
+                    <div class="geometry-modal-summary-card">
+                        <span>Top Left</span>
+                        <strong>{{modalInfo.cornerRadiusTopLeft}}</strong>
+                    </div>
+                    <div class="geometry-modal-summary-card">
+                        <span>Top Right</span>
+                        <strong>{{modalInfo.cornerRadiusTopRight}}</strong>
+                    </div>
+                    <div class="geometry-modal-summary-card">
+                        <span>Bottom Right</span>
+                        <strong>{{modalInfo.cornerRadiusBottomRight}}</strong>
+                    </div>
+                    <div class="geometry-modal-summary-card">
+                        <span>Bottom Left</span>
+                        <strong>{{modalInfo.cornerRadiusBottomLeft}}</strong>
+                    </div>
+                </div>
+
+                <div *ngIf="supportsWinding" class="geometry-modal-summary-card">
+                    <span>Active Rule</span>
+                    <strong>{{windingLabel}}</strong>
+                </div>
+
+                <div *ngIf="isRegularPolygon" class="geometry-modal-summary-grid">
+                    <div class="geometry-modal-summary-card">
+                        <span>Sides</span>
+                        <strong>{{modalInfo.regularPolygonSides}}</strong>
+                    </div>
+                    <div class="geometry-modal-summary-card">
+                        <span>Inner Radius</span>
+                        <strong>{{modalInfo.regularPolygonInnerRadiusScale | number:'1.2-2'}}</strong>
+                    </div>
+                    <div class="geometry-modal-summary-card">
+                        <span>Rotation</span>
+                        <strong>{{modalInfo.regularPolygonRotation | number:'1.0-0'}}&deg;</strong>
+                    </div>
+                </div>
+
+                <div *ngIf="isArrow" class="geometry-modal-summary-grid">
+                    <div class="geometry-modal-summary-card">
+                        <span>Head Length</span>
+                        <strong>{{modalInfo.arrowHeadLengthScale | number:'1.2-2'}}</strong>
+                    </div>
+                    <div class="geometry-modal-summary-card">
+                        <span>Head Width</span>
+                        <strong>{{modalInfo.arrowHeadWidthScale | number:'1.2-2'}}</strong>
+                    </div>
+                    <div class="geometry-modal-summary-card">
+                        <span>Shaft Width</span>
+                        <strong>{{modalInfo.arrowShaftWidthScale | number:'1.2-2'}}</strong>
+                    </div>
+                </div>
+
+                <div *ngIf="isRing" class="geometry-modal-summary-card">
+                    <span>Inner Radius</span>
+                    <strong>{{modalInfo.ringInnerRadiusScale | number:'1.2-2'}}</strong>
+                </div>
+
+                <div *ngIf="supportsAngles" class="geometry-modal-summary-grid">
+                    <div class="geometry-modal-summary-card">
+                        <span>Start</span>
+                        <strong>{{activeAngleStart | number:'1.0-0'}}&deg;</strong>
+                    </div>
+                    <div class="geometry-modal-summary-card">
+                        <span>End</span>
+                        <strong>{{activeAngleEnd | number:'1.0-0'}}&deg;</strong>
+                    </div>
+                    <div class="geometry-modal-summary-card">
+                        <span>Sweep</span>
+                        <strong>{{angleSweep | number:'1.0-0'}}&deg;</strong>
+                    </div>
                 </div>
             </aside>
         </div>
@@ -80,6 +229,6 @@
 </form>
 
 <div class="modal-footer">
-    <button type="button" class="btn btn-primary" (click)="commit()" ngbAutofocus>OK</button>
+    <button type="button" class="btn btn-primary" (click)="commit()" autofocus>OK</button>
     <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss('Cancel')">Cancel</button>
 </div>

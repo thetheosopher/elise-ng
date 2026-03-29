@@ -88,6 +88,12 @@
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
+.appearance-modal-look-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.75rem;
+}
+
 .appearance-modal-grid-disabled {
     opacity: 0.55;
 }
@@ -184,6 +190,90 @@
     flex-wrap: wrap;
     gap: 0.45rem;
     margin-top: 0.75rem;
+}
+
+.appearance-modal-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    gap: 0.65rem;
+}
+
+.appearance-modal-stat-card {
+    padding: 0.75rem 0.8rem;
+    border: 1px solid #dfd8cc;
+    border-radius: 0.75rem;
+    background: rgba(252, 249, 243, 0.9);
+}
+
+.appearance-modal-stat-card span {
+    display: block;
+    margin-bottom: 0.2rem;
+    color: #7a6a5a;
+    font-size: 0.74rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.appearance-modal-stat-card strong {
+    display: block;
+    color: #33281e;
+    font-size: 0.9rem;
+    font-weight: 700;
+    line-height: 1.35;
+    word-break: break-word;
+}
+
+.appearance-modal-look-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2rem;
+    padding: 0.9rem;
+    border: 1px solid #d8d1c6;
+    border-radius: 0.85rem;
+    background: rgba(255, 255, 255, 0.82);
+    color: #352a1f;
+    text-align: left;
+}
+
+.appearance-modal-look-card strong {
+    font-size: 0.94rem;
+    font-weight: 700;
+}
+
+.appearance-modal-look-card small {
+    color: #746656;
+    font-size: 0.79rem;
+    line-height: 1.4;
+}
+
+.appearance-modal-look-card span {
+    color: #5f7289;
+    font-size: 0.74rem;
+    font-weight: 600;
+}
+
+.appearance-modal-look-card:hover,
+.appearance-modal-look-card:focus {
+    border-color: #8aa7c7;
+    color: #243244;
+    background: rgba(233, 241, 249, 0.9);
+}
+
+.appearance-modal-look-card-active {
+    border-color: #7aa1c0;
+    background: rgba(233, 241, 249, 0.96);
+    box-shadow: 0 0 0 0.16rem rgba(122, 161, 192, 0.14);
+}
+
+.appearance-modal-look-badge {
+    margin-top: 0.1rem;
+    color: #36506b;
+    font-size: 0.72rem;
+    font-style: normal;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
 }
 
 .appearance-modal-preset-button {

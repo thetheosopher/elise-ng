@@ -261,4 +261,5 @@ export class ClipPathModalInfo {
     applyToModel = false;
     applyToSelected = true;
     selectedElementCount = 0;
+    mixedValueLabels: string[] = [];
 }

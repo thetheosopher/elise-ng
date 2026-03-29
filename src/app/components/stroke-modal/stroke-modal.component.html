@@ -13,6 +13,30 @@
                         <p>Tune the outline color, width, dash pattern, and how corners and endpoints render.</p>
                     </div>
 
+                    <div *ngIf="modalInfo.selectedElementCount > 1" class="stroke-modal-selection-note">
+                        Multiple elements are selected. Stroke values are rehydrated from the first selected element and can be applied across the full selection.
+                        <div *ngIf="modalInfo.mixedValueLabels.length > 0">
+                            <strong>Mixed across selection:</strong> {{modalInfo.mixedValueLabels.join(' · ')}}.
+                        </div>
+                        <div *ngIf="hasPartialSelectionCoverage">
+                            <strong>Coverage:</strong> applying to the selection updates {{modalInfo.supportedSelectedElementCount}} of {{modalInfo.selectedElementCount}} elements. {{modalInfo.unsupportedSelectedElementCount}} unsupported element{{modalInfo.unsupportedSelectedElementCount === 1 ? '' : 's'}} will be skipped.
+                        </div>
+                        <div *ngIf="hasNoSupportedSelectionTargets">
+                            <strong>Coverage:</strong> none of the selected elements support stroke updates.
+                        </div>
+                    </div>
+
+                    <div class="stroke-modal-look-grid">
+                        <button *ngFor="let preset of strokePresets" type="button" class="stroke-modal-look-card"
+                            [class.stroke-modal-look-card-active]="isStrokePresetActive(preset)"
+                            (click)="applyStrokePreset(preset)">
+                            <strong>{{preset.label}}</strong>
+                            <small>{{preset.description}}</small>
+                            <span>{{preset.summary}}</span>
+                            <em *ngIf="isStrokePresetActive(preset)" class="stroke-modal-look-badge">Current</em>
+                        </button>
+                    </div>
+
                     <div class="stroke-modal-grid stroke-modal-grid-hero">
                         <div class="stroke-modal-card">
                             <div class="stroke-modal-range-header">
@@ -39,6 +63,24 @@
                                         [attr.stroke-miterlimit]="modalInfo.miterLimit">
                                     </polyline>
                                 </svg>
+                            </div>
+                        </div>
+
+                        <div class="stroke-modal-card">
+                            <div class="stroke-modal-subheading">Current Stroke</div>
+                            <div class="stroke-modal-stat-grid">
+                                <div class="stroke-modal-stat-card">
+                                    <span>Width</span>
+                                    <strong>{{strokeSummary.width}}</strong>
+                                </div>
+                                <div class="stroke-modal-stat-card">
+                                    <span>Dash</span>
+                                    <strong>{{strokeSummary.dash}}</strong>
+                                </div>
+                                <div class="stroke-modal-stat-card">
+                                    <span>Ends</span>
+                                    <strong>{{strokeSummary.join}}</strong>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -129,10 +171,12 @@
                         </label>
                         <label *ngIf="modalInfo.selectedElementCount > 0" class="stroke-modal-checkbox-card">
                             <input type="checkbox" [(ngModel)]="modalInfo.applyToSelected" name="applyToSelected"
-                                id="applyToSelected" class="form-check-input">
+                                id="applyToSelected" class="form-check-input" [disabled]="hasNoSupportedSelectionTargets">
                             <span>
                                 <strong>Apply To Selected Elements</strong>
-                                <small>Update only the currently selected elements.</small>
+                                <small *ngIf="hasNoSupportedSelectionTargets">Unavailable because the current selection cannot receive stroke updates.</small>
+                                <small *ngIf="!hasNoSupportedSelectionTargets && hasPartialSelectionCoverage">Update {{modalInfo.supportedSelectedElementCount}} eligible selected elements and skip {{modalInfo.unsupportedSelectedElementCount}} unsupported element{{modalInfo.unsupportedSelectedElementCount === 1 ? '' : 's'}}.</small>
+                                <small *ngIf="!hasNoSupportedSelectionTargets && !hasPartialSelectionCoverage">Update only the currently selected elements.</small>
                             </span>
                         </label>
                     </div>
@@ -143,6 +187,6 @@
 </form>
 
 <div class="modal-footer">
-    <button type="button" class="btn btn-primary" (click)="commit()" ngbAutofocus>OK</button>
+    <button type="button" class="btn btn-primary" (click)="commit()" autofocus>OK</button>
     <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss('Cancel')">Cancel</button>
 </div>

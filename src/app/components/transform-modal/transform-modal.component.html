@@ -13,6 +13,13 @@
                         <p>Apply one supported transform command at a time. The current engine accepts translate, scale, rotate, skew, or matrix definitions.</p>
                     </div>
 
+                    <div *ngIf="modalInfo.selectedElementCount > 1" class="transform-modal-selection-note">
+                        Multiple elements are selected. Transform values are rehydrated from the first selected element and can be applied across the full selection.
+                        <div *ngIf="modalInfo.mixedValueLabels.length > 0">
+                            <strong>Mixed across selection:</strong> {{modalInfo.mixedValueLabels.join(' · ')}}.
+                        </div>
+                    </div>
+
                     <div class="transform-modal-grid transform-modal-grid-primary">
                         <div class="transform-modal-card">
                             <label class="transform-modal-label" for="transformMode">Mode</label>
@@ -25,19 +32,43 @@
                             <div class="transform-modal-subheading">Preview String</div>
                             <code class="transform-modal-preview-code">{{previewTransformText}}</code>
                         </div>
+
+                        <div class="transform-modal-card">
+                            <div class="transform-modal-subheading">Preset Pack</div>
+                            <div class="transform-modal-summary-grid transform-modal-summary-grid-compact">
+                                <div class="transform-modal-summary-card">
+                                    <span>Mode</span>
+                                    <strong>{{activeModeLabel}}</strong>
+                                </div>
+                                <div class="transform-modal-summary-card">
+                                    <span>Groups</span>
+                                    <strong>{{presetGroups.length}}</strong>
+                                </div>
+                                <div class="transform-modal-summary-card">
+                                    <span>Presets</span>
+                                    <strong>{{presetCount}}</strong>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
                 <section class="transform-modal-panel">
                     <div class="transform-modal-section-heading transform-modal-section-heading-inline">
                         <h5>Quick Presets</h5>
-                        <p>Start from a common transform and then fine-tune the numeric fields below.</p>
+                        <p>Start from a common transform family and then fine-tune the numeric fields below.</p>
                     </div>
-                    <div class="transform-modal-preset-grid">
-                        <button *ngFor="let preset of presets" type="button" class="transform-modal-preset-button" (click)="applyPreset(preset)">
-                            <strong>{{preset.label}}</strong>
-                            <span>{{preset.description}}</span>
-                        </button>
+                    <div class="transform-modal-preset-groups">
+                        <section *ngFor="let group of presetGroups" class="transform-modal-preset-group">
+                            <div class="transform-modal-subheading transform-modal-subheading-tight">{{group.label}}</div>
+                            <p class="transform-modal-help transform-modal-help-tight">{{group.description}}</p>
+                            <div class="transform-modal-preset-grid">
+                                <button *ngFor="let preset of group.presets" type="button" class="transform-modal-preset-button" (click)="applyPreset(preset)">
+                                    <strong>{{preset.label}}</strong>
+                                    <span>{{preset.description}}</span>
+                                </button>
+                            </div>
+                        </section>
                     </div>
                 </section>
 
@@ -209,6 +240,6 @@
 </form>
 
 <div class="modal-footer">
-    <button type="button" class="btn btn-primary" (click)="commit()" ngbAutofocus>OK</button>
+    <button type="button" class="btn btn-primary" (click)="commit()" autofocus>OK</button>
     <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss('Cancel')">Cancel</button>
 </div>

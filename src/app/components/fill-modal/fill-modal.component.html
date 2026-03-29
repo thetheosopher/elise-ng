@@ -7,11 +7,58 @@
     <div class="modal-body fill-modal-body">
         <div class="fill-modal-layout">
             <div class="fill-modal-main">
+                <section class="fill-modal-panel">
+                    <div class="fill-modal-section-heading fill-modal-section-heading-inline">
+                        <h5>Quick Looks</h5>
+                        <p>Apply a curated fill recipe, then fine-tune the underlying values below.</p>
+                    </div>
+
+                    <div *ngIf="modalInfo.selectedElementCount > 1" class="fill-modal-selection-note">
+                        Multiple elements are selected. Fill values are rehydrated from the first selected element and can be applied across the full selection.
+                        <div *ngIf="modalInfo.mixedValueLabels.length > 0">
+                            <strong>Mixed across selection:</strong> {{modalInfo.mixedValueLabels.join(' · ')}}.
+                        </div>
+                        <div *ngIf="hasPartialSelectionCoverage">
+                            <strong>Coverage:</strong> applying to the selection updates {{modalInfo.supportedSelectedElementCount}} of {{modalInfo.selectedElementCount}} elements. {{modalInfo.unsupportedSelectedElementCount}} unsupported element{{modalInfo.unsupportedSelectedElementCount === 1 ? '' : 's'}} will be skipped.
+                        </div>
+                        <div *ngIf="hasNoSupportedSelectionTargets">
+                            <strong>Coverage:</strong> none of the selected elements support fill updates.
+                        </div>
+                    </div>
+
+                    <div class="fill-modal-look-grid">
+                        <button *ngFor="let preset of fillPresets" type="button" class="fill-modal-look-card"
+                            [class.fill-modal-look-card-active]="isFillPresetActive(preset)"
+                            (click)="applyFillPreset(preset)">
+                            <strong>{{preset.label}}</strong>
+                            <small>{{preset.description}}</small>
+                            <span>{{preset.summary}}</span>
+                            <em *ngIf="isFillPresetActive(preset)" class="fill-modal-look-badge">Current</em>
+                        </button>
+                    </div>
+
+                    <div class="fill-modal-stat-grid">
+                        <div class="fill-modal-stat-card">
+                            <span>Type</span>
+                            <strong>{{fillSummary.type}}</strong>
+                        </div>
+                        <div class="fill-modal-stat-card">
+                            <span>Opacity</span>
+                            <strong>{{fillSummary.opacity}}</strong>
+                        </div>
+                        <div class="fill-modal-stat-card">
+                            <span>Detail</span>
+                            <strong>{{fillSummary.detail}}</strong>
+                        </div>
+                    </div>
+                </section>
+
                 <section *ngIf="modalInfo.fillType == 'color'" class="fill-modal-panel">
                     <div class="fill-modal-section-heading">
                         <h5>Solid Color</h5>
                         <p>Pick any color directly or start from a named color swatch.</p>
                     </div>
+
                     <div class="fill-modal-grid fill-modal-grid-solid">
                         <div class="fill-modal-card fill-modal-color-card">
                             <label class="fill-modal-label">Color</label>
@@ -159,6 +206,7 @@
                         <h5>Image Fill</h5>
                         <p>Use a bitmap resource and tune how it repeats across the element.</p>
                     </div>
+
                     <div class="fill-modal-card">
                         <label class="fill-modal-label">Image Resource</label>
                         <select class="form-select fill-modal-select"
@@ -216,6 +264,7 @@
                         <h5>Model Fill</h5>
                         <p>Use another model as the fill source and tune the pattern placement.</p>
                     </div>
+
                     <div class="fill-modal-card">
                         <label class="fill-modal-label">Model Resource</label>
                         <select class="form-select fill-modal-select"
@@ -298,10 +347,12 @@
                         </label>
                         <label *ngIf="modalInfo.selectedElementCount > 0" class="fill-modal-checkbox-card">
                             <input type="checkbox" [(ngModel)]="modalInfo.applyToSelected" name="applyToSelected"
-                                id="applyToSelected" class="form-check-input">
+                                id="applyToSelected" class="form-check-input" [disabled]="hasNoSupportedSelectionTargets">
                             <span>
                                 <strong>Apply To Selected Elements</strong>
-                                <small>Update only the currently selected elements.</small>
+                                <small *ngIf="hasNoSupportedSelectionTargets">Unavailable because the current selection cannot receive fill updates.</small>
+                                <small *ngIf="!hasNoSupportedSelectionTargets && hasPartialSelectionCoverage">Update {{modalInfo.supportedSelectedElementCount}} eligible selected elements and skip {{modalInfo.unsupportedSelectedElementCount}} unsupported element{{modalInfo.unsupportedSelectedElementCount === 1 ? '' : 's'}}.</small>
+                                <small *ngIf="!hasNoSupportedSelectionTargets && !hasPartialSelectionCoverage">Update only the currently selected elements.</small>
                             </span>
                         </label>
                     </div>
@@ -312,6 +363,6 @@
 </form>
 
 <div class="modal-footer">
-    <button type="button" class="btn btn-primary" (click)="commit()" ngbAutofocus>OK</button>
+    <button type="button" class="btn btn-primary" (click)="commit()" autofocus>OK</button>
     <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss('Cancel')">Cancel</button>
 </div>

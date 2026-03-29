@@ -176,10 +176,10 @@
                                                 <button ngbDropdownItem class="edit-dropdown-item" (click)="showTransformModal()">Transform...</button>
 
                                                 <button *ngIf="selectedElementCount === 1" ngbDropdownItem class="edit-dropdown-item" (click)="showElementSizeModal()">Element Size...</button>
-                                                <button *ngIf="singleElementType=='rectangle' || singleElementType=='polygon' || singleElementType=='path'" ngbDropdownItem class="edit-dropdown-item" (click)="showGeometryModal()">Geometry...</button>
+                                                <button *ngIf="singleElementType=='rectangle' || singleElementType=='polygon' || singleElementType=='path' || singleElementType=='regularPolygon' || singleElementType=='arrow' || singleElementType=='ring' || singleElementType=='arc' || singleElementType=='wedge'" ngbDropdownItem class="edit-dropdown-item" (click)="showGeometryModal()">Geometry...</button>
 
                                                 <!-- Single element property dialogs -->
-                                                <button *ngIf="singleElementType=='text'" ngbDropdownItem class="edit-dropdown-item" (click)="showTextElementModal()">Element Properties...</button>
+                                                <button *ngIf="singleElementType=='text'" ngbDropdownItem class="edit-dropdown-item" (click)="showTextElementModal()">Text...</button>
                                                 <button *ngIf="singleElementType=='image'" ngbDropdownItem class="edit-dropdown-item" (click)="showImageElementModal()">Element Properties...</button>
                                                 <button *ngIf="singleElementType=='model'" ngbDropdownItem class="edit-dropdown-item" (click)="showModelElementModal()">Element Properties...</button>
                                                 <button *ngIf="singleElementType=='polyline'" ngbDropdownItem class="edit-dropdown-item" (click)="showPointsContainerModal()">Edit Points...</button>
@@ -294,8 +294,8 @@
                                         <button class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showTransformModal()">Transform...</button>
                                         <button class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showGridSettingsModal()">Grid and Snap Settings...</button>
                                         <button *ngIf="selectedElementCount === 1" class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showElementSizeModal()">Element Size...</button>
-                                        <button *ngIf="singleElementType=='rectangle' || singleElementType=='polygon' || singleElementType=='path'" class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showGeometryModal()">Geometry...</button>
-                                        <button *ngIf="singleElementType=='text'" class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showTextElementModal()">Element Properties...</button>
+                                        <button *ngIf="singleElementType=='rectangle' || singleElementType=='polygon' || singleElementType=='path' || singleElementType=='regularPolygon' || singleElementType=='arrow' || singleElementType=='ring' || singleElementType=='arc' || singleElementType=='wedge'" class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showGeometryModal()">Geometry...</button>
+                                        <button *ngIf="singleElementType=='text'" class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showTextElementModal()">Text...</button>
                                         <button *ngIf="singleElementType=='image'" class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showImageElementModal()">Element Properties...</button>
                                         <button *ngIf="singleElementType=='model'" class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showModelElementModal()">Element Properties...</button>
                                         <button *ngIf="singleElementType=='polyline'" class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showPointsContainerModal()">Edit Points...</button>

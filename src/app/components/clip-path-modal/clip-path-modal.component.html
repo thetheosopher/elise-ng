@@ -15,6 +15,9 @@
 
                     <div *ngIf="modalInfo.selectedElementCount > 1" class="clip-path-modal-selection-note">
                         Multiple elements are selected. The clip-path state is rehydrated from the first selected element and can be applied across the selection.
+                        <div *ngIf="modalInfo.mixedValueLabels.length > 0">
+                            <strong>Mixed across selection:</strong> {{modalInfo.mixedValueLabels.join(' · ')}}.
+                        </div>
                     </div>
 
                     <label class="clip-path-modal-checkbox-card clip-path-modal-checkbox-card-inline">

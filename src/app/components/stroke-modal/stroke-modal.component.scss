@@ -78,6 +78,16 @@
 	gap: 0.2rem;
 }
 
+.stroke-modal-selection-note {
+	padding: 0.7rem 0.85rem;
+	border: 1px solid #d9d8ce;
+	border-radius: 0.8rem;
+	background: rgba(247, 244, 238, 0.92);
+	color: #675949;
+	font-size: 0.8rem;
+	line-height: 1.45;
+}
+
 .stroke-modal-label {
 	display: inline-block;
 	margin-bottom: 0.35rem;
@@ -105,6 +115,12 @@
 	gap: 0.9rem;
 }
 
+.stroke-modal-look-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+	gap: 0.75rem;
+}
+
 .stroke-modal-grid-hero,
 .stroke-modal-grid-colors,
 .stroke-modal-grid-controls {
@@ -116,6 +132,59 @@
 	border: 1px solid #e3d7c8;
 	border-radius: 0.8rem;
 	background: rgba(255, 255, 255, 0.82);
+}
+
+.stroke-modal-look-card {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 0.15rem;
+	min-height: 100%;
+	padding: 0.9rem;
+	border: 1px solid #ddd0c0;
+	border-radius: 0.82rem;
+	background: rgba(255, 251, 245, 0.92);
+	color: #34291f;
+	text-align: left;
+}
+
+.stroke-modal-look-card strong {
+	font-size: 0.94rem;
+	font-weight: 700;
+}
+
+.stroke-modal-look-card small {
+	color: #7b6b5c;
+	font-size: 0.79rem;
+	line-height: 1.38;
+}
+
+.stroke-modal-look-card span {
+	color: #556779;
+	font-size: 0.74rem;
+	font-weight: 600;
+}
+
+.stroke-modal-look-card:hover,
+.stroke-modal-look-card:focus {
+	border-color: #b49a7b;
+	background: rgba(248, 241, 231, 0.96);
+}
+
+.stroke-modal-look-card-active {
+	border-color: #b49a7b;
+	background: rgba(248, 241, 231, 0.98);
+	box-shadow: 0 0 0 0.16rem rgba(180, 154, 123, 0.14);
+}
+
+.stroke-modal-look-badge {
+	margin-top: 0.1rem;
+	color: #6a553f;
+	font-size: 0.72rem;
+	font-style: normal;
+	font-weight: 700;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
 }
 
 .stroke-modal-card-compact {
@@ -198,6 +267,37 @@
 	color: #7b6b5c;
 	font-size: 0.8rem;
 	line-height: 1.4;
+}
+
+.stroke-modal-stat-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+	gap: 0.65rem;
+}
+
+.stroke-modal-stat-card {
+	padding: 0.75rem 0.8rem;
+	border: 1px solid #dfd8cc;
+	border-radius: 0.75rem;
+	background: rgba(252, 249, 243, 0.9);
+}
+
+.stroke-modal-stat-card span {
+	display: block;
+	margin-bottom: 0.2rem;
+	color: #7a6a5a;
+	font-size: 0.74rem;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+.stroke-modal-stat-card strong {
+	display: block;
+	color: #33281e;
+	font-size: 0.9rem;
+	font-weight: 700;
+	line-height: 1.35;
+	word-break: break-word;
 }
 
 .stroke-modal-apply-grid {

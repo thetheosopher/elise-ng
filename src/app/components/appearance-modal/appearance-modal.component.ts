@@ -14,6 +14,23 @@ interface FilterPresetOption {
     value: string;
 }
 
+interface AppearancePreset {
+    label: string;
+    description: string;
+    summary: string;
+    values: {
+        opacity: number;
+        blendMode: GlobalCompositeOperation | '';
+        filter: string;
+        shadowEnabled: boolean;
+        shadowColor: string;
+        shadowBlur: number;
+        shadowOffsetX: number;
+        shadowOffsetY: number;
+        interactive: boolean;
+    };
+}
+
 @Component({
     imports: [CommonModule, FormsModule, ColorPickerDirective],
     selector: 'app-appearance-modal',
@@ -63,6 +80,89 @@ export class AppearanceModalComponent {
         { label: 'Saturate', value: 'saturate(160%)' }
     ];
 
+    readonly appearancePresets: AppearancePreset[] = [
+        {
+            label: 'Neutral',
+            description: 'Reset to a clean default look with no extra effects.',
+            summary: 'Opacity 100% · Default blend · No filter',
+            values: {
+                opacity: 255,
+                blendMode: '',
+                filter: '',
+                shadowEnabled: false,
+                shadowColor: '#00000055',
+                shadowBlur: 12,
+                shadowOffsetX: 6,
+                shadowOffsetY: 8,
+                interactive: true
+            }
+        },
+        {
+            label: 'Soft Elevation',
+            description: 'A gentle shadow and slightly reduced opacity for layered cards and panels.',
+            summary: 'Opacity 94% · Default blend · Soft shadow',
+            values: {
+                opacity: 240,
+                blendMode: '',
+                filter: '',
+                shadowEnabled: true,
+                shadowColor: '#0f172a30',
+                shadowBlur: 18,
+                shadowOffsetX: 0,
+                shadowOffsetY: 10,
+                interactive: true
+            }
+        },
+        {
+            label: 'Ink Multiply',
+            description: 'Use multiply compositing with a print-like contrast bump for illustrations and overlays.',
+            summary: 'Opacity 92% · Multiply · Contrast + Sepia',
+            values: {
+                opacity: 235,
+                blendMode: 'multiply',
+                filter: 'contrast(118%) sepia(14%)',
+                shadowEnabled: false,
+                shadowColor: '#00000055',
+                shadowBlur: 12,
+                shadowOffsetX: 6,
+                shadowOffsetY: 8,
+                interactive: true
+            }
+        },
+        {
+            label: 'Atmospheric Glow',
+            description: 'A brightened screen blend with a cool glow for accent elements and badges.',
+            summary: 'Opacity 100% · Screen · Brightness + Saturate',
+            values: {
+                opacity: 255,
+                blendMode: 'screen',
+                filter: 'brightness(112%) saturate(128%)',
+                shadowEnabled: true,
+                shadowColor: '#67e8f960',
+                shadowBlur: 20,
+                shadowOffsetX: 0,
+                shadowOffsetY: 0,
+                interactive: true
+            }
+        },
+        {
+            label: 'Frosted Overlay',
+            description: 'A softened, slightly desaturated treatment for translucent overlay layers.',
+            summary: 'Opacity 88% · Screen · Blur + Grayscale',
+            values: {
+                opacity: 224,
+                blendMode: 'screen',
+                filter: 'blur(1px) grayscale(18%) brightness(108%)',
+                shadowEnabled: true,
+                shadowColor: '#ffffff55',
+                shadowBlur: 14,
+                shadowOffsetX: 0,
+                shadowOffsetY: 0,
+                interactive: true
+            }
+        }
+    ];
+
     ngOnInit() {
         this.modalInfo.opacity = this.normalizeOpacity(this.modalInfo.opacity);
         this.modalInfo.shadowColor = this.modalInfo.shadowColor ?? '#00000055';
@@ -96,6 +196,40 @@ export class AppearanceModalComponent {
 
     applyFilterPreset(filter: string) {
         this.modalInfo.filter = filter;
+    }
+
+    applyAppearancePreset(preset: AppearancePreset) {
+        this.modalInfo.opacity = this.normalizeOpacity(preset.values.opacity);
+        this.modalInfo.blendMode = preset.values.blendMode;
+        this.modalInfo.filter = this.normalizeFilter(preset.values.filter);
+        this.modalInfo.shadowEnabled = preset.values.shadowEnabled;
+        this.modalInfo.shadowColor = preset.values.shadowColor;
+        this.modalInfo.shadowBlur = this.normalizeShadowBlur(preset.values.shadowBlur);
+        this.modalInfo.shadowOffsetX = this.normalizeShadowOffset(preset.values.shadowOffsetX);
+        this.modalInfo.shadowOffsetY = this.normalizeShadowOffset(preset.values.shadowOffsetY);
+        this.modalInfo.interactive = preset.values.interactive;
+    }
+
+    isAppearancePresetActive(preset: AppearancePreset) {
+        return this.normalizeOpacity(this.modalInfo.opacity) === this.normalizeOpacity(preset.values.opacity)
+            && (this.modalInfo.blendMode ?? '') === preset.values.blendMode
+            && this.normalizeFilter(this.modalInfo.filter) === this.normalizeFilter(preset.values.filter)
+            && !!this.modalInfo.shadowEnabled === preset.values.shadowEnabled
+            && (this.modalInfo.shadowColor ?? '') === preset.values.shadowColor
+            && this.normalizeShadowBlur(this.modalInfo.shadowBlur) === this.normalizeShadowBlur(preset.values.shadowBlur)
+            && this.normalizeShadowOffset(this.modalInfo.shadowOffsetX) === this.normalizeShadowOffset(preset.values.shadowOffsetX)
+            && this.normalizeShadowOffset(this.modalInfo.shadowOffsetY) === this.normalizeShadowOffset(preset.values.shadowOffsetY)
+            && this.modalInfo.interactive === preset.values.interactive;
+    }
+
+    get effectSummary() {
+        return {
+            blendMode: this.modalInfo.blendMode || 'Default',
+            filter: this.modalInfo.filter || 'None',
+            shadow: this.modalInfo.shadowEnabled
+                ? `${this.modalInfo.shadowBlur}px blur`
+                : 'Off'
+        };
     }
 
     get previewShadowStyle() {
@@ -145,4 +279,5 @@ export class AppearanceModalInfo {
     applyToModel = false;
     applyToSelected = true;
     selectedElementCount = 0;
+    mixedValueLabels: string[] = [];
 }

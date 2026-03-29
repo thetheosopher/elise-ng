@@ -191,23 +191,31 @@ Completed:
 - Export settings modal with raster scale and quality controls.
 - Model-tool opacity conversion fix.
 - Phase 2 follow-up for appearance presets and multi-selection rehydration.
+- Phase 2 appearance quick-look presets and effect summary cards.
+- Phase 2 appearance preset active-state highlighting and modal consistency polish.
 - Phase 3 transform follow-up with quick presets and matrix decomposition hints.
+- Phase 3 transform preset-pack expansion with grouped position, scale, rotation, skew, and matrix combos.
 - Phase 4 text authoring upgrade with resource binding, rich text runs, and advanced spacing/decoration controls.
 - New-text stamping via `elementCreated()` so resource-backed and rich-text defaults carry into created text elements.
+- Stroke modal preset-pack expansion with curated outline recipes and active preset highlighting.
 - Phase 5 geometry modal for rectangle corner radii and polygon/path winding rules.
+- Phase 5 geometry preset-pack expansion with richer corner recipes and summary cards.
 - Phase 5 fill modal upgrade from two gradient endpoints to a repeating gradient-stop editor.
+- Fill modal preset-pack expansion with curated solid and gradient recipes plus active preset highlighting.
 - Phase 5 geometry default stamping so new rectangles, polygons, and paths inherit the current corner-radius or winding defaults.
 - Phase 6 clip-path modal with command editing, units, winding, transform, and selection/model application.
 - Phase 6 clip-path follow-up with presets, validation warnings, inline preview, and command summaries.
 - Bundle-budget recovery by lazy-loading the clip-path and geometry modals out of the initial designer chunk.
+- Bundle-budget recovery by lazy-loading the stroke and fill modals out of the initial designer chunk after preset-pack expansion.
+- Multi-selection rehydration messaging parity across appearance, clip-path, fill, stroke, and transform modals.
+- Selection-state refinement with mixed-value summaries across appearance, clip-path, fill, stroke, and transform modals.
+- Selection coverage feedback for unsupported stroke and fill targets, including first-eligible rehydration for mixed selections.
 - Full Angular build validation after each implementation slice.
 
 In progress:
 
-- Phase 2 unified appearance surface final polish.
-- Shared appearance modal presets for common blend and filter combinations.
-- First-selected-element rehydration for multi-selection stroke, fill, appearance, and transform state.
+- Remaining multi-selection affordance polish outside the completed stroke and fill coverage feedback.
 
 Next recommended slice:
 
-- Focus on any remaining appearance-surface polish, or move into richer transform and geometry presets now that clip-path authoring is in place.
+- Focus on remaining multi-selection affordance polish, such as action availability cues and clearer unsupported-target messaging beyond stroke and fill.

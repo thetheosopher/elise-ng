@@ -62,6 +62,16 @@
     gap: 0.2rem;
 }
 
+.transform-modal-selection-note {
+    padding: 0.7rem 0.85rem;
+    border: 1px solid #d9d8ce;
+    border-radius: 0.8rem;
+    background: rgba(247, 244, 238, 0.92);
+    color: #675949;
+    font-size: 0.8rem;
+    line-height: 1.45;
+}
+
 .transform-modal-grid {
     display: grid;
     gap: 0.9rem;
@@ -71,6 +81,18 @@
 .transform-modal-summary-grid {
     display: grid;
     gap: 0.75rem;
+}
+
+.transform-modal-preset-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.transform-modal-preset-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
 }
 
 .transform-modal-grid-primary,
@@ -88,6 +110,10 @@
 
 .transform-modal-summary-grid {
     grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+}
+
+.transform-modal-summary-grid-compact {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
 }
 
 .transform-modal-card {
@@ -137,6 +163,10 @@
     line-height: 1.4;
 }
 
+.transform-modal-help-tight {
+    margin-top: -0.1rem;
+}
+
 .transform-modal-preset-button {
     display: flex;
     flex-direction: column;
@@ -167,6 +197,10 @@
     color: #6e5c4d;
     font-size: 0.78rem;
     line-height: 1.35;
+}
+
+.transform-modal-subheading-tight {
+    margin-bottom: 0;
 }
 
 .transform-modal-matrix-summary {

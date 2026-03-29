@@ -12,6 +12,12 @@ interface TransformPreset {
     values?: Partial<TransformModalInfo>;
 }
 
+interface TransformPresetGroup {
+    label: string;
+    description: string;
+    presets: TransformPreset[];
+}
+
 interface TransformModeOption {
     label: string;
     value: TransformMode;
@@ -58,62 +64,193 @@ export class TransformModalComponent {
         { label: 'Raw Text', value: 'custom' }
     ];
 
-    readonly presets: TransformPreset[] = [
+    readonly presetGroups: TransformPresetGroup[] = [
         {
-            label: 'Reset',
-            description: 'Clear the current transform.',
-            mode: 'none'
+            label: 'Position',
+            description: 'Quick translation nudges for layout and spacing adjustments.',
+            presets: [
+                {
+                    label: 'Reset',
+                    description: 'Clear the current transform.',
+                    mode: 'none'
+                },
+                {
+                    label: 'Move Left',
+                    description: 'Shift 24px on the x axis.',
+                    mode: 'translate',
+                    values: { translateX: -24, translateY: 0 }
+                },
+                {
+                    label: 'Move Right',
+                    description: 'Shift 24px on the x axis.',
+                    mode: 'translate',
+                    values: { translateX: 24, translateY: 0 }
+                },
+                {
+                    label: 'Move Up',
+                    description: 'Shift 24px on the y axis.',
+                    mode: 'translate',
+                    values: { translateX: 0, translateY: -24 }
+                },
+                {
+                    label: 'Move Down',
+                    description: 'Shift 24px on the y axis.',
+                    mode: 'translate',
+                    values: { translateX: 0, translateY: 24 }
+                },
+                {
+                    label: 'Drift Diagonal',
+                    description: 'Shift 18px on both axes for layered compositions.',
+                    mode: 'translate',
+                    values: { translateX: 18, translateY: 18 }
+                }
+            ]
         },
         {
-            label: 'Move Right',
-            description: 'Shift 24px on the x axis.',
-            mode: 'translate',
-            values: { translateX: 24, translateY: 0 }
+            label: 'Scale And Mirror',
+            description: 'Common scale moves for emphasis, compression, and reflection.',
+            presets: [
+                {
+                    label: 'Half Scale',
+                    description: 'Reduce evenly to 50%.',
+                    mode: 'scale',
+                    values: { scaleX: 0.5, scaleY: 0.5 }
+                },
+                {
+                    label: 'Double Scale',
+                    description: 'Scale equally to 200%.',
+                    mode: 'scale',
+                    values: { scaleX: 2, scaleY: 2 }
+                },
+                {
+                    label: 'Stretch Wide',
+                    description: 'Widen without increasing height.',
+                    mode: 'scale',
+                    values: { scaleX: 1.35, scaleY: 1 }
+                },
+                {
+                    label: 'Stretch Tall',
+                    description: 'Increase height without widening.',
+                    mode: 'scale',
+                    values: { scaleX: 1, scaleY: 1.35 }
+                },
+                {
+                    label: 'Mirror X',
+                    description: 'Flip horizontally around the local origin.',
+                    mode: 'scale',
+                    values: { scaleX: -1, scaleY: 1 }
+                },
+                {
+                    label: 'Mirror Y',
+                    description: 'Flip vertically around the local origin.',
+                    mode: 'scale',
+                    values: { scaleX: 1, scaleY: -1 }
+                }
+            ]
         },
         {
-            label: 'Move Down',
-            description: 'Shift 24px on the y axis.',
-            mode: 'translate',
-            values: { translateX: 0, translateY: 24 }
+            label: 'Rotate And Skew',
+            description: 'Useful angular presets for badges, labels, and italicized treatments.',
+            presets: [
+                {
+                    label: 'Quarter Turn',
+                    description: 'Rotate 90 degrees clockwise.',
+                    mode: 'rotate',
+                    values: { rotateAngle: 90 }
+                },
+                {
+                    label: 'Quarter Back',
+                    description: 'Rotate 90 degrees counterclockwise.',
+                    mode: 'rotate',
+                    values: { rotateAngle: -90 }
+                },
+                {
+                    label: 'Half Turn',
+                    description: 'Rotate 180 degrees.',
+                    mode: 'rotate',
+                    values: { rotateAngle: 180 }
+                },
+                {
+                    label: 'Tilt Right',
+                    description: 'A subtle 15 degree rotation.',
+                    mode: 'rotate',
+                    values: { rotateAngle: 15 }
+                },
+                {
+                    label: 'Italic Skew',
+                    description: 'Apply a gentle x skew.',
+                    mode: 'skew',
+                    values: { skewX: -12, skewY: 0 }
+                },
+                {
+                    label: 'Shear Down',
+                    description: 'Push the lower edge with a small y skew.',
+                    mode: 'skew',
+                    values: { skewX: 0, skewY: 12 }
+                }
+            ]
         },
         {
-            label: 'Double Scale',
-            description: 'Scale equally to 200%.',
-            mode: 'scale',
-            values: { scaleX: 2, scaleY: 2 }
-        },
-        {
-            label: 'Mirror X',
-            description: 'Flip horizontally around the local origin.',
-            mode: 'scale',
-            values: { scaleX: -1, scaleY: 1 }
-        },
-        {
-            label: 'Quarter Turn',
-            description: 'Rotate 90 degrees.',
-            mode: 'rotate',
-            values: { rotateAngle: 90 }
-        },
-        {
-            label: 'Italic Skew',
-            description: 'Apply a gentle x skew.',
-            mode: 'skew',
-            values: { skewX: -12, skewY: 0 }
-        },
-        {
-            label: 'Identity Matrix',
-            description: 'Reset matrix coefficients to identity.',
-            mode: 'matrix',
-            values: {
-                matrixM11: 1,
-                matrixM12: 0,
-                matrixM21: 0,
-                matrixM22: 1,
-                matrixOffsetX: 0,
-                matrixOffsetY: 0
-            }
+            label: 'Matrix Combos',
+            description: 'Affine combinations that package multiple effects into a single matrix.',
+            presets: [
+                {
+                    label: 'Identity Matrix',
+                    description: 'Reset matrix coefficients to identity.',
+                    mode: 'matrix',
+                    values: {
+                        matrixM11: 1,
+                        matrixM12: 0,
+                        matrixM21: 0,
+                        matrixM22: 1,
+                        matrixOffsetX: 0,
+                        matrixOffsetY: 0
+                    }
+                },
+                {
+                    label: 'Poster Lean',
+                    description: 'A slight clockwise lean plus horizontal drift.',
+                    mode: 'matrix',
+                    values: {
+                        matrixM11: 0.98,
+                        matrixM12: 0.18,
+                        matrixM21: -0.12,
+                        matrixM22: 0.98,
+                        matrixOffsetX: 16,
+                        matrixOffsetY: -6
+                    }
+                },
+                {
+                    label: 'Isometric Hint',
+                    description: 'Compress and skew into a faux isometric attitude.',
+                    mode: 'matrix',
+                    values: {
+                        matrixM11: 0.86,
+                        matrixM12: 0.42,
+                        matrixM21: -0.42,
+                        matrixM22: 0.86,
+                        matrixOffsetX: 0,
+                        matrixOffsetY: 0
+                    }
+                },
+                {
+                    label: 'Swing Card',
+                    description: 'Combine mild rotation, skew, and lift for mockups.',
+                    mode: 'matrix',
+                    values: {
+                        matrixM11: 0.92,
+                        matrixM12: 0.22,
+                        matrixM21: -0.18,
+                        matrixM22: 0.96,
+                        matrixOffsetX: 8,
+                        matrixOffsetY: -10
+                    }
+                }
+            ]
         }
     ];
+
+    readonly presetCount = this.presetGroups.reduce((count, group) => count + group.presets.length, 0);
 
     ngOnInit() {
         this.modalInfo.transformText = (this.modalInfo.transformText ?? '').trim();
@@ -189,6 +326,10 @@ export class TransformModalComponent {
 
     get hasMatrixDecomposition() {
         return this.modalInfo.mode === 'matrix' && !!this.matrixDecomposition;
+    }
+
+    get activeModeLabel() {
+        return this.modeOptions.find((option) => option.value === this.modalInfo.mode)?.label ?? 'None';
     }
 
     applyPreset(preset: TransformPreset) {
@@ -421,6 +562,7 @@ export class TransformModalInfo {
     selectedElementCount = 0;
     applyToModel = false;
     applyToSelected = true;
+    mixedValueLabels: string[] = [];
     translateX = 0;
     translateY = 0;
     scaleX = 1;

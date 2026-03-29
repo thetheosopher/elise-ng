@@ -104,14 +104,82 @@
 
 .geometry-modal-preset-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 0.65rem;
+}
+
+.geometry-modal-preset-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.15rem;
+    min-height: 100%;
+    padding: 0.85rem 0.9rem;
+    border: 1px solid #ddd0c0;
+    border-radius: 0.8rem;
+    background: rgba(255, 251, 245, 0.92);
+    color: #34291f;
+    text-align: left;
+}
+
+.geometry-modal-preset-card strong {
+    font-size: 0.94rem;
+    font-weight: 700;
+}
+
+.geometry-modal-preset-card small {
+    color: #7b6a58;
+    font-size: 0.78rem;
+    line-height: 1.35;
+}
+
+.geometry-modal-preset-card:hover,
+.geometry-modal-preset-card:focus {
+    border-color: #b79370;
+    background: rgba(248, 238, 225, 0.96);
+}
+
+.geometry-modal-inline-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-top: 0.85rem;
 }
 
 .geometry-modal-mode-list {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
+}
+
+.geometry-modal-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.75rem;
+}
+
+.geometry-modal-summary-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 0.8rem 0.9rem;
+    border: 1px solid #e1d4c5;
+    border-radius: 0.8rem;
+    background: rgba(255, 252, 246, 0.92);
+}
+
+.geometry-modal-summary-card span {
+    color: #7b6a58;
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.geometry-modal-summary-card strong {
+    color: #32271d;
+    font-size: 1rem;
+    font-weight: 700;
 }
 
 .geometry-modal-option-card {

@@ -17,7 +17,8 @@ import { UploadService, UploadStateCode, Upload, UploadState } from '../../servi
 
 // Elise core classes
 import { BitmapResource, Color, GridType, Model, ModelResource, Point, Region, Resource, Size,
-    GradientFillStop, PolylineElement, PolygonElement, PathElement, RectangleElement, TextResource, WindingMode } from 'elise-graphics';
+    ArcElement, ArrowElement, GradientFillStop, PathElement, PolylineElement, PolygonElement, RectangleElement,
+    RegularPolygonElement, RingElement, TextResource, WedgeElement, WindingMode } from 'elise-graphics';
 import { FillInfo, LinearGradientFill, PointEventParameters, RadialGradientFill, StrokeInfo, UndoState, ViewDragArgs } from 'elise-graphics';
 import { ElementBase, ImageElement, ModelElement, TextElement } from 'elise-graphics';
 import { DesignContextMenuEventArgs, DesignController } from 'elise-graphics';
@@ -31,8 +32,8 @@ import { ArcTool, ArrowTool, DesignTool, EllipseTool, ImageElementTool, LineTool
 import { ImageActionModalComponent, ImageActionModalInfo } from '../image-action-modal/image-action-modal.component';
 import { ModelActionModalComponent, ModelActionModalInfo } from '../model-action-modal/model-action-modal.component';
 import { NewModelModalComponent, NewModelModalInfo } from '../new-model-modal/new-model-modal.component';
-import { StrokeModalComponent, StrokeModalInfo } from '../stroke-modal/stroke-modal.component';
-import { FillModalComponent, FillModalInfo } from '../fill-modal/fill-modal.component';
+import type { StrokeModalInfo } from '../stroke-modal/stroke-modal.component';
+import type { FillModalInfo } from '../fill-modal/fill-modal.component';
 import { ImageElementModalComponent, ImageElementModalInfo } from '../image-element-modal/image-element-modal.component';
 import { ModelElementModalComponent, ModelElementModalInfo } from '../model-element-modal/model-element-modal.component';
 import { TextContentMode, TextElementModalComponent, TextElementModalInfo, TextModalResourceSummary, TextModalRun, TextResourceMode } from '../text-element-modal/text-element-modal.component';
@@ -213,6 +214,17 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     fillradialGradientRadiusY = 50;
     geometryCornerRadii: CornerRadii = [0, 0, 0, 0];
     geometryWindingMode: WindingMode = WindingMode.NonZero;
+    geometryRegularPolygonSides = 5;
+    geometryRegularPolygonInnerRadiusScale = 1;
+    geometryRegularPolygonRotation = -90;
+    geometryArrowHeadLengthScale = 0.35;
+    geometryArrowHeadWidthScale = 0.7;
+    geometryArrowShaftWidthScale = 0.3;
+    geometryRingInnerRadiusScale = 0.55;
+    geometryArcStartAngle = 0;
+    geometryArcEndAngle = 90;
+    geometryWedgeStartAngle = 270;
+    geometryWedgeEndAngle = 90;
 
     applyFillToModel = false;
     applyFillToSelected = true;
@@ -260,6 +272,15 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     transformText = '';
     applyTransformToModel = false;
     applyTransformToSelected = true;
+    appearanceMixedValueLabels: string[] = [];
+    clipPathMixedValueLabels: string[] = [];
+    transformMixedValueLabels: string[] = [];
+    strokeMixedValueLabels: string[] = [];
+    fillMixedValueLabels: string[] = [];
+    strokeSupportedSelectedCount = 0;
+    strokeUnsupportedSelectedCount = 0;
+    fillSupportedSelectedCount = 0;
+    fillUnsupportedSelectedCount = 0;
 
     _activeToolName = 'select';
 
@@ -1902,12 +1923,12 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         });
         modal.componentInstance.modalInfo = modalInfo;
         modal.result.then((result: ExportModelModalInfo) => {
-            this.exportCurrentModel(result);
+            void this.exportCurrentModel(result);
         }, () => {
         });
     }
 
-    private exportCurrentModel(exportInfo: ExportModelModalInfo) {
+    private async exportCurrentModel(exportInfo: ExportModelModalInfo) {
         try {
             if (exportInfo.format === 'svg') {
                 this.downloadTextFile(this.model.toSVG(), exportInfo.fileName, this.SVG_MIME_TYPE);
@@ -1917,11 +1938,178 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             const mimeType = this.getExportMimeType(exportInfo.format);
             const quality = exportInfo.format === 'png' ? undefined : exportInfo.quality / 100;
             const scale = exportInfo.scale / 100;
-            this.model.downloadAs(exportInfo.fileName, mimeType, quality, scale);
+            const restoreBitmapResources = await this.prepareModelForRasterExport(this.model);
+            try {
+                this.model.downloadAs(exportInfo.fileName, mimeType, quality, scale);
+            }
+            finally {
+                restoreBitmapResources();
+            }
         }
         catch (error) {
-            this.onError(error, 'Model Export Error');
+            this.onError(this.getRasterExportErrorMessage(error), 'Model Export Error');
         }
+    }
+
+    private async prepareModelForRasterExport(model: Model) {
+        if (!isPlatformBrowser(this.platformId)) {
+            return () => {
+            };
+        }
+
+        const restoreActions: Array<() => void> = [];
+        const bitmapResources = this.collectBitmapResourcesForExport(model);
+
+        for (const bitmapResource of bitmapResources) {
+            const source = await this.resolveBitmapExportSource(bitmapResource, model);
+            if (!source || !this.isCrossOriginBitmapSource(source)) {
+                continue;
+            }
+
+            try {
+                const exportSafeImage = await this.createExportSafeBitmapImage(source);
+                const previousImage = bitmapResource.image;
+                bitmapResource.image = exportSafeImage.image;
+                restoreActions.push(() => {
+                    bitmapResource.image = previousImage;
+                    exportSafeImage.dispose();
+                });
+            }
+            catch {
+                restoreActions.reverse().forEach((restore) => restore());
+                const blockedResource = bitmapResource.key || bitmapResource.uri || source;
+                throw new Error(`Raster export was blocked by image resource ${blockedResource} because the remote host does not allow canvas-safe cross-origin access. Re-host it with CORS enabled, embed it locally, or export as SVG.`);
+            }
+        }
+
+        return () => {
+            restoreActions.reverse().forEach((restore) => restore());
+        };
+    }
+
+    private collectBitmapResourcesForExport(model: Model, visitedModels = new Set<Model>()) {
+        if (!model || visitedModels.has(model)) {
+            return [] as BitmapResource[];
+        }
+
+        visitedModels.add(model);
+        const bitmapResources: BitmapResource[] = [];
+        for (const resource of model.resources ?? []) {
+            if (resource instanceof BitmapResource) {
+                bitmapResources.push(resource);
+                continue;
+            }
+
+            if (resource instanceof ModelResource && resource.model) {
+                bitmapResources.push(...this.collectBitmapResourcesForExport(resource.model, visitedModels));
+            }
+        }
+
+        return bitmapResources;
+    }
+
+    private async resolveBitmapExportSource(bitmapResource: BitmapResource, model: Model) {
+        const activeImageSource = bitmapResource.image?.currentSrc || bitmapResource.image?.src;
+        if (activeImageSource) {
+            return activeImageSource;
+        }
+
+        if (!bitmapResource.uri) {
+            return undefined;
+        }
+
+        if (bitmapResource.uri.startsWith('data:') || bitmapResource.uri.startsWith('blob:')) {
+            return bitmapResource.uri;
+        }
+
+        const resourceManager = model?.resourceManager;
+        if (resourceManager?.urlProxy) {
+            return new Promise<string | undefined>((resolve) => {
+                resourceManager.urlProxy.getUrl(bitmapResource.uri, (success, url) => {
+                    resolve(success ? url : undefined);
+                });
+            });
+        }
+
+        if (bitmapResource.uri.startsWith(':')) {
+            return bitmapResource.uri.substring(1);
+        }
+
+        if (bitmapResource.uri.startsWith('/')) {
+            return bitmapResource.uri;
+        }
+
+        if (model?.resourceManager?.localResourcePath) {
+            return model.resourceManager.localResourcePath + bitmapResource.uri;
+        }
+
+        return bitmapResource.uri;
+    }
+
+    private isCrossOriginBitmapSource(source: string) {
+        if (!isPlatformBrowser(this.platformId) || source.startsWith('data:') || source.startsWith('blob:')) {
+            return false;
+        }
+
+        try {
+            const view = this.document.defaultView;
+            if (!view?.location) {
+                return false;
+            }
+
+            const sourceUrl = new URL(source, view.location.href);
+            return sourceUrl.origin !== view.location.origin;
+        }
+        catch {
+            return false;
+        }
+    }
+
+    private async createExportSafeBitmapImage(source: string) {
+        const view = this.document.defaultView;
+        if (!view?.fetch || !view.URL || !view.Image) {
+            throw new Error('Browser export helpers are unavailable.');
+        }
+
+        const response = await view.fetch(source, { credentials: 'omit', cache: 'no-store' });
+        if (!response.ok) {
+            throw new Error(`Unable to fetch export resource: ${response.status}`);
+        }
+
+        const blob = await response.blob();
+        const objectUrl = view.URL.createObjectURL(blob);
+
+        try {
+            const image = await this.loadImageForExport(objectUrl, view.Image);
+            return {
+                image,
+                dispose: () => view.URL.revokeObjectURL(objectUrl)
+            };
+        }
+        catch (error) {
+            view.URL.revokeObjectURL(objectUrl);
+            throw error;
+        }
+    }
+
+    private loadImageForExport(source: string, ImageCtor: typeof Image) {
+        return new Promise<HTMLImageElement>((resolve, reject) => {
+            const image = new ImageCtor();
+            image.onload = () => resolve(image);
+            image.onerror = () => reject(new Error(`Unable to load export-safe image: ${source}`));
+            image.src = source;
+        });
+    }
+
+    private getRasterExportErrorMessage(error: unknown) {
+        if (error instanceof Error) {
+            if (error.message.includes('Tainted canvases may not be exported')) {
+                return 'Raster export was blocked by a cross-origin image resource. Re-host the image with CORS enabled, embed it locally, or export as SVG.';
+            }
+            return error.message;
+        }
+
+        return String(error ?? 'Raster export failed.');
     }
 
     private getExportMimeType(format: ModelExportFormat) {
@@ -1991,6 +2179,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         modalInfo.applyToModel = this.applyAppearanceToModel;
         modalInfo.applyToSelected = this.applyAppearanceToSelected;
         modalInfo.selectedElementCount = this.selectedElementCount;
+        modalInfo.mixedValueLabels = this.appearanceMixedValueLabels.slice();
 
         const modal = this.modalService.open(AppearanceModalComponent, {
             ariaLabelledBy: 'modal-basic-title',
@@ -2107,6 +2296,210 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         return Math.max(0, Math.min(1, normalized));
     }
 
+    private clearMixedSelectionFeedback() {
+        this.appearanceMixedValueLabels = [];
+        this.clipPathMixedValueLabels = [];
+        this.transformMixedValueLabels = [];
+        this.strokeMixedValueLabels = [];
+        this.fillMixedValueLabels = [];
+        this.strokeSupportedSelectedCount = 0;
+        this.strokeUnsupportedSelectedCount = 0;
+        this.fillSupportedSelectedCount = 0;
+        this.fillUnsupportedSelectedCount = 0;
+    }
+
+    private updateMixedSelectionFeedback(selectedElements: ElementBase[]) {
+        this.strokeSupportedSelectedCount = selectedElements.filter((element) => element.canStroke()).length;
+        this.strokeUnsupportedSelectedCount = Math.max(0, selectedElements.length - this.strokeSupportedSelectedCount);
+        this.fillSupportedSelectedCount = selectedElements.filter((element) => element.canFill()).length;
+        this.fillUnsupportedSelectedCount = Math.max(0, selectedElements.length - this.fillSupportedSelectedCount);
+
+        if (selectedElements.length <= 1) {
+            this.appearanceMixedValueLabels = [];
+            this.clipPathMixedValueLabels = [];
+            this.transformMixedValueLabels = [];
+            this.strokeMixedValueLabels = [];
+            this.fillMixedValueLabels = [];
+            return;
+        }
+
+        this.appearanceMixedValueLabels = this.getAppearanceMixedValueLabels(selectedElements);
+        this.clipPathMixedValueLabels = this.getClipPathMixedValueLabels(selectedElements);
+        this.transformMixedValueLabels = this.getTransformMixedValueLabels(selectedElements);
+        this.strokeMixedValueLabels = this.getStrokeMixedValueLabels(selectedElements.filter((element) => element.canStroke()));
+        this.fillMixedValueLabels = this.getFillMixedValueLabels(selectedElements.filter((element) => element.canFill()));
+    }
+
+    private getAppearanceMixedValueLabels(selectedElements: ElementBase[]) {
+        const states = selectedElements.map((element) => this.getAppearanceComparisonState(element));
+        return this.getMixedLabels(states, [
+            { label: 'Opacity', signature: (state) => state.opacity },
+            { label: 'Interactivity', signature: (state) => state.interactive },
+            { label: 'Blend Mode', signature: (state) => state.blendMode },
+            { label: 'Filter', signature: (state) => state.filter },
+            { label: 'Shadow', signature: (state) => state.shadow }
+        ]);
+    }
+
+    private getClipPathMixedValueLabels(selectedElements: ElementBase[]) {
+        const states = selectedElements.map((element) => this.getClipPathComparisonState(element));
+        return this.getMixedLabels(states, [
+            { label: 'Clip Enabled', signature: (state) => state.enabled },
+            { label: 'Commands', signature: (state) => state.commands },
+            { label: 'Units', signature: (state) => state.units },
+            { label: 'Winding', signature: (state) => state.winding },
+            { label: 'Transform', signature: (state) => state.transform }
+        ]);
+    }
+
+    private getTransformMixedValueLabels(selectedElements: ElementBase[]) {
+        return this.getMixedLabels(selectedElements, [
+            { label: 'Transform', signature: (element) => this.normalizeTransformText(element.transform) }
+        ]);
+    }
+
+    private getStrokeMixedValueLabels(selectedElements: ElementBase[]) {
+        const states = selectedElements.map((element) => this.getStrokeComparisonState(element));
+        return this.getMixedLabels(states, [
+            { label: 'Style', signature: (state) => state.style },
+            { label: 'Dash Pattern', signature: (state) => state.dashPattern },
+            { label: 'Caps And Joins', signature: (state) => state.capsAndJoins }
+        ]);
+    }
+
+    private getFillMixedValueLabels(selectedElements: ElementBase[]) {
+        const states = selectedElements.map((element) => this.getFillComparisonState(element));
+        return this.getMixedLabels(states, [
+            { label: 'Fill Type', signature: (state) => state.type },
+            { label: 'Color', signature: (state) => state.color },
+            { label: 'Gradient Stops', signature: (state) => state.gradientStops },
+            { label: 'Gradient Geometry', signature: (state) => state.gradientGeometry },
+            { label: 'Resource', signature: (state) => state.resource },
+            { label: 'Opacity', signature: (state) => state.opacity },
+            { label: 'Scale', signature: (state) => state.scale },
+            { label: 'Offset', signature: (state) => state.offset }
+        ]);
+    }
+
+    private getAppearanceComparisonState(element: ElementBase) {
+        const appearance = this.getAppearanceStateFromElement(element);
+        return {
+            opacity: this.normalizeAppearanceOpacity(appearance.opacity),
+            interactive: appearance.interactive,
+            blendMode: appearance.blendMode ?? '',
+            filter: (appearance.filter ?? '').trim(),
+            shadow: appearance.shadow
+                ? {
+                    color: appearance.shadow.color,
+                    blur: appearance.shadow.blur ?? 0,
+                    offsetX: appearance.shadow.offsetX ?? 0,
+                    offsetY: appearance.shadow.offsetY ?? 0
+                }
+                : null
+        };
+    }
+
+    private getClipPathComparisonState(element: ElementBase) {
+        const clipPath = this.getClipPathStateFromElement(element);
+        return {
+            enabled: !!clipPath,
+            commands: clipPath?.commands ?? [],
+            units: clipPath?.units ?? 'userSpaceOnUse',
+            winding: clipPath?.winding ?? WindingMode.NonZero,
+            transform: clipPath?.transform ?? ''
+        };
+    }
+
+    private getStrokeComparisonState(element: ElementBase) {
+        const strokeInfo = StrokeInfo.getStrokeInfo(element);
+        const strokeStyle = this.getStrokeStyleState({
+            strokeDash: element.strokeDash,
+            lineCap: element.lineCap,
+            lineJoin: element.lineJoin,
+            miterLimit: element.miterLimit
+        });
+
+        return {
+            style: {
+                type: strokeInfo.strokeType,
+                color: strokeInfo.strokeType === 'color' ? (strokeInfo.strokeColor ?? '').toLowerCase() : null,
+                width: strokeInfo.strokeType === 'color' ? strokeInfo.strokeWidth : null
+            },
+            dashPattern: this.formatStrokeDashText(strokeStyle.strokeDash),
+            capsAndJoins: {
+                lineCap: strokeStyle.lineCap,
+                lineJoin: strokeStyle.lineJoin,
+                miterLimit: strokeStyle.miterLimit
+            }
+        };
+    }
+
+    private getFillComparisonState(element: ElementBase) {
+        const fillInfo = FillInfo.getFillInfo(element);
+        return {
+            type: fillInfo.type,
+            color: fillInfo.type === 'color' ? (fillInfo.color ?? '').toLowerCase() : null,
+            gradientStops: fillInfo.type === 'linear' || fillInfo.type === 'radial'
+                ? (fillInfo.fillStops ?? []).map((stop) => ({
+                    color: (stop.color ?? '').toLowerCase(),
+                    offset: stop.offset
+                }))
+                : null,
+            gradientGeometry: fillInfo.type === 'linear'
+                ? {
+                    start: fillInfo.start,
+                    end: fillInfo.end
+                }
+                : fillInfo.type === 'radial'
+                    ? {
+                        center: fillInfo.center,
+                        focus: fillInfo.focus,
+                        radiusX: fillInfo.radiusX,
+                        radiusY: fillInfo.radiusY
+                    }
+                    : null,
+            resource: fillInfo.type === 'image' || fillInfo.type === 'model'
+                ? {
+                    type: fillInfo.type,
+                    source: fillInfo.source ?? ''
+                }
+                : null,
+            opacity: fillInfo.opacity ?? 255,
+            scale: fillInfo.scale ?? 1,
+            offset: {
+                x: this.normalizeComparableNumber(element.fillOffsetX),
+                y: this.normalizeComparableNumber(element.fillOffsetY)
+            }
+        };
+    }
+
+    private getMixedLabels<T>(items: T[], comparisons: Array<{ label: string; signature: (item: T) => unknown }>) {
+        if (items.length <= 1) {
+            return [];
+        }
+
+        return comparisons
+            .filter((comparison) => {
+                const referenceSignature = this.serializeComparableValue(comparison.signature(items[0]));
+                return items.slice(1).some((item) => this.serializeComparableValue(comparison.signature(item)) !== referenceSignature);
+            })
+            .map((comparison) => comparison.label);
+    }
+
+    private serializeComparableValue(value: unknown) {
+        if (value === undefined) {
+            return '__undefined__';
+        }
+
+        const serialized = JSON.stringify(value);
+        return serialized ?? '__undefined__';
+    }
+
+    private normalizeComparableNumber(value?: number, fallback = 0) {
+        const normalized = Number(value);
+        return Number.isFinite(normalized) ? normalized : fallback;
+    }
+
     async showClipPathModal() {
         const clipPathModalModule = await import('../clip-path-modal/clip-path-modal.component');
         const modalInfo = new clipPathModalModule.ClipPathModalInfo();
@@ -2118,6 +2511,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         modalInfo.applyToModel = this.applyClipPathToModel;
         modalInfo.applyToSelected = this.applyClipPathToSelected;
         modalInfo.selectedElementCount = this.selectedElementCount;
+        modalInfo.mixedValueLabels = this.clipPathMixedValueLabels.slice();
 
         const modal = this.modalService.open(clipPathModalModule.ClipPathModalComponent, {
             ariaLabelledBy: 'modal-basic-title',
@@ -2223,6 +2617,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         modalInfo.applyToModel = this.applyTransformToModel;
         modalInfo.applyToSelected = this.applyTransformToSelected;
         modalInfo.selectedElementCount = this.selectedElementCount;
+        modalInfo.mixedValueLabels = this.transformMixedValueLabels.slice();
 
         const modal = this.modalService.open(TransformModalComponent, {
             ariaLabelledBy: 'modal-basic-title',
@@ -2271,8 +2666,9 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         return (transformText ?? '').trim();
     }
 
-    showStrokeModal() {
-        const modalInfo = new StrokeModalInfo();
+    async showStrokeModal() {
+        const strokeModalModule = await import('../stroke-modal/stroke-modal.component');
+        const modalInfo = new strokeModalModule.StrokeModalInfo();
         modalInfo.width = this.strokeWidth;
         modalInfo.color = this.strokeColor;
         const color = Color.parse(this.strokeColor);
@@ -2288,7 +2684,10 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         modalInfo.applyToModel = this.applyStrokeToModel;
         modalInfo.applyToSelected = this.applyStrokeToSelected;
         modalInfo.selectedElementCount = this.selectedElementCount;
-        const modal = this.modalService.open(StrokeModalComponent, {
+        modalInfo.mixedValueLabels = this.strokeMixedValueLabels.slice();
+        modalInfo.supportedSelectedElementCount = this.strokeSupportedSelectedCount;
+        modalInfo.unsupportedSelectedElementCount = this.strokeUnsupportedSelectedCount;
+        const modal = this.modalService.open(strokeModalModule.StrokeModalComponent, {
             ariaLabelledBy: 'modal-basic-title',
             scrollable: true,
             size: 'xl',
@@ -2313,8 +2712,9 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         });
     }
 
-    showFillModal() {
-        const modalInfo = new FillModalInfo();
+    async showFillModal() {
+        const fillModalModule = await import('../fill-modal/fill-modal.component');
+        const modalInfo = new fillModalModule.FillModalInfo();
 
         modalInfo.color = this.fillColor;
         let color = Color.parse(this.fillColor);
@@ -2345,6 +2745,9 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         modalInfo.applyToModel = this.applyFillToModel;
         modalInfo.applyToSelected = this.applyFillToSelected;
         modalInfo.selectedElementCount = this.selectedElementCount;
+        modalInfo.mixedValueLabels = this.fillMixedValueLabels.slice();
+        modalInfo.supportedSelectedElementCount = this.fillSupportedSelectedCount;
+        modalInfo.unsupportedSelectedElementCount = this.fillUnsupportedSelectedCount;
 
         // Load bitmap resources
         const bitmapResources: BitmapResource[] = [];
@@ -2378,7 +2781,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             modalInfo.selectedModelResource = selectedModelResource ?? modelResources[0];
         }
 
-        const modal = this.modalService.open(FillModalComponent, {
+        const modal = this.modalService.open(fillModalModule.FillModalComponent, {
             ariaLabelledBy: 'modal-basic-title',
             scrollable: true,
             size: 'xl',
@@ -2721,6 +3124,8 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
     selectionChanged(c: number) {
         let selectedElement: ElementBase;
+        let strokeSourceElement: ElementBase;
+        let fillSourceElement: ElementBase;
         if (this.controller) {
             this.selectedElementCount = this.controller.selectedElementCount();
         }
@@ -2730,11 +3135,22 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
         this.syncUndoState();
 
+            if (this.selectedElementCount > 0) {
+            this.updateMixedSelectionFeedback(this.controller?.selectedElements ?? []);
+        }
+        else {
+            this.clearMixedSelectionFeedback();
+        }
+
         if (this.selectedElementCount > 0) {
             selectedElement = this.controller.selectedElements[0];
+            strokeSourceElement = this.controller.selectedElements.find((element) => element.canStroke()) ?? selectedElement;
+            fillSourceElement = this.controller.selectedElements.find((element) => element.canFill()) ?? selectedElement;
         }
         else if (this.selectedElementCount === 0) {
             selectedElement = this.model;
+            strokeSourceElement = this.model;
+            fillSourceElement = this.model;
         }
 
         // If single element selected
@@ -2769,6 +3185,26 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                     this.onPathElementSelected(selectedElement as PathElement);
                     break;
 
+                case 'regularPolygon':
+                    this.onRegularPolygonElementSelected(selectedElement as RegularPolygonElement);
+                    break;
+
+                case 'arrow':
+                    this.onArrowElementSelected(selectedElement as ArrowElement);
+                    break;
+
+                case 'ring':
+                    this.onRingElementSelected(selectedElement as RingElement);
+                    break;
+
+                case 'arc':
+                    this.onArcElementSelected(selectedElement as ArcElement);
+                    break;
+
+                case 'wedge':
+                    this.onWedgeElementSelected(selectedElement as WedgeElement);
+                    break;
+
                 default:
                     this.singleElementType = undefined;
                     break;
@@ -2780,6 +3216,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
         // Return if multiple selected
         if (!selectedElement) {
+            this.clearMixedSelectionFeedback();
             this.setNoStroke(false, false);
             this.setNoFill(false, false);
             this.setClipPathUiState(undefined);
@@ -2791,17 +3228,17 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         }
 
         // Set active stroke to first selected element or model
-        if (selectedElement.canStroke()) {
-            const strokeInfo = StrokeInfo.getStrokeInfo(selectedElement);
+        if (strokeSourceElement?.canStroke()) {
+            const strokeInfo = StrokeInfo.getStrokeInfo(strokeSourceElement);
             if (strokeInfo.strokeType === 'color') {
                 this.strokeColor = strokeInfo.strokeColor;
                 this.strokeWidth = strokeInfo.strokeWidth;
-                this.activeStroke = selectedElement.stroke;
+                this.activeStroke = strokeSourceElement.stroke;
                 this.setColorStroke(this.strokeColor, this.strokeWidth, false, false, {
-                    strokeDash: selectedElement.strokeDash,
-                    lineCap: selectedElement.lineCap,
-                    lineJoin: selectedElement.lineJoin,
-                    miterLimit: selectedElement.miterLimit
+                    strokeDash: strokeSourceElement.strokeDash,
+                    lineCap: strokeSourceElement.lineCap,
+                    lineJoin: strokeSourceElement.lineJoin,
+                    miterLimit: strokeSourceElement.miterLimit
                 });
             }
             else if (strokeInfo.strokeType === 'none') {
@@ -2810,30 +3247,32 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         }
 
         // Set active fill to first selected element
-        if (selectedElement.canFill()) {
-            const fillInfo = FillInfo.getFillInfo(selectedElement);
+        if (fillSourceElement?.canFill()) {
+            const fillInfo = FillInfo.getFillInfo(fillSourceElement);
             if (fillInfo.type === 'image') {
-                const modalInfo: FillModalInfo = new FillModalInfo();
-                modalInfo.fillType = 'image';
-                modalInfo.selectedBitmapResource = this.model.resources.find(r => r.key === fillInfo.source);
-                modalInfo.opacity = fillInfo.opacity;
-                modalInfo.scale = fillInfo.scale * 100;
-                modalInfo.fillOffsetX = selectedElement.fillOffsetX;
-                modalInfo.fillOffsetY = selectedElement.fillOffsetY;
-                modalInfo.applyToModel = false;
-                modalInfo.applyToSelected = false;
+                const modalInfo = {
+                    fillType: 'image',
+                    selectedBitmapResource: this.model.resources.find(r => r.key === fillInfo.source),
+                    opacity: fillInfo.opacity,
+                    scale: fillInfo.scale * 100,
+                    fillOffsetX: fillSourceElement.fillOffsetX,
+                    fillOffsetY: fillSourceElement.fillOffsetY,
+                    applyToModel: false,
+                    applyToSelected: false
+                } as FillModalInfo;
                 this.setImageFill(modalInfo);
             }
             else if (fillInfo.type === 'model') {
-                const modalInfo: FillModalInfo = new FillModalInfo();
-                modalInfo.fillType = 'model';
-                modalInfo.selectedModelResource = this.model.resources.find(r => r.key === fillInfo.source);
-                modalInfo.opacity = fillInfo.opacity;
-                modalInfo.scale = fillInfo.scale * 100;
-                modalInfo.fillOffsetX = selectedElement.fillOffsetX;
-                modalInfo.fillOffsetY = selectedElement.fillOffsetY;
-                modalInfo.applyToModel = false;
-                modalInfo.applyToSelected = false;
+                const modalInfo = {
+                    fillType: 'model',
+                    selectedModelResource: this.model.resources.find(r => r.key === fillInfo.source),
+                    opacity: fillInfo.opacity,
+                    scale: fillInfo.scale * 100,
+                    fillOffsetX: fillSourceElement.fillOffsetX,
+                    fillOffsetY: fillSourceElement.fillOffsetY,
+                    applyToModel: false,
+                    applyToSelected: false
+                } as FillModalInfo;
                 this.setModelFill(modalInfo);
             }
             else if (fillInfo.type === 'color') {
@@ -2842,13 +3281,13 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                     color.a = Math.floor(fillInfo.opacity);
                 }
                 this.fillColor = color.toHexString();
-                this.activeFill = selectedElement.fill;
-                this.fillScale = selectedElement.fillScale ?? 1;
+                this.activeFill = fillSourceElement.fill;
+                this.fillScale = fillSourceElement.fillScale ?? 1;
                 this.setColorFill(this.fillColor, false, false);
             }
             else if(fillInfo.type === 'linear') {
                 this.fillType = 'linearGradient';
-                this.activeFill = selectedElement.fill as LinearGradientFill;
+                this.activeFill = fillSourceElement.fill as LinearGradientFill;
                 this.fillScale = 1;
                 const start = Point.parse(fillInfo.start);
                 this.fillLinearGradientStartX = start.x;
@@ -2860,7 +3299,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             }
             else if(fillInfo.type === 'radial') {
                 this.fillType = 'radialGradient';
-                this.activeFill = selectedElement.fill as RadialGradientFill;
+                this.activeFill = fillSourceElement.fill as RadialGradientFill;
                 this.fillScale = 1;
                 const center = Point.parse(fillInfo.center);
                 this.fillRadialGradientCenterX = center.x;
@@ -3147,6 +3586,37 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         this.geometryWindingMode = pathElement.winding ?? WindingMode.NonZero;
     }
 
+    onRegularPolygonElementSelected(regularPolygonElement: RegularPolygonElement) {
+        this.singleElementType = regularPolygonElement.type;
+        this.geometryRegularPolygonSides = regularPolygonElement.sides;
+        this.geometryRegularPolygonInnerRadiusScale = regularPolygonElement.innerRadiusScale;
+        this.geometryRegularPolygonRotation = regularPolygonElement.rotation;
+    }
+
+    onArrowElementSelected(arrowElement: ArrowElement) {
+        this.singleElementType = arrowElement.type;
+        this.geometryArrowHeadLengthScale = arrowElement.headLengthScale;
+        this.geometryArrowHeadWidthScale = arrowElement.headWidthScale;
+        this.geometryArrowShaftWidthScale = arrowElement.shaftWidthScale;
+    }
+
+    onRingElementSelected(ringElement: RingElement) {
+        this.singleElementType = ringElement.type;
+        this.geometryRingInnerRadiusScale = ringElement.innerRadiusScale;
+    }
+
+    onArcElementSelected(arcElement: ArcElement) {
+        this.singleElementType = arcElement.type;
+        this.geometryArcStartAngle = arcElement.startAngle;
+        this.geometryArcEndAngle = arcElement.endAngle;
+    }
+
+    onWedgeElementSelected(wedgeElement: WedgeElement) {
+        this.singleElementType = wedgeElement.type;
+        this.geometryWedgeStartAngle = wedgeElement.startAngle;
+        this.geometryWedgeEndAngle = wedgeElement.endAngle;
+    }
+
     private applyGeometryDefaultsToElement(element: ElementBase) {
         if (element instanceof RectangleElement) {
             element.setCornerRadii(
@@ -3160,6 +3630,42 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
         if (element instanceof PolygonElement || element instanceof PathElement) {
             element.setWinding(this.geometryWindingMode);
+            return;
+        }
+
+        if (element instanceof RegularPolygonElement) {
+            element.sides = this.geometryRegularPolygonSides;
+            element.innerRadiusScale = this.geometryRegularPolygonInnerRadiusScale;
+            element.rotation = this.geometryRegularPolygonRotation;
+            element.clearBounds();
+            return;
+        }
+
+        if (element instanceof ArrowElement) {
+            element.headLengthScale = this.geometryArrowHeadLengthScale;
+            element.headWidthScale = this.geometryArrowHeadWidthScale;
+            element.shaftWidthScale = this.geometryArrowShaftWidthScale;
+            element.clearBounds();
+            return;
+        }
+
+        if (element instanceof RingElement) {
+            element.innerRadiusScale = this.geometryRingInnerRadiusScale;
+            element.clearBounds();
+            return;
+        }
+
+        if (element instanceof ArcElement) {
+            element.startAngle = this.geometryArcStartAngle;
+            element.endAngle = this.geometryArcEndAngle;
+            element.clearBounds();
+            return;
+        }
+
+        if (element instanceof WedgeElement) {
+            element.startAngle = this.geometryWedgeStartAngle;
+            element.endAngle = this.geometryWedgeEndAngle;
+            element.clearBounds();
         }
     }
 
@@ -3194,6 +3700,47 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                 modalInfo.geometryType = 'path';
                 modalInfo.windingMode = (selectedElement as PathElement).winding ?? WindingMode.NonZero;
                 break;
+
+            case 'regularPolygon': {
+                const regularPolygonElement = selectedElement as RegularPolygonElement;
+                modalInfo.geometryType = 'regularPolygon';
+                modalInfo.regularPolygonSides = regularPolygonElement.sides;
+                modalInfo.regularPolygonInnerRadiusScale = regularPolygonElement.innerRadiusScale;
+                modalInfo.regularPolygonRotation = regularPolygonElement.rotation;
+                break;
+            }
+
+            case 'arrow': {
+                const arrowElement = selectedElement as ArrowElement;
+                modalInfo.geometryType = 'arrow';
+                modalInfo.arrowHeadLengthScale = arrowElement.headLengthScale;
+                modalInfo.arrowHeadWidthScale = arrowElement.headWidthScale;
+                modalInfo.arrowShaftWidthScale = arrowElement.shaftWidthScale;
+                break;
+            }
+
+            case 'ring': {
+                const ringElement = selectedElement as RingElement;
+                modalInfo.geometryType = 'ring';
+                modalInfo.ringInnerRadiusScale = ringElement.innerRadiusScale;
+                break;
+            }
+
+            case 'arc': {
+                const arcElement = selectedElement as ArcElement;
+                modalInfo.geometryType = 'arc';
+                modalInfo.arcStartAngle = arcElement.startAngle;
+                modalInfo.arcEndAngle = arcElement.endAngle;
+                break;
+            }
+
+            case 'wedge': {
+                const wedgeElement = selectedElement as WedgeElement;
+                modalInfo.geometryType = 'wedge';
+                modalInfo.wedgeStartAngle = wedgeElement.startAngle;
+                modalInfo.wedgeEndAngle = wedgeElement.endAngle;
+                break;
+            }
 
             default:
                 return;
@@ -3234,6 +3781,58 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                     (selectedElement as PathElement).setWinding(result.windingMode);
                     this.geometryWindingMode = result.windingMode;
                     break;
+
+                case 'regularPolygon': {
+                    const regularPolygonElement = selectedElement as RegularPolygonElement;
+                    regularPolygonElement.sides = result.regularPolygonSides;
+                    regularPolygonElement.innerRadiusScale = result.regularPolygonInnerRadiusScale;
+                    regularPolygonElement.rotation = result.regularPolygonRotation;
+                    regularPolygonElement.clearBounds();
+                    this.geometryRegularPolygonSides = result.regularPolygonSides;
+                    this.geometryRegularPolygonInnerRadiusScale = result.regularPolygonInnerRadiusScale;
+                    this.geometryRegularPolygonRotation = result.regularPolygonRotation;
+                    break;
+                }
+
+                case 'arrow': {
+                    const arrowElement = selectedElement as ArrowElement;
+                    arrowElement.headLengthScale = result.arrowHeadLengthScale;
+                    arrowElement.headWidthScale = result.arrowHeadWidthScale;
+                    arrowElement.shaftWidthScale = result.arrowShaftWidthScale;
+                    arrowElement.clearBounds();
+                    this.geometryArrowHeadLengthScale = result.arrowHeadLengthScale;
+                    this.geometryArrowHeadWidthScale = result.arrowHeadWidthScale;
+                    this.geometryArrowShaftWidthScale = result.arrowShaftWidthScale;
+                    break;
+                }
+
+                case 'ring': {
+                    const ringElement = selectedElement as RingElement;
+                    ringElement.innerRadiusScale = result.ringInnerRadiusScale;
+                    ringElement.clearBounds();
+                    this.geometryRingInnerRadiusScale = result.ringInnerRadiusScale;
+                    break;
+                }
+
+                case 'arc': {
+                    const arcElement = selectedElement as ArcElement;
+                    arcElement.startAngle = result.arcStartAngle;
+                    arcElement.endAngle = result.arcEndAngle;
+                    arcElement.clearBounds();
+                    this.geometryArcStartAngle = result.arcStartAngle;
+                    this.geometryArcEndAngle = result.arcEndAngle;
+                    break;
+                }
+
+                case 'wedge': {
+                    const wedgeElement = selectedElement as WedgeElement;
+                    wedgeElement.startAngle = result.wedgeStartAngle;
+                    wedgeElement.endAngle = result.wedgeEndAngle;
+                    wedgeElement.clearBounds();
+                    this.geometryWedgeStartAngle = result.wedgeStartAngle;
+                    this.geometryWedgeEndAngle = result.wedgeEndAngle;
+                    break;
+                }
             }
 
             this.controller.draw();

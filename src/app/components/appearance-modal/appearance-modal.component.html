@@ -14,6 +14,9 @@
                     </div>
                     <div *ngIf="modalInfo.selectedElementCount > 1" class="appearance-modal-selection-note">
                         Multiple elements are selected. Current values are rehydrated from the first selected element and can be applied across the full selection.
+                        <div *ngIf="modalInfo.mixedValueLabels.length > 0">
+                            <strong>Mixed across selection:</strong> {{modalInfo.mixedValueLabels.join(' · ')}}.
+                        </div>
                     </div>
 
                     <div class="appearance-modal-grid appearance-modal-grid-hero">
@@ -39,6 +42,41 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="appearance-modal-card">
+                            <div class="appearance-modal-subheading">Current Effect Stack</div>
+                            <div class="appearance-modal-stat-grid">
+                                <div class="appearance-modal-stat-card">
+                                    <span>Blend</span>
+                                    <strong>{{effectSummary.blendMode}}</strong>
+                                </div>
+                                <div class="appearance-modal-stat-card">
+                                    <span>Filter</span>
+                                    <strong>{{effectSummary.filter}}</strong>
+                                </div>
+                                <div class="appearance-modal-stat-card">
+                                    <span>Shadow</span>
+                                    <strong>{{effectSummary.shadow}}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="appearance-modal-panel">
+                    <div class="appearance-modal-section-heading appearance-modal-section-heading-inline">
+                        <h5>Quick Looks</h5>
+                        <p>Apply a curated effect stack, then fine-tune the individual controls below.</p>
+                    </div>
+                    <div class="appearance-modal-look-grid">
+                        <button *ngFor="let preset of appearancePresets" type="button" class="appearance-modal-look-card"
+                            [class.appearance-modal-look-card-active]="isAppearancePresetActive(preset)"
+                            (click)="applyAppearancePreset(preset)">
+                            <strong>{{preset.label}}</strong>
+                            <small>{{preset.description}}</small>
+                            <span>{{preset.summary}}</span>
+                            <em *ngIf="isAppearancePresetActive(preset)" class="appearance-modal-look-badge">Current</em>
+                        </button>
                     </div>
                 </section>
 
@@ -154,6 +192,6 @@
 </form>
 
 <div class="modal-footer">
-    <button type="button" class="btn btn-primary" (click)="commit()" ngbAutofocus>OK</button>
+    <button type="button" class="btn btn-primary" (click)="commit()" autofocus>OK</button>
     <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss('Cancel')">Cancel</button>
 </div>
