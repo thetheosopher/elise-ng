@@ -21,6 +21,11 @@ interface FillPreset {
 })
 export class FillModalComponent implements OnInit {
 
+    readonly linearPreviewId = 'fillModalLinearGradientPreview';
+    readonly radialPreviewId = 'fillModalRadialGradientPreview';
+    readonly bitmapPreviewId = 'fillModalBitmapPatternPreview';
+    readonly modelPreviewId = 'fillModalModelPatternPreview';
+
     readonly defaultGradientStart = '#000000ff';
     readonly defaultGradientEnd = '#ffffffff';
     readonly fillPresets: FillPreset[] = [
@@ -240,6 +245,87 @@ export class FillModalComponent implements OnInit {
                     ? 'Single color'
                     : 'Resource'
         };
+    }
+
+    get previewGradientStops() {
+        return this.normalizeGradientStops(this.modalInfo.gradientStops);
+    }
+
+    get previewFillPaint() {
+        switch (this.modalInfo.fillType) {
+            case 'color':
+                return this.modalInfo.color ?? '#ffffffff';
+            case 'linearGradient':
+                return `url(#${this.linearPreviewId})`;
+            case 'radialGradient':
+                return `url(#${this.radialPreviewId})`;
+            case 'image':
+                return this.previewBitmapSource ? `url(#${this.bitmapPreviewId})` : 'rgba(255, 255, 255, 0.35)';
+            case 'model':
+                return `url(#${this.modelPreviewId})`;
+            default:
+                return 'rgba(255, 255, 255, 0.18)';
+        }
+    }
+
+    get previewBitmapSource() {
+        return this.modalInfo.selectedBitmapResource?.image?.src ?? '';
+    }
+
+    get previewResourceLabel() {
+        if (this.modalInfo.fillType === 'image') {
+            return this.modalInfo.selectedBitmapResource?.key ?? 'No image selected';
+        }
+
+        if (this.modalInfo.fillType === 'model') {
+            return this.modalInfo.selectedModelResource?.key ?? 'Model pattern';
+        }
+
+        return '';
+    }
+
+    get previewShapeOpacity() {
+        if (this.modalInfo.fillType === 'image' || this.modalInfo.fillType === 'model') {
+            return this.normalizeOpacity(this.modalInfo.opacity) / 255;
+        }
+
+        return this.modalInfo.fillType === 'none' ? 0.18 : 1;
+    }
+
+    get showLinearGradientPreview() {
+        return this.modalInfo.fillType === 'linearGradient';
+    }
+
+    get showRadialGradientPreview() {
+        return this.modalInfo.fillType === 'radialGradient';
+    }
+
+    get showBitmapPreview() {
+        return this.modalInfo.fillType === 'image' && !!this.previewBitmapSource;
+    }
+
+    get showModelPreview() {
+        return this.modalInfo.fillType === 'model';
+    }
+
+    get showPreviewLabel() {
+        return this.modalInfo.fillType === 'image' || this.modalInfo.fillType === 'model';
+    }
+
+    get showNoFillPreview() {
+        return this.modalInfo.fillType === 'none';
+    }
+
+    get previewPatternSize() {
+        const baseScale = this.normalizeScale(this.modalInfo.scale);
+        return Math.max(36, Math.min(180, Math.round(baseScale * 0.9)));
+    }
+
+    get previewRadialRadius() {
+        return Math.max(
+            this.normalizeNumber(this.modalInfo.radialGradientRadiusX),
+            this.normalizeNumber(this.modalInfo.radialGradientRadiusY)
+        );
     }
 
     onFillTypeChanged() {
