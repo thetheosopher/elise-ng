@@ -1,9 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
-    imports: [NgbModule],
+    imports: [],
     selector: 'app-delete-folder-modal',
     templateUrl: './delete-folder-modal.component.html'
 })

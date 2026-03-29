@@ -1,0 +1,85 @@
+<div class="modal-header">
+    <h4 class="modal-title">Geometry</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('X')"></button>
+</div>
+
+<form>
+    <div class="modal-body geometry-modal-body">
+        <div class="geometry-modal-layout">
+            <section class="geometry-modal-panel geometry-modal-panel-main">
+                <div class="geometry-modal-section-heading">
+                    <h5>{{ isRectangle ? 'Rectangle Geometry' : 'Fill Rule' }}</h5>
+                    <p *ngIf="modalInfo.elementDescription">Editing {{modalInfo.elementDescription}}.</p>
+                    <p *ngIf="!modalInfo.elementDescription">
+                        {{ isRectangle ? 'Tune each corner radius independently or start from a quick preset.' : 'Choose how overlapping segments determine the filled interior.' }}
+                    </p>
+                </div>
+
+                <div *ngIf="isRectangle" class="geometry-modal-stack">
+                    <div class="geometry-modal-card">
+                        <div class="geometry-modal-subheading">Quick Radii</div>
+                        <div class="geometry-modal-preset-grid">
+                            <button type="button" class="btn btn-outline-secondary btn-sm" (click)="applyUniformCornerRadius(0)">Square</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" (click)="applyUniformCornerRadius(12)">Soft</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" (click)="applyUniformCornerRadius(24)">Rounded</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" (click)="applyUniformCornerRadius(9999)">Capsule</button>
+                        </div>
+                    </div>
+
+                    <div class="geometry-modal-card">
+                        <div class="geometry-modal-subheading">Corner Radii</div>
+                        <div class="geometry-modal-grid geometry-modal-grid-four">
+                            <div>
+                                <label class="geometry-modal-label" for="cornerRadiusTopLeft">Top Left</label>
+                                <input class="form-control geometry-modal-input" id="cornerRadiusTopLeft" name="cornerRadiusTopLeft"
+                                    type="number" min="0" step="1" [(ngModel)]="modalInfo.cornerRadiusTopLeft">
+                            </div>
+                            <div>
+                                <label class="geometry-modal-label" for="cornerRadiusTopRight">Top Right</label>
+                                <input class="form-control geometry-modal-input" id="cornerRadiusTopRight" name="cornerRadiusTopRight"
+                                    type="number" min="0" step="1" [(ngModel)]="modalInfo.cornerRadiusTopRight">
+                            </div>
+                            <div>
+                                <label class="geometry-modal-label" for="cornerRadiusBottomRight">Bottom Right</label>
+                                <input class="form-control geometry-modal-input" id="cornerRadiusBottomRight" name="cornerRadiusBottomRight"
+                                    type="number" min="0" step="1" [(ngModel)]="modalInfo.cornerRadiusBottomRight">
+                            </div>
+                            <div>
+                                <label class="geometry-modal-label" for="cornerRadiusBottomLeft">Bottom Left</label>
+                                <input class="form-control geometry-modal-input" id="cornerRadiusBottomLeft" name="cornerRadiusBottomLeft"
+                                    type="number" min="0" step="1" [(ngModel)]="modalInfo.cornerRadiusBottomLeft">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div *ngIf="supportsWinding" class="geometry-modal-card">
+                    <div class="geometry-modal-subheading">Winding Mode</div>
+                    <div class="geometry-modal-mode-list">
+                        <label *ngFor="let option of windingOptions" class="geometry-modal-option-card">
+                            <input class="form-check-input" type="radio" name="windingMode"
+                                [value]="option.value" [(ngModel)]="modalInfo.windingMode">
+                            <span>
+                                <strong>{{option.label}}</strong>
+                                <small>{{option.description}}</small>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <aside class="geometry-modal-panel geometry-modal-panel-side">
+                <div class="geometry-modal-section-heading geometry-modal-section-heading-inline">
+                    <h5>What Changes</h5>
+                    <p *ngIf="isRectangle">Corner radii reshape the selected rectangle without changing its bounds.</p>
+                    <p *ngIf="supportsWinding">The winding rule affects how fills behave in nested or overlapping contours.</p>
+                </div>
+            </aside>
+        </div>
+    </div>
+</form>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="commit()" ngbAutofocus>OK</button>
+    <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss('Cancel')">Cancel</button>
+</div>

@@ -2,7 +2,6 @@ import { Component, OnInit, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 export type TextContentMode = 'inline' | 'resource' | 'rich';
 export type TextResourceMode = 'existing' | 'embedded' | 'uri';
@@ -25,7 +24,7 @@ export interface TextModalRun {
 }
 
 @Component({
-    imports: [CommonModule, FormsModule, NgbModule],
+    imports: [CommonModule, FormsModule],
     selector: 'app-text-element-modal',
     templateUrl: './text-element-modal.component.html',
     styleUrls: ['./text-element-modal.component.scss']

@@ -10,7 +10,7 @@
         <div class="mb-3">
             <label for="modelname">Model Name</label>
             <input type="text" id="modelname" name="modelname" #modelname="ngModel" class="form-control" required
-                [(ngModel)]="modalInfo.name" ngbAutofocus />
+                [(ngModel)]="modalInfo.name" autofocus />
             <div [hidden]="modelname.valid || modelname.pristine" class="alert alert-danger">
                 Model Name Is Required
             </div>

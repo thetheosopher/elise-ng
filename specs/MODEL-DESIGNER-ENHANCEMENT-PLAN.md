@@ -194,6 +194,12 @@ Completed:
 - Phase 3 transform follow-up with quick presets and matrix decomposition hints.
 - Phase 4 text authoring upgrade with resource binding, rich text runs, and advanced spacing/decoration controls.
 - New-text stamping via `elementCreated()` so resource-backed and rich-text defaults carry into created text elements.
+- Phase 5 geometry modal for rectangle corner radii and polygon/path winding rules.
+- Phase 5 fill modal upgrade from two gradient endpoints to a repeating gradient-stop editor.
+- Phase 5 geometry default stamping so new rectangles, polygons, and paths inherit the current corner-radius or winding defaults.
+- Phase 6 clip-path modal with command editing, units, winding, transform, and selection/model application.
+- Phase 6 clip-path follow-up with presets, validation warnings, inline preview, and command summaries.
+- Bundle-budget recovery by lazy-loading the clip-path and geometry modals out of the initial designer chunk.
 - Full Angular build validation after each implementation slice.
 
 In progress:
@@ -201,8 +207,7 @@ In progress:
 - Phase 2 unified appearance surface final polish.
 - Shared appearance modal presets for common blend and filter combinations.
 - First-selected-element rehydration for multi-selection stroke, fill, appearance, and transform state.
-- Phase 5 geometry and fill refinement.
 
 Next recommended slice:
 
-- Add rectangle geometry and winding controls, or move ahead with clip-path authoring once the current appearance and transform surfaces settle.
+- Focus on any remaining appearance-surface polish, or move into richer transform and geometry presets now that clip-path authoring is in place.

@@ -10,7 +10,7 @@
         <div class="mb-3">
             <label for="containername">Container Name</label>
             <input type="text" id="containername" name="containername" #containername="ngModel"
-                class="form-control" required [(ngModel)]="modalInfo.name" ngbAutofocus />
+                class="form-control" required [(ngModel)]="modalInfo.name" autofocus />
             <div [hidden]="containername.valid || containername.pristine" class="alert alert-danger">
                 Container Name Is Required
             </div>

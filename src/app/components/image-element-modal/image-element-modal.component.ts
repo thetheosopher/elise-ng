@@ -4,10 +4,9 @@ import { BitmapResource } from 'elise-graphics/lib/resource/bitmap-resource';
 import { ContainerUrlProxy } from '../../schematrix/classes/container-url-proxy';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
-    imports: [CommonModule, FormsModule, NgbModule],
+    imports: [CommonModule, FormsModule],
     selector: 'app-image-element-modal',
     templateUrl: './image-element-modal.component.html',
     styleUrls: ['./image-element-modal.component.scss']

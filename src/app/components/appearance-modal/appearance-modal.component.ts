@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColorPickerDirective } from 'ngx-color-picker';
 
 interface BlendModeOption {
@@ -15,7 +15,7 @@ interface FilterPresetOption {
 }
 
 @Component({
-    imports: [CommonModule, FormsModule, NgbModule, ColorPickerDirective],
+    imports: [CommonModule, FormsModule, ColorPickerDirective],
     selector: 'app-appearance-modal',
     templateUrl: './appearance-modal.component.html',
     styleUrls: ['./appearance-modal.component.scss']

@@ -36,36 +36,52 @@
                 <section *ngIf="modalInfo.fillType == 'linearGradient' || modalInfo.fillType == 'radialGradient'" class="fill-modal-panel">
                     <div class="fill-modal-section-heading">
                         <h5>{{modalInfo.fillType == 'linearGradient' ? 'Linear Gradient' : 'Radial Gradient'}}</h5>
-                        <p>Define the endpoint colors, then tune the geometry below.</p>
+                        <p>Build a gradient stop stack, then tune the geometry below.</p>
                     </div>
 
-                    <div class="fill-modal-grid fill-modal-grid-gradient-colors">
-                        <div class="fill-modal-card">
-                            <label class="fill-modal-label">Start Color</label>
-                            <div class="fill-modal-stack">
-                                <app-color-selector [(selectedColor)]="modalInfo.gradientNamedColor1"
-                                    (colorSelected)="onGradient1ColorSelected($event)">
-                                </app-color-selector>
-                                <input class="form-control fill-modal-input"
-                                    [value]="modalInfo.gradientColor1"
-                                    [colorPicker]="modalInfo.gradientColor1"
-                                    [cpAlphaChannel]="'forced'" (colorPickerChange)="gradient1ColorPickerChange($event)"
-                                    [cpOutputFormat]="'hex'">
+                    <div class="fill-modal-card">
+                        <div class="fill-modal-subheading">Gradient Stops</div>
+                        <div class="fill-modal-stop-list">
+                            <div class="fill-modal-stop-row" *ngFor="let stop of modalInfo.gradientStops; let stopIndex = index; trackBy: trackByIndex">
+                                <div class="fill-modal-stop-order">{{stopIndex + 1}}</div>
+                                <div>
+                                    <label class="fill-modal-label" [for]="'gradientStopColor' + stopIndex">Color</label>
+                                    <input class="form-control fill-modal-input"
+                                        [id]="'gradientStopColor' + stopIndex"
+                                        [name]="'gradientStopColor' + stopIndex"
+                                        [value]="stop.color"
+                                        [colorPicker]="stop.color"
+                                        [cpAlphaChannel]="'forced'"
+                                        (colorPickerChange)="gradientStopColorPickerChange(stopIndex, $event)"
+                                        [cpOutputFormat]="'hex'">
+                                </div>
+                                <div>
+                                    <label class="fill-modal-label" [for]="'gradientStopOffset' + stopIndex">Offset</label>
+                                    <div class="input-group">
+                                        <input class="form-control fill-modal-input"
+                                            [id]="'gradientStopOffset' + stopIndex"
+                                            [name]="'gradientStopOffset' + stopIndex"
+                                            type="number" min="0" max="1" step="0.01"
+                                            [(ngModel)]="stop.offset">
+                                        <span class="input-group-text fill-modal-stop-suffix">0-1</span>
+                                    </div>
+                                </div>
+                                <div class="fill-modal-stop-actions">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" (click)="duplicateGradientStop(stopIndex)">Duplicate</button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm"
+                                        [disabled]="modalInfo.gradientStops.length <= 2"
+                                        (click)="removeGradientStop(stopIndex)">Remove</button>
+                                </div>
                             </div>
                         </div>
-
-                        <div class="fill-modal-card">
-                            <label class="fill-modal-label">End Color</label>
-                            <div class="fill-modal-stack">
-                                <app-color-selector [(selectedColor)]="modalInfo.gradientNamedColor2"
-                                    (colorSelected)="onGradient2ColorSelected($event)">
-                                </app-color-selector>
-                                <input class="form-control fill-modal-input"
-                                    [value]="modalInfo.gradientColor2"
-                                    [colorPicker]="modalInfo.gradientColor2"
-                                    [cpAlphaChannel]="'forced'" (colorPickerChange)="gradient2ColorPickerChange($event)"
-                                    [cpOutputFormat]="'hex'">
-                            </div>
+                        <div class="fill-modal-stop-toolbar">
+                            <button type="button" class="btn btn-outline-secondary btn-sm" (click)="addGradientStop()">Add Stop</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm"
+                                [disabled]="modalInfo.gradientStops.length < 2"
+                                (click)="reverseGradientStops()">Reverse</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm"
+                                [disabled]="modalInfo.gradientStops.length < 2"
+                                (click)="evenlyDistributeGradientStops()">Evenly Space</button>
                         </div>
                     </div>
 
@@ -256,7 +272,7 @@
             <aside class="fill-modal-side">
                 <section class="fill-modal-panel fill-modal-panel-hero">
                     <label class="fill-modal-label" for="fillType">Fill Type</label>
-                    <select class="form-select fill-modal-select" id="fillType" name="fillType" [(ngModel)]="modalInfo.fillType">
+                    <select class="form-select fill-modal-select" id="fillType" name="fillType" [(ngModel)]="modalInfo.fillType" (ngModelChange)="onFillTypeChanged()">
                         <option value='none'>None</option>
                         <option value='color'>Color</option>
                         <option value='linearGradient'>Linear Gradient</option>

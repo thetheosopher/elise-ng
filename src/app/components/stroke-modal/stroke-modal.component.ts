@@ -4,11 +4,10 @@ import { Color, NamedColor } from 'elise-graphics';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ColorPickerDirective } from 'ngx-color-picker';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ColorSelectorComponent } from '../color-selector/color-selector.component';
 
 @Component({
-    imports: [CommonModule, FormsModule, ColorPickerDirective, NgbModule, ColorSelectorComponent],
+    imports: [CommonModule, FormsModule, ColorPickerDirective, ColorSelectorComponent],
     selector: 'app-stroke-modal',
     templateUrl: './stroke-modal.component.html',
     styleUrls: ['./stroke-modal.component.scss']

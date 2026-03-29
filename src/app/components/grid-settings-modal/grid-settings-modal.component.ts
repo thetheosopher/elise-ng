@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { GridType } from 'elise-graphics';
 
 interface GridTypeOption {
@@ -10,7 +10,7 @@ interface GridTypeOption {
 }
 
 @Component({
-    imports: [CommonModule, FormsModule, NgbModule],
+    imports: [CommonModule, FormsModule],
     selector: 'app-grid-settings-modal',
     templateUrl: './grid-settings-modal.component.html'
 })

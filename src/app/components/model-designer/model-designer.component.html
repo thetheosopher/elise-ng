@@ -172,9 +172,11 @@
 
                                                 <button ngbDropdownItem class="edit-dropdown-item" (click)="showModelSizeModal()">Model Size...</button>
                                                 <button ngbDropdownItem class="edit-dropdown-item" (click)="showAppearanceModal()">Appearance...</button>
+                                                <button ngbDropdownItem class="edit-dropdown-item" (click)="showClipPathModal()">Clip Path...</button>
                                                 <button ngbDropdownItem class="edit-dropdown-item" (click)="showTransformModal()">Transform...</button>
 
                                                 <button *ngIf="selectedElementCount === 1" ngbDropdownItem class="edit-dropdown-item" (click)="showElementSizeModal()">Element Size...</button>
+                                                <button *ngIf="singleElementType=='rectangle' || singleElementType=='polygon' || singleElementType=='path'" ngbDropdownItem class="edit-dropdown-item" (click)="showGeometryModal()">Geometry...</button>
 
                                                 <!-- Single element property dialogs -->
                                                 <button *ngIf="singleElementType=='text'" ngbDropdownItem class="edit-dropdown-item" (click)="showTextElementModal()">Element Properties...</button>
@@ -245,6 +247,8 @@
                                     ngbTooltip="Set Fill">Fill</button>
                                 <button class='btn btn-sm btn-outline-primary' (click)="showAppearanceModal()"
                                     ngbTooltip="Set Appearance">Appearance</button>
+                                <button class='btn btn-sm btn-outline-primary' (click)="showClipPathModal()"
+                                    ngbTooltip="Set Clip Path">Clip</button>
                                 <button class='btn btn-sm btn-outline-primary' (click)="showTransformModal()"
                                     ngbTooltip="Set Transform">Transform</button>
                             </div>
@@ -286,9 +290,11 @@
 
                                         <button class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showModelSizeModal()">Model Size...</button>
                                         <button class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showAppearanceModal()">Appearance...</button>
+                                        <button class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showClipPathModal()">Clip Path...</button>
                                         <button class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showTransformModal()">Transform...</button>
                                         <button class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showGridSettingsModal()">Grid and Snap Settings...</button>
                                         <button *ngIf="selectedElementCount === 1" class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showElementSizeModal()">Element Size...</button>
+                                        <button *ngIf="singleElementType=='rectangle' || singleElementType=='polygon' || singleElementType=='path'" class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showGeometryModal()">Geometry...</button>
                                         <button *ngIf="singleElementType=='text'" class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showTextElementModal()">Element Properties...</button>
                                         <button *ngIf="singleElementType=='image'" class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showImageElementModal()">Element Properties...</button>
                                         <button *ngIf="singleElementType=='model'" class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showModelElementModal()">Element Properties...</button>

@@ -1,10 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
-    imports: [FormsModule, NgbModule],
+    imports: [FormsModule],
     selector: 'app-points-modal',
     templateUrl: './points-modal.component.html',
     styleUrls: ['./points-modal.component.scss']

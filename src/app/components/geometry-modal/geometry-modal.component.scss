@@ -1,0 +1,163 @@
+.geometry-modal-body {
+    padding: 1rem 1.1rem;
+    background:
+        radial-gradient(circle at top left, rgba(240, 214, 186, 0.42), transparent 30%),
+        linear-gradient(180deg, #fffdf9 0%, #f6efe6 100%);
+}
+
+.geometry-modal-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(240px, 0.75fr);
+    gap: 1rem;
+    align-items: start;
+}
+
+.geometry-modal-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    padding: 1rem;
+    border: 1px solid #ddd0c0;
+    border-radius: 0.9rem;
+    background: rgba(255, 250, 242, 0.92);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+.geometry-modal-panel-side {
+    background: rgba(248, 242, 232, 0.98);
+}
+
+.geometry-modal-section-heading {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.geometry-modal-section-heading h5 {
+    margin: 0;
+    color: #31261c;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.geometry-modal-section-heading p {
+    margin: 0;
+    color: #736452;
+    font-size: 0.85rem;
+    line-height: 1.45;
+}
+
+.geometry-modal-section-heading-inline {
+    gap: 0.25rem;
+}
+
+.geometry-modal-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+
+.geometry-modal-card {
+    padding: 0.9rem;
+    border: 1px solid #e3d7c8;
+    border-radius: 0.8rem;
+    background: rgba(255, 255, 255, 0.84);
+}
+
+.geometry-modal-subheading {
+    margin-bottom: 0.7rem;
+    color: #5d4b39;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.geometry-modal-label {
+    display: inline-block;
+    margin-bottom: 0.35rem;
+    color: #4f402f;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.geometry-modal-input {
+    border-color: #cfbfae;
+    background: #fffdfa;
+}
+
+.geometry-modal-input:focus {
+    border-color: #b79370;
+    box-shadow: 0 0 0 0.2rem rgba(183, 147, 112, 0.15);
+}
+
+.geometry-modal-grid {
+    display: grid;
+    gap: 0.9rem;
+}
+
+.geometry-modal-grid-four {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.geometry-modal-preset-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.65rem;
+}
+
+.geometry-modal-mode-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.geometry-modal-option-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.85rem 0.9rem;
+    border: 1px solid #ddd0c0;
+    border-radius: 0.8rem;
+    background: rgba(255, 251, 245, 0.92);
+    cursor: pointer;
+}
+
+.geometry-modal-option-card .form-check-input {
+    margin-top: 0.2rem;
+}
+
+.geometry-modal-option-card strong {
+    display: block;
+    margin-bottom: 0.15rem;
+    color: #34291f;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.geometry-modal-option-card small {
+    display: block;
+    color: #7b6a58;
+    font-size: 0.8rem;
+    line-height: 1.4;
+}
+
+@media (max-width: 767px) {
+    .geometry-modal-body {
+        padding: 1rem;
+    }
+
+    .geometry-modal-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .geometry-modal-panel {
+        padding: 0.85rem;
+    }
+
+    .geometry-modal-card {
+        padding: 0.8rem;
+    }
+}

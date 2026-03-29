@@ -14,7 +14,7 @@
         <div class="mb-3">
             <label for="foldername">Folder Name</label>
             <input type="text" id="foldername" name="foldername" #foldername="ngModel" class="form-control"
-                required [(ngModel)]="modalInfo.name" ngbAutofocus />
+                required [(ngModel)]="modalInfo.name" autofocus />
             <div [hidden]="foldername.valid || foldername.pristine" class="alert alert-danger">
                 Folder Name Is Required
             </div>

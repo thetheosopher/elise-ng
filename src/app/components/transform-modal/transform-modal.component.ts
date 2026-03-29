@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 type TransformMode = 'none' | 'translate' | 'scale' | 'rotate' | 'skew' | 'matrix' | 'custom';
 
@@ -33,7 +33,7 @@ interface MatrixDecomposition {
 }
 
 @Component({
-    imports: [CommonModule, FormsModule, NgbModule],
+    imports: [CommonModule, FormsModule],
     selector: 'app-transform-modal',
     templateUrl: './transform-modal.component.html',
     styleUrls: ['./transform-modal.component.scss']

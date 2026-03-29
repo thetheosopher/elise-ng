@@ -8,11 +8,10 @@ import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EliseViewComponent } from '../../elise/view/elise-view.component';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-    imports: [CommonModule, FormsModule, EliseViewComponent, NgbModule],
+    imports: [CommonModule, FormsModule, EliseViewComponent],
     selector: 'app-model-element-modal',
     templateUrl: './model-element-modal.component.html',
     styleUrls: ['./model-element-modal.component.scss']

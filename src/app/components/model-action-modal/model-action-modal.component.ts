@@ -4,10 +4,9 @@ import { Model } from 'elise-graphics/lib/core/model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EliseViewComponent } from '../../elise/view/elise-view.component';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
-    imports: [CommonModule, FormsModule, EliseViewComponent, NgbModule],
+    imports: [CommonModule, FormsModule, EliseViewComponent],
     selector: 'app-model-action-modal',
     templateUrl: './model-action-modal.component.html',
     styleUrls: ['./model-action-modal.component.scss']

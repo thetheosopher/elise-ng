@@ -1,0 +1,150 @@
+<div class="modal-header">
+    <h4 class="modal-title">Clip Path</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('X')"></button>
+</div>
+
+<form>
+    <div class="modal-body clip-path-modal-body">
+        <div class="clip-path-modal-layout">
+            <div class="clip-path-modal-main">
+                <section class="clip-path-modal-panel clip-path-modal-panel-hero">
+                    <div class="clip-path-modal-section-heading">
+                        <h5>Clip Geometry</h5>
+                        <p>Trim rendering to a custom path using the same command grammar exposed by the path editor.</p>
+                    </div>
+
+                    <div *ngIf="modalInfo.selectedElementCount > 1" class="clip-path-modal-selection-note">
+                        Multiple elements are selected. The clip-path state is rehydrated from the first selected element and can be applied across the selection.
+                    </div>
+
+                    <label class="clip-path-modal-checkbox-card clip-path-modal-checkbox-card-inline">
+                        <input type="checkbox" [(ngModel)]="modalInfo.clipPathEnabled" (ngModelChange)="onClipPathEnabledChanged()" name="clipPathEnabled" class="form-check-input">
+                        <span>
+                            <strong>Enable Clip Path</strong>
+                            <small>Turn clipping on or off without losing the current commands.</small>
+                        </span>
+                    </label>
+
+                    <div class="clip-path-modal-preset-list">
+                        <button *ngFor="let preset of presets" type="button" class="clip-path-modal-preset-card" (click)="applyPreset(preset)">
+                            <strong>{{preset.label}}</strong>
+                            <small>{{preset.description}}</small>
+                        </button>
+                        <button type="button" class="clip-path-modal-preset-card clip-path-modal-preset-card-clear" (click)="clearClipPath()">
+                            <strong>Clear</strong>
+                            <small>Remove the current clip path.</small>
+                        </button>
+                    </div>
+
+                    <div class="clip-path-modal-grid clip-path-modal-grid-preview">
+                        <div class="clip-path-modal-card clip-path-modal-preview-card">
+                            <div class="clip-path-modal-subheading">Preview</div>
+                            <div class="clip-path-modal-preview-shell" [class.clip-path-modal-preview-shell-disabled]="!modalInfo.clipPathEnabled || !hasPreview">
+                                <svg *ngIf="hasPreview" class="clip-path-modal-preview" [attr.viewBox]="previewViewBox" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+                                    <rect *ngIf="modalInfo.units === 'objectBoundingBox'" x="0" y="0" width="1" height="1" rx="0.06" ry="0.06" class="clip-path-modal-preview-frame"></rect>
+                                    <path [attr.d]="previewPathData" class="clip-path-modal-preview-path"></path>
+                                </svg>
+                                <div *ngIf="!hasPreview" class="clip-path-modal-preview-empty">Enter commands to preview the clip path.</div>
+                            </div>
+                        </div>
+
+                        <div class="clip-path-modal-card">
+                            <div class="clip-path-modal-subheading">Command Summary</div>
+                            <div class="clip-path-modal-stat-grid">
+                                <div class="clip-path-modal-stat-card">
+                                    <span>Commands</span>
+                                    <strong>{{commandCount}}</strong>
+                                </div>
+                                <div class="clip-path-modal-stat-card">
+                                    <span>Units</span>
+                                    <strong>{{modalInfo.units === 'objectBoundingBox' ? 'Bounds' : 'User'}}</strong>
+                                </div>
+                                <div class="clip-path-modal-stat-card">
+                                    <span>Winding</span>
+                                    <strong>{{modalInfo.windingMode === 2 ? 'Even-odd' : 'Non-zero'}}</strong>
+                                </div>
+                            </div>
+                            <p class="clip-path-modal-help">The preview is lightweight and best-effort. User-space clips are framed from the numeric range found in the command list.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="clip-path-modal-panel" [class.clip-path-modal-panel-disabled]="!modalInfo.clipPathEnabled">
+                    <div class="clip-path-modal-grid clip-path-modal-grid-controls">
+                        <div class="clip-path-modal-card">
+                            <label class="clip-path-modal-label" for="clipPathUnits">Units</label>
+                            <select class="form-select clip-path-modal-select" id="clipPathUnits" name="clipPathUnits"
+                                [(ngModel)]="modalInfo.units" (ngModelChange)="onUnitsChanged()" [disabled]="!modalInfo.clipPathEnabled">
+                                <option *ngFor="let option of unitsOptions" [ngValue]="option.value">{{option.label}}</option>
+                            </select>
+                            <p class="clip-path-modal-help">{{ modalInfo.units === 'objectBoundingBox' ? unitsOptions[1].description : unitsOptions[0].description }}</p>
+                        </div>
+
+                        <div class="clip-path-modal-card">
+                            <label class="clip-path-modal-label" for="clipPathWinding">Winding</label>
+                            <select class="form-select clip-path-modal-select" id="clipPathWinding" name="clipPathWinding"
+                                [(ngModel)]="modalInfo.windingMode" [disabled]="!modalInfo.clipPathEnabled">
+                                <option *ngFor="let option of windingOptions" [ngValue]="option.value">{{option.label}}</option>
+                            </select>
+                            <p class="clip-path-modal-help">Use even-odd when overlapping clip contours should carve holes.</p>
+                        </div>
+
+                        <div class="clip-path-modal-card">
+                            <label class="clip-path-modal-label" for="clipPathTransform">Clip Transform</label>
+                            <input class="form-control clip-path-modal-input" id="clipPathTransform" name="clipPathTransform"
+                                [(ngModel)]="modalInfo.transformText" (ngModelChange)="onTransformTextChanged()" [disabled]="!modalInfo.clipPathEnabled"
+                                placeholder="Optional transform(...) string">
+                            <p class="clip-path-modal-help">Applies after units scaling. Leave blank for no extra transform.</p>
+                        </div>
+                    </div>
+
+                    <div class="clip-path-modal-card">
+                        <label class="clip-path-modal-label" for="clipPathCommands">Commands</label>
+                        <textarea class="form-control clip-path-modal-textarea" id="clipPathCommands" name="clipPathCommands"
+                            rows="12" [(ngModel)]="modalInfo.commandText" (ngModelChange)="onCommandTextChanged()" [disabled]="!modalInfo.clipPathEnabled"
+                            placeholder="One command per line, for example:&#10;m0.14,0.1&#10;l0.86,0.1&#10;l0.96,0.5&#10;z"></textarea>
+                        <p class="clip-path-modal-help">Use one command token per line or paste a whitespace-separated command list. Normalized object-bounding-box clips usually stay within 0-1 coordinates.</p>
+                    </div>
+
+                    <div *ngIf="validationMessage" class="alert alert-danger mb-0" role="alert">
+                        {{validationMessage}}
+                    </div>
+
+                    <div *ngIf="validationWarnings.length > 0" class="alert alert-warning mb-0" role="alert">
+                        <div *ngFor="let warning of validationWarnings">{{warning}}</div>
+                    </div>
+                </section>
+            </div>
+
+            <aside class="clip-path-modal-side">
+                <section class="clip-path-modal-panel clip-path-modal-panel-actions">
+                    <div class="clip-path-modal-section-heading clip-path-modal-section-heading-inline">
+                        <h5>Apply</h5>
+                        <p>Update the model clip path, the selected elements, or both.</p>
+                    </div>
+                    <div class="clip-path-modal-apply-grid">
+                        <label class="clip-path-modal-checkbox-card">
+                            <input type="checkbox" [(ngModel)]="modalInfo.applyToModel" name="applyToModel" class="form-check-input">
+                            <span>
+                                <strong>Apply To Model</strong>
+                                <small>Set the clip path on the model container itself.</small>
+                            </span>
+                        </label>
+                        <label *ngIf="modalInfo.selectedElementCount > 0" class="clip-path-modal-checkbox-card">
+                            <input type="checkbox" [(ngModel)]="modalInfo.applyToSelected" name="applyToSelected" class="form-check-input">
+                            <span>
+                                <strong>Apply To Selected Elements</strong>
+                                <small>Update only the elements in the current selection.</small>
+                            </span>
+                        </label>
+                    </div>
+                </section>
+            </aside>
+        </div>
+    </div>
+</form>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="commit()" ngbAutofocus>OK</button>
+    <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss('Cancel')">Cancel</button>
+</div>

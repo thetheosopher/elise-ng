@@ -17,7 +17,7 @@ import { UploadService, UploadStateCode, Upload, UploadState } from '../../servi
 
 // Elise core classes
 import { BitmapResource, Color, GridType, Model, ModelResource, Point, Region, Resource, Size,
-    PolylineElement, PolygonElement, PathElement, TextResource } from 'elise-graphics';
+    GradientFillStop, PolylineElement, PolygonElement, PathElement, RectangleElement, TextResource, WindingMode } from 'elise-graphics';
 import { FillInfo, LinearGradientFill, PointEventParameters, RadialGradientFill, StrokeInfo, UndoState, ViewDragArgs } from 'elise-graphics';
 import { ElementBase, ImageElement, ModelElement, TextElement } from 'elise-graphics';
 import { DesignContextMenuEventArgs, DesignController } from 'elise-graphics';
@@ -74,6 +74,15 @@ type AppearanceState = {
     shadow?: AppearanceShadow;
 };
 
+type ClipPathUnits = 'userSpaceOnUse' | 'objectBoundingBox';
+
+type ClipPathState = {
+    commands: string[];
+    units?: ClipPathUnits;
+    winding?: WindingMode;
+    transform?: string;
+};
+
 type DesignerTextRun = {
     text: string;
     typeface?: string;
@@ -82,6 +91,8 @@ type DesignerTextRun = {
     letterSpacing?: number;
     decoration?: string;
 };
+
+type CornerRadii = [number, number, number, number];
 
 @Component({
     imports: [CommonModule, FormsModule, NgbModule, AngularSplitModule, EliseDesignComponent, ContainerSelectorComponent, ContainerTreeComponent, AlertComponent, UploadListComponent, FileListComponent, DndDirective],
@@ -186,8 +197,10 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     fillTooltip: string;
     fillBitmapSource: string;
     fillModelSource: string;
-    fillgradientColor1 = '#000000ff';
-    fillgradientColor2 = '#ffffffff';
+    fillGradientStops: GradientFillStop[] = [
+        GradientFillStop.create('#000000ff', 0),
+        GradientFillStop.create('#ffffffff', 1)
+    ];
     fillLinearGradientStartX = 0;
     fillLinearGradientStartY = 0;
     fillLinearGradientEndX = 100;
@@ -198,6 +211,8 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     fillRadialGradientFocusY = 50;
     fillRadialGradientRadiusX = 50;
     fillradialGradientRadiusY = 50;
+    geometryCornerRadii: CornerRadii = [0, 0, 0, 0];
+    geometryWindingMode: WindingMode = WindingMode.NonZero;
 
     applyFillToModel = false;
     applyFillToSelected = true;
@@ -235,6 +250,13 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     appearanceShadowOffsetY = 8;
     applyAppearanceToModel = false;
     applyAppearanceToSelected = true;
+    clipPathEnabled = false;
+    clipPathCommandText = '';
+    clipPathUnits: ClipPathUnits = 'userSpaceOnUse';
+    clipPathWindingMode: WindingMode = WindingMode.NonZero;
+    clipPathTransformText = '';
+    applyClipPathToModel = false;
+    applyClipPathToSelected = true;
     transformText = '';
     applyTransformToModel = false;
     applyTransformToSelected = true;
@@ -502,6 +524,48 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         this.setFill(color, null, updateSelectedElements, updateModel);
     }
 
+    private createDefaultGradientStops() {
+        return [
+            GradientFillStop.create('#000000ff', 0),
+            GradientFillStop.create('#ffffffff', 1)
+        ];
+    }
+
+    private normalizeGradientStops(stops?: Array<{ color?: string; offset?: number }>) {
+        const normalizedStops = (stops ?? [])
+            .map((stop) => ({
+                color: stop?.color?.trim() || '#000000ff',
+                offset: this.normalizeGradientOffset(stop?.offset)
+            }))
+            .sort((left, right) => left.offset - right.offset);
+
+        if (normalizedStops.length === 0) {
+            return this.createDefaultGradientStops();
+        }
+
+        if (normalizedStops.length === 1) {
+            return [
+                GradientFillStop.create(normalizedStops[0].color, 0),
+                GradientFillStop.create(normalizedStops[0].color, 1)
+            ];
+        }
+
+        return normalizedStops.map((stop) => GradientFillStop.create(stop.color, stop.offset));
+    }
+
+    private normalizeGradientOffset(offset?: number) {
+        const normalizedOffset = Number(offset);
+        if (!Number.isFinite(normalizedOffset)) {
+            return 0;
+        }
+
+        return Math.max(0, Math.min(1, normalizedOffset));
+    }
+
+    private setGradientStopState(stops?: Array<{ color?: string; offset?: number }>) {
+        this.fillGradientStops = this.normalizeGradientStops(stops);
+    }
+
     setImageFill(fillInfo: FillModalInfo) {
         this.fillType = 'image';
         this.fillBitmapSource = fillInfo.selectedBitmapResource.key;
@@ -540,14 +604,13 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         this.fillScale = 1;
         this.fillOffsetX = 0;
         this.fillOffsetY = 0;
+        const gradientStops = this.normalizeGradientStops(fillInfo.gradientStops);
         const fill = new LinearGradientFill(
             `${fillInfo.linearGradientStartX},${fillInfo.linearGradientStartY}`,
             `${fillInfo.linearGradientEndX},${fillInfo.linearGradientEndY}`);
-        fill.addFillStop(fillInfo.gradientColor1, 0);
-        fill.addFillStop(fillInfo.gradientColor2, 1);
-        this.setFill(fill, fillInfo.scale, fillInfo.applyToSelected, fillInfo.applyToModel);
-        this.fillgradientColor1 = fillInfo.gradientColor1;
-        this.fillgradientColor2 = fillInfo.gradientColor2;
+        gradientStops.forEach((stop) => fill.addFillStop(stop.color, stop.offset));
+        this.setFill(fill, null, fillInfo.applyToSelected, fillInfo.applyToModel);
+        this.setGradientStopState(gradientStops);
         this.fillLinearGradientStartX = fillInfo.linearGradientStartX;
         this.fillLinearGradientStartY = fillInfo.linearGradientStartY;
         this.fillLinearGradientEndX = fillInfo.linearGradientEndX;
@@ -560,15 +623,14 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         this.fillScale = 1;
         this.fillOffsetX = 0;
         this.fillOffsetY = 0;
+        const gradientStops = this.normalizeGradientStops(fillInfo.gradientStops);
         const fill = new RadialGradientFill(
             `${fillInfo.radialGradientCenterX},${fillInfo.radialGradientCenterY}`,
             `${fillInfo.radialGradientFocusX},${fillInfo.radialGradientFocusY}`,
             fillInfo.radialGradientRadiusX, fillInfo.radialGradientRadiusY);
-        fill.addFillStop(fillInfo.gradientColor1, 0);
-        fill.addFillStop(fillInfo.gradientColor2, 1);
-        this.setFill(fill, fillInfo.scale, fillInfo.applyToSelected, fillInfo.applyToModel);
-        this.fillgradientColor1 = fillInfo.gradientColor1;
-        this.fillgradientColor2 = fillInfo.gradientColor2;
+        gradientStops.forEach((stop) => fill.addFillStop(stop.color, stop.offset));
+        this.setFill(fill, null, fillInfo.applyToSelected, fillInfo.applyToModel);
+        this.setGradientStopState(gradientStops);
         this.fillRadialGradientCenterX = fillInfo.radialGradientCenterX;
         this.fillRadialGradientCenterY = fillInfo.radialGradientCenterY;
         this.fillRadialGradientFocusX = fillInfo.radialGradientFocusX;
@@ -2045,6 +2107,116 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         return Math.max(0, Math.min(1, normalized));
     }
 
+    async showClipPathModal() {
+        const clipPathModalModule = await import('../clip-path-modal/clip-path-modal.component');
+        const modalInfo = new clipPathModalModule.ClipPathModalInfo();
+        modalInfo.clipPathEnabled = this.clipPathEnabled;
+        modalInfo.commandText = this.clipPathCommandText;
+        modalInfo.units = this.clipPathUnits;
+        modalInfo.windingMode = this.clipPathWindingMode;
+        modalInfo.transformText = this.clipPathTransformText;
+        modalInfo.applyToModel = this.applyClipPathToModel;
+        modalInfo.applyToSelected = this.applyClipPathToSelected;
+        modalInfo.selectedElementCount = this.selectedElementCount;
+
+        const modal = this.modalService.open(clipPathModalModule.ClipPathModalComponent, {
+            ariaLabelledBy: 'modal-basic-title',
+            scrollable: true,
+            size: 'xl',
+            windowClass: 'clip-path-modal-window'
+        });
+        modal.componentInstance.modalInfo = modalInfo;
+        modal.result.then((result: InstanceType<typeof clipPathModalModule.ClipPathModalInfo>) => {
+            this.applyClipPathToSelected = result.applyToSelected;
+            this.applyClipPathToModel = result.applyToModel;
+            this.setClipPathState(result.clipPathEnabled ? {
+                commands: this.parseClipPathCommandText(result.commandText),
+                units: result.units,
+                winding: result.windingMode,
+                transform: result.transformText
+            } : undefined, result.applyToSelected, result.applyToModel);
+        }, () => {
+        });
+    }
+
+    private setClipPathState(clipPath: ClipPathState | undefined, updateSelectedElements: boolean, updateModel: boolean) {
+        this.setClipPathUiState(clipPath);
+
+        if (updateSelectedElements && this.controller?.selectedElementCount() > 0) {
+            this.controller.selectedElements.forEach((selectedElement) => {
+                this.applyClipPathToElement(selectedElement, clipPath);
+            });
+        }
+
+        if (updateModel) {
+            this.applyClipPathToElement(this.model, clipPath);
+        }
+
+        if (updateSelectedElements || updateModel) {
+            this.controller.draw();
+        }
+    }
+
+    private setClipPathUiState(clipPath?: ClipPathState) {
+        this.clipPathEnabled = !!clipPath && clipPath.commands.length > 0;
+        this.clipPathCommandText = clipPath?.commands?.join('\n') ?? '';
+        this.clipPathUnits = clipPath?.units === 'objectBoundingBox' ? 'objectBoundingBox' : 'userSpaceOnUse';
+        this.clipPathWindingMode = clipPath?.winding === WindingMode.EvenOdd ? WindingMode.EvenOdd : WindingMode.NonZero;
+        this.clipPathTransformText = this.normalizeTransformText(clipPath?.transform);
+    }
+
+    private getClipPathStateFromElement(element: ElementBase): ClipPathState | undefined {
+        if (!element.clipPath || !element.clipPath.commands || element.clipPath.commands.length === 0) {
+            return undefined;
+        }
+
+        return {
+            commands: element.clipPath.commands.slice(),
+            units: element.clipPath.units === 'objectBoundingBox' ? 'objectBoundingBox' : 'userSpaceOnUse',
+            winding: element.clipPath.winding === WindingMode.EvenOdd ? WindingMode.EvenOdd : WindingMode.NonZero,
+            transform: this.normalizeTransformText(element.clipPath.transform)
+        };
+    }
+
+    private applyClipPathToElement(element: ElementBase, clipPath: ClipPathState | undefined = this.getCurrentClipPathState()) {
+        if (!clipPath || clipPath.commands.length === 0) {
+            element.setClipPath(undefined);
+            return;
+        }
+
+        element.setClipPath({
+            commands: clipPath.commands.slice(),
+            units: clipPath.units,
+            winding: clipPath.winding,
+            transform: clipPath.transform
+        });
+    }
+
+    private getCurrentClipPathState(): ClipPathState | undefined {
+        if (!this.clipPathEnabled) {
+            return undefined;
+        }
+
+        const commands = this.parseClipPathCommandText(this.clipPathCommandText);
+        if (commands.length === 0) {
+            return undefined;
+        }
+
+        return {
+            commands,
+            units: this.clipPathUnits,
+            winding: this.clipPathWindingMode,
+            transform: this.normalizeTransformText(this.clipPathTransformText) || undefined
+        };
+    }
+
+    private parseClipPathCommandText(commandText?: string) {
+        return (commandText ?? '')
+            .split(/\s+/)
+            .map((command) => command.trim())
+            .filter((command) => command.length > 0);
+    }
+
     showTransformModal() {
         const modalInfo = new TransformModalInfo();
         modalInfo.transformText = this.transformText;
@@ -2150,20 +2322,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             const namedColor = Color.NamedColors.find((c) => (c.color as Color).equalsHue(color));
             modalInfo.namedColor = namedColor;
         }
-
-        modalInfo.gradientColor1 = this.fillgradientColor1;
-        color = Color.parse(this.fillgradientColor1);
-        if(color.isNamedColor()) {
-            const namedColor = Color.NamedColors.find((c) => (c.color as Color).equalsHue(color));
-            modalInfo.gradientNamedColor1 = namedColor;
-        }
-
-        modalInfo.gradientColor2 = this.fillgradientColor2;
-        color = Color.parse(this.fillgradientColor2);
-        if(color.isNamedColor()) {
-            const namedColor = Color.NamedColors.find((c) => (c.color as Color).equalsHue(color));
-            modalInfo.gradientNamedColor2 = namedColor;
-        }
+        modalInfo.gradientStops = this.fillGradientStops.map((stop) => ({ color: stop.color, offset: stop.offset }));
 
         modalInfo.opacity = this.fillOpacity * 255;
         modalInfo.fillType = this.fillType;
@@ -2205,7 +2364,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
         // Load model resources
         const modelResources: ModelResource[] = [];
-        let selectedModelResource: BitmapResource;
+        let selectedModelResource: ModelResource;
         this.model.resources.forEach((r) => {
             if (r.type === 'model') {
                 modelResources.push(r);
@@ -2230,7 +2389,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             this.applyFillToSelected = result.applyToSelected;
             this.applyFillToModel = result.applyToModel;
             if (result.fillType === 'color') {
-                this.setColorFill(result.color, modalInfo.applyToSelected, modalInfo.applyToModel);
+                this.setColorFill(result.color, result.applyToSelected, result.applyToModel);
             }
             else if (result.fillType === 'image') {
                 this.setImageFill(result);
@@ -2245,7 +2404,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                 this.setRadialGradientFill(result);
             }
             else {
-                this.setNoFill(modalInfo.applyToSelected, modalInfo.applyToModel);
+                this.setNoFill(result.applyToSelected, result.applyToModel);
             }
         }, (reason) => {
         });
@@ -2582,6 +2741,10 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         if (this.selectedElementCount === 1) {
             switch (selectedElement.type) {
 
+                case 'rectangle':
+                    this.onRectangleElementSelected(selectedElement as RectangleElement);
+                    break;
+
                 case 'image':
                     this.onImageElementSelected(selectedElement as ImageElement);
                     break;
@@ -2619,6 +2782,9 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         if (!selectedElement) {
             this.setNoStroke(false, false);
             this.setNoFill(false, false);
+            this.setClipPathUiState(undefined);
+            this.applyClipPathToSelected = this.selectedElementCount > 0;
+            this.applyClipPathToModel = this.selectedElementCount === 0;
             this.applyAppearanceToSelected = this.selectedElementCount > 0;
             this.applyAppearanceToModel = this.selectedElementCount === 0;
             return;
@@ -2682,17 +2848,20 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             }
             else if(fillInfo.type === 'linear') {
                 this.fillType = 'linearGradient';
+                this.activeFill = selectedElement.fill as LinearGradientFill;
+                this.fillScale = 1;
                 const start = Point.parse(fillInfo.start);
                 this.fillLinearGradientStartX = start.x;
                 this.fillLinearGradientStartY = start.y;
                 const end = Point.parse(fillInfo.end);
                 this.fillLinearGradientEndX = end.x;
                 this.fillLinearGradientEndY = end.y;
-                this.fillgradientColor1 = fillInfo.fillStops[0].color;
-                this.fillgradientColor2 = fillInfo.fillStops[1].color;
+                this.setGradientStopState(fillInfo.fillStops);
             }
             else if(fillInfo.type === 'radial') {
                 this.fillType = 'radialGradient';
+                this.activeFill = selectedElement.fill as RadialGradientFill;
+                this.fillScale = 1;
                 const center = Point.parse(fillInfo.center);
                 this.fillRadialGradientCenterX = center.x;
                 this.fillRadialGradientCenterY = center.y;
@@ -2701,13 +2870,14 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                 this.fillRadialGradientFocusY = focus.y;
                 this.fillRadialGradientRadiusX = fillInfo.radiusX;
                 this.fillradialGradientRadiusY = fillInfo.radiusY;
-                this.fillgradientColor1 = fillInfo.fillStops[0].color;
-                this.fillgradientColor2 = fillInfo.fillStops[1].color;
+                this.setGradientStopState(fillInfo.fillStops);
             }
             else if (fillInfo.type === 'none') {
                 // this.setNoFill(false, false);
             }
         }
+
+        this.setClipPathUiState(this.getClipPathStateFromElement(selectedElement));
 
         if (this.selectedElementCount === 1) {
             this.setAppearanceUiState(this.getAppearanceStateFromElement(selectedElement));
@@ -2722,6 +2892,8 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             this.setSelectedIndexes();
             this.applyFillToSelected = true;
             this.applyFillToModel = false;
+            this.applyClipPathToSelected = true;
+            this.applyClipPathToModel = false;
             this.applyStrokeToSelected = true;
             this.applyStrokeToModel = false;
             this.applyAppearanceToSelected = true;
@@ -2732,6 +2904,8 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         else {
             this.applyFillToSelected = false;
             this.applyFillToModel = true;
+            this.applyClipPathToSelected = false;
+            this.applyClipPathToModel = true;
             this.applyStrokeToSelected = false;
             this.applyStrokeToModel = true;
             this.applyAppearanceToSelected = false;
@@ -2941,8 +3115,14 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         this.singleElementType = polylineElement.type;
     }
 
+    onRectangleElementSelected(rectangleElement: RectangleElement) {
+        this.singleElementType = rectangleElement.type;
+        this.geometryCornerRadii = rectangleElement.getCornerRadii();
+    }
+
     onPolygonElementSelected(polygonElement: PolygonElement) {
         this.singleElementType = polygonElement.type;
+        this.geometryWindingMode = polygonElement.winding ?? WindingMode.NonZero;
     }
 
     showPointsContainerModal() {
@@ -2964,6 +3144,101 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
     onPathElementSelected(pathElement: PathElement) {
         this.singleElementType = pathElement.type;
+        this.geometryWindingMode = pathElement.winding ?? WindingMode.NonZero;
+    }
+
+    private applyGeometryDefaultsToElement(element: ElementBase) {
+        if (element instanceof RectangleElement) {
+            element.setCornerRadii(
+                this.geometryCornerRadii[0],
+                this.geometryCornerRadii[1],
+                this.geometryCornerRadii[2],
+                this.geometryCornerRadii[3]
+            );
+            return;
+        }
+
+        if (element instanceof PolygonElement || element instanceof PathElement) {
+            element.setWinding(this.geometryWindingMode);
+        }
+    }
+
+    async showGeometryModal() {
+        if (this.selectedElementCount !== 1 || !this.controller?.selectedElements?.length) {
+            return;
+        }
+
+        const geometryModalModule = await import('../geometry-modal/geometry-modal.component');
+        const selectedElement = this.controller.selectedElements[0] as ElementBase;
+        const modalInfo = new geometryModalModule.GeometryModalInfo();
+        modalInfo.elementDescription = selectedElement.describe?.() ?? selectedElement.type;
+
+        switch (selectedElement.type) {
+            case 'rectangle': {
+                const rectangleElement = selectedElement as RectangleElement;
+                const cornerRadii = rectangleElement.getCornerRadii();
+                modalInfo.geometryType = 'rectangle';
+                modalInfo.cornerRadiusTopLeft = cornerRadii[0];
+                modalInfo.cornerRadiusTopRight = cornerRadii[1];
+                modalInfo.cornerRadiusBottomRight = cornerRadii[2];
+                modalInfo.cornerRadiusBottomLeft = cornerRadii[3];
+                break;
+            }
+
+            case 'polygon':
+                modalInfo.geometryType = 'polygon';
+                modalInfo.windingMode = (selectedElement as PolygonElement).winding ?? WindingMode.NonZero;
+                break;
+
+            case 'path':
+                modalInfo.geometryType = 'path';
+                modalInfo.windingMode = (selectedElement as PathElement).winding ?? WindingMode.NonZero;
+                break;
+
+            default:
+                return;
+        }
+
+        const modal = this.modalService.open(geometryModalModule.GeometryModalComponent, {
+            ariaLabelledBy: 'modal-basic-title',
+            scrollable: true,
+            size: 'lg',
+            windowClass: 'geometry-modal-window'
+        });
+        modal.componentInstance.modalInfo = modalInfo;
+        modal.result.then((result: InstanceType<typeof geometryModalModule.GeometryModalInfo>) => {
+            switch (result.geometryType) {
+                case 'rectangle': {
+                    const rectangleElement = selectedElement as RectangleElement;
+                    rectangleElement.setCornerRadii(
+                        result.cornerRadiusTopLeft,
+                        result.cornerRadiusTopRight,
+                        result.cornerRadiusBottomRight,
+                        result.cornerRadiusBottomLeft
+                    );
+                    this.geometryCornerRadii = [
+                        result.cornerRadiusTopLeft,
+                        result.cornerRadiusTopRight,
+                        result.cornerRadiusBottomRight,
+                        result.cornerRadiusBottomLeft
+                    ];
+                    break;
+                }
+
+                case 'polygon':
+                    (selectedElement as PolygonElement).setWinding(result.windingMode);
+                    this.geometryWindingMode = result.windingMode;
+                    break;
+
+                case 'path':
+                    (selectedElement as PathElement).setWinding(result.windingMode);
+                    this.geometryWindingMode = result.windingMode;
+                    break;
+            }
+
+            this.controller.draw();
+        }, () => {
+        });
     }
 
     showPathElementModal() {
@@ -3006,6 +3281,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                 if (selectedElement.canStroke()) {
                     this.applyStrokeStyleToElement(selectedElement);
                 }
+                this.applyGeometryDefaultsToElement(selectedElement);
                 this.applyAppearanceToElement(selectedElement);
                 this.applyTransformToElement(selectedElement);
                 if (selectedElement instanceof TextElement) {
@@ -3016,6 +3292,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         }
         else if (this.controller?.selectedElements?.length) {
             this.controller.selectedElements.forEach((selectedElement) => {
+                this.applyGeometryDefaultsToElement(selectedElement);
                 this.applyAppearanceToElement(selectedElement);
                 this.applyTransformToElement(selectedElement);
                 if (selectedElement instanceof TextElement) {
