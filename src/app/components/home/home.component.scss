@@ -1,59 +1,61 @@
 @use '../../../styles/variables' as *;
 
+// ── Page shell ──
 .landing-page {
     padding: 2rem;
     background:
-        radial-gradient(circle at top right, rgba($elise-warning, 0.18), transparent 28%),
-        radial-gradient(circle at top left, rgba($elise-primary, 0.18), transparent 32%),
+        radial-gradient(circle at top right, rgba($elise-warning, 0.12), transparent 30%),
+        radial-gradient(circle at top left, rgba($elise-primary, 0.14), transparent 34%),
+        radial-gradient(circle at 60% 80%, rgba($elise-accent, 0.08), transparent 40%),
         linear-gradient(180deg, #f7fbff 0%, #eef5ff 45%, #ffffff 100%);
 }
 
+// ── Hero ──
 .landing-hero {
     display: grid;
-    grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.9fr);
+    grid-template-columns: 1.2fr 1fr;
     gap: 1.5rem;
     align-items: stretch;
-    margin-bottom: 1.75rem;
-}
-
-.hero-copy,
-.hero-panel {
-    border-radius: $radius-lg;
-    box-shadow: $shadow-lg;
+    margin-bottom: 0;
 }
 
 .hero-copy {
-    padding: 2.25rem;
+    padding: 2.5rem;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-lg;
     color: white;
     background:
-        linear-gradient(135deg, rgba(15, 23, 42, 0.94), rgba(30, 64, 175, 0.88)),
-        linear-gradient(45deg, rgba($elise-warning, 0.18), transparent 55%);
+        linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(30, 64, 175, 0.9)),
+        linear-gradient(45deg, rgba($elise-accent, 0.2), transparent 55%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 
     h1 {
-        margin: 0 0 0.875rem;
+        margin: 0 0 1rem;
         font-family: $font-display;
-        font-size: clamp(2.2rem, 4vw, 4rem);
-        line-height: 1.05;
-        max-width: 12ch;
+        font-size: clamp(2.2rem, 3.8vw, 3.6rem);
+        line-height: 1.08;
+        max-width: 16ch;
     }
+}
 
-    p {
-        max-width: 60ch;
-        margin-bottom: 1.25rem;
-        color: rgba(255, 255, 255, 0.86);
-        font-size: 1.02rem;
-    }
+.hero-lead {
+    max-width: 56ch;
+    margin-bottom: 1.5rem;
+    color: rgba(255, 255, 255, 0.86);
+    font-size: 1.05rem;
+    line-height: 1.55;
 }
 
 .hero-kicker {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.875rem;
+    margin-bottom: 1rem;
     text-transform: uppercase;
     letter-spacing: 0.14em;
     font-size: 0.72rem;
-    color: rgba(255, 255, 255, 0.72);
+    color: rgba(255, 255, 255, 0.6);
 }
 
 .hero-actions {
@@ -62,49 +64,353 @@
     flex-wrap: wrap;
 }
 
-.hero-panel {
-    padding: 1.25rem;
-    background: rgba(255, 255, 255, 0.82);
-    backdrop-filter: blur(14px);
-    border: 1px solid rgba(255, 255, 255, 0.8);
+.hero-visual {
+    border-radius: $radius-lg;
+    overflow: hidden;
+    box-shadow: $shadow-lg;
+    background: $elise-gray-900;
+    position: relative;
+    min-height: 320px;
+
+    app-sample-preview {
+        display: block;
+        height: 100%;
+
+        ::ng-deep .sample-preview-shell {
+            height: 100%;
+            border-bottom: none;
+            background: transparent;
+        }
+    }
 }
 
-.hero-stat-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.85rem;
+.hero-visual-caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0.5rem 0.75rem;
+    background: rgba(15, 23, 42, 0.72);
+    backdrop-filter: blur(6px);
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
 }
 
-.hero-stat {
+// ── Proof bar ──
+.proof-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    padding: 1.25rem 1.5rem;
+    margin: 1.5rem 0;
+    border-radius: $radius-lg;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba($elise-gray-200, 0.8);
+    box-shadow: $shadow-md;
+    flex-wrap: wrap;
+}
+
+.proof-item {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
-    padding: 1rem;
-    border-radius: $radius-md;
+    align-items: center;
+    gap: 0.15rem;
+    min-width: 80px;
+}
+
+.proof-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: $elise-gray-900;
+    line-height: 1.1;
+}
+
+.proof-label {
+    color: $elise-gray-500;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.proof-divider {
+    width: 1px;
+    height: 32px;
+    background: $elise-gray-200;
+}
+
+// ── Live showcase strip ──
+.showcase-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.showcase-card {
+    border-radius: $radius-lg;
+    overflow: hidden;
     background: white;
+    border: 1px solid $elise-gray-200;
+    box-shadow: $shadow-md;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 16px 32px rgba(15, 23, 42, 0.14);
+        border-color: rgba($elise-primary, 0.5);
+        color: inherit;
+        text-decoration: none;
+    }
+}
+
+.showcase-preview {
+    height: 160px;
+    background: $elise-gray-900;
+    overflow: hidden;
+
+    app-sample-preview {
+        display: block;
+        height: 100%;
+
+        ::ng-deep .sample-preview-shell {
+            height: 100%;
+            border-bottom: none;
+            background: transparent;
+        }
+    }
+}
+
+.showcase-info {
+    padding: 0.85rem 1rem;
+
+    h4 {
+        margin: 0 0 0.35rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+    }
+
+    p {
+        margin: 0;
+        font-size: 0.82rem;
+        color: $elise-gray-500;
+        line-height: 1.4;
+    }
+}
+
+// ── Differentiators ──
+.diff-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.diff-card {
+    padding: 1.25rem;
+    border-radius: $radius-lg;
+    background: linear-gradient(180deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.85));
+    border: 1px solid rgba(148, 163, 184, 0.15);
+
+    h3 {
+        margin: 0 0 0.4rem;
+        font-size: 1rem;
+        color: white;
+    }
+
+    p {
+        margin: 0;
+        font-size: 0.86rem;
+        color: rgba(255, 255, 255, 0.7);
+        line-height: 1.45;
+    }
+}
+
+.diff-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: $radius-md;
+    background: rgba($elise-primary, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.75rem;
+    color: $elise-primary;
+    font-size: 0.95rem;
+}
+
+// ── Feature families ──
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.feature-tile {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    padding: 1rem 1.1rem;
+    border-radius: $radius-md;
+    background: rgba(255, 255, 255, 0.75);
+    border: 1px solid $elise-gray-200;
+    transition: border-color 0.15s ease;
+
+    &:hover {
+        border-color: rgba($elise-primary, 0.35);
+    }
+
+    h4 {
+        margin: 0 0 0.2rem;
+        font-size: 0.92rem;
+        font-weight: 600;
+        color: $elise-gray-900;
+    }
+
+    p {
+        margin: 0;
+        font-size: 0.82rem;
+        color: $elise-gray-500;
+        line-height: 1.4;
+    }
+}
+
+.feature-tile-icon {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: $radius-sm;
+    background: rgba($elise-primary, 0.1);
+    color: $elise-primary;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    margin-top: 0.1rem;
+}
+
+// ── Spotlight row ──
+.spotlight-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.spotlight-card {
+    padding: 1.75rem;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-lg;
+
+    h3 {
+        margin: 0.75rem 0 0.5rem;
+        font-size: 1.3rem;
+        color: white;
+    }
+
+    p {
+        color: rgba(255, 255, 255, 0.78);
+        font-size: 0.92rem;
+        line-height: 1.5;
+        margin-bottom: 1rem;
+    }
+}
+
+.spotlight-design {
+    background:
+        linear-gradient(135deg, rgba(30, 64, 175, 0.95), rgba(99, 102, 241, 0.9)),
+        radial-gradient(circle at bottom right, rgba($elise-accent, 0.3), transparent 60%);
+}
+
+.spotlight-surface {
+    background:
+        linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.94)),
+        radial-gradient(circle at top left, rgba($elise-warning, 0.2), transparent 50%);
+}
+
+.spotlight-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.spotlight-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.25rem;
+
+    li {
+        padding: 0.3rem 0;
+        color: rgba(255, 255, 255, 0.75);
+        font-size: 0.84rem;
+        line-height: 1.4;
+    }
+}
+
+// ── Code section ──
+.landing-section-code {
+    padding: 1.75rem;
+    border-radius: $radius-lg;
+    background: $elise-gray-50;
     border: 1px solid $elise-gray-200;
 }
 
-.hero-stat-value {
-    font-size: 1.65rem;
-    font-weight: 700;
-    color: $elise-gray-900;
-}
-
-.hero-stat-label {
-    color: $elise-gray-500;
-    font-size: 0.9rem;
-}
-
-.hero-note {
-    margin-top: 0.9rem;
-    padding: 0.9rem 1rem;
+.code-block-wrapper {
     border-radius: $radius-md;
-    background: rgba($elise-warning, 0.14);
-    color: $elise-gray-800;
-    font-size: 0.92rem;
+    overflow: hidden;
+    box-shadow: $shadow-lg;
 }
 
+.code-block-header {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.65rem 0.9rem;
+    background: $elise-gray-800;
+}
+
+.code-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.code-dot-red { background: #ef4444; }
+.code-dot-yellow { background: #f59e0b; }
+.code-dot-green { background: #22c55e; }
+
+.code-block-title {
+    margin-left: 0.5rem;
+    color: $elise-gray-500;
+    font-size: 0.78rem;
+    font-family: $font-mono;
+}
+
+.code-block-body {
+    margin: 0;
+    padding: 1.25rem;
+    background: $elise-gray-900;
+    color: #e2e8f0;
+    font-family: $font-mono;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    overflow-x: auto;
+
+    code {
+        font-family: inherit;
+        color: inherit;
+    }
+}
+
+// ── Shared section scaffolding ──
 .landing-section {
     margin-bottom: 1.75rem;
 }
@@ -135,6 +441,7 @@
     }
 }
 
+// ── Shared card grid ──
 .landing-grid {
     display: grid;
     gap: 1rem;
@@ -196,6 +503,52 @@
     align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
+}
+
+.landing-card-eyebrow {
+    display: inline-block;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.68rem;
+    color: $elise-gray-500;
+    font-weight: 600;
+
+    .landing-card-dark & {
+        color: rgba(255, 255, 255, 0.5);
+    }
+}
+
+.landing-card-icon {
+    margin-bottom: 0.5rem;
+    font-size: 1.65rem;
+    color: $elise-primary;
+
+    .landing-card-dark & {
+        color: rgba($elise-primary, 0.8);
+    }
+}
+
+.landing-card-link {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: $elise-primary;
+
+    .landing-card-dark & {
+        color: rgba(255, 255, 255, 0.8);
+    }
+}
+
+.landing-pill {
+    display: inline-block;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    background: rgba($elise-warning, 0.2);
+    color: $elise-warning;
+    font-size: 0.68rem;
+    font-weight: 500;
 }
 
 .landing-card-eyebrow {

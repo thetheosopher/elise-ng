@@ -1,52 +1,197 @@
 <div class="landing-page">
+
+    <!-- ===== HERO ===== -->
     <section class="landing-hero">
         <div class="hero-copy">
-            <div class="hero-kicker">Elise Graphics Demo Studio</div>
-            <h1>Explore samples, validate rendering, and build new models from a single front door.</h1>
-            <p>
-                Elise bundles gallery-style examples, rendering harnesses, and authenticated authoring tools.
-                The landing page gives first-time visitors a clear map of what to try next.
+            <div class="hero-kicker">
+                <span class="fas fa-gem me-2"></span>Elise Graphics Library
+            </div>
+            <h1>Design it. Render it. Animate it. Ship it.</h1>
+            <p class="hero-lead">
+                A retained-mode 2D graphics engine for the web with a built-in design surface,
+                dual canvas &amp; SVG renderers, animation-ready primitives, and a Surface framework
+                for building kiosks, signage, and interactive presentations.
             </p>
             <div class="hero-actions">
-                <a class="btn btn-primary" routerLink="/primitives">
+                <a class="btn btn-primary btn-lg" routerLink="/primitives">
                     <span class="fas fa-sparkles me-2"></span>Browse Samples
                 </a>
-                <a class="btn btn-outline-light" routerLink="/tests/view">
-                    <span class="fas fa-flask me-2"></span>Open Test Harnesses
+                <a class="btn btn-outline-light btn-lg" routerLink="/animations">
+                    <span class="fas fa-play me-2"></span>Watch Animations
                 </a>
             </div>
         </div>
-
-        <div class="hero-panel">
-            <div class="hero-stat-grid">
-                <div class="hero-stat">
-                    <span class="hero-stat-value">{{ sampleCounts.primitives ?? '...' }}</span>
-                    <span class="hero-stat-label">Primitive studies</span>
-                </div>
-                <div class="hero-stat">
-                    <span class="hero-stat-value">{{ sampleCounts.animations ?? '...' }}</span>
-                    <span class="hero-stat-label">Animated scenes</span>
-                </div>
-                <div class="hero-stat">
-                    <span class="hero-stat-value">{{ sampleCounts.sketches ?? '...' }}</span>
-                    <span class="hero-stat-label">Sketch experiments</span>
-                </div>
-                <div class="hero-stat">
-                    <span class="hero-stat-value">3</span>
-                    <span class="hero-stat-label">Authoring tools</span>
-                </div>
-            </div>
-            <div class="hero-note">
-                <span class="fas fa-circle-info me-2"></span>
-                Tooling routes are available after sign-in. Sample galleries and test harnesses remain a fast public entry point.
+        <div class="hero-visual">
+            <app-sample-preview
+                type="animations"
+                id="aurora-borealis"
+                previewMode="animated"
+                [timerEnabled]="true"
+                [scale]="0.72"
+                backgroundStyle="white">
+            </app-sample-preview>
+            <div class="hero-visual-caption">
+                <span class="fas fa-circle-play me-1"></span>
+                Live — Aurora Borealis
             </div>
         </div>
     </section>
 
+    <!-- ===== PROOF BAR ===== -->
+    <section class="proof-bar">
+        <div class="proof-item">
+            <span class="proof-value">{{ sampleCounts.primitives ?? '...' }}</span>
+            <span class="proof-label">Primitive Studies</span>
+        </div>
+        <div class="proof-divider"></div>
+        <div class="proof-item">
+            <span class="proof-value">{{ sampleCounts.animations ?? '...' }}</span>
+            <span class="proof-label">Animated Scenes</span>
+        </div>
+        <div class="proof-divider"></div>
+        <div class="proof-item">
+            <span class="proof-value">{{ sampleCounts.sketches ?? '...' }}</span>
+            <span class="proof-label">Sketch Experiments</span>
+        </div>
+        <div class="proof-divider"></div>
+        <div class="proof-item">
+            <span class="proof-value">31</span>
+            <span class="proof-label">Easing Curves</span>
+        </div>
+        <div class="proof-divider"></div>
+        <div class="proof-item">
+            <span class="proof-value">14</span>
+            <span class="proof-label">Drawing Tools</span>
+        </div>
+        <div class="proof-divider"></div>
+        <div class="proof-item">
+            <span class="proof-value">20+</span>
+            <span class="proof-label">Sprite Transitions</span>
+        </div>
+    </section>
+
+    <!-- ===== LIVE SHOWCASE STRIP ===== -->
+    <section class="landing-section">
+        <div class="landing-section-header">
+            <h2>See it running</h2>
+            <p>Live canvas-rendered demos — each built entirely with the Elise API, running inside retained scene models with timer-driven animation.</p>
+        </div>
+        <div class="showcase-grid">
+            <a *ngFor="let item of showcaseItems; trackBy: trackByShowcase"
+               class="showcase-card"
+               [routerLink]="item.route">
+                <div class="showcase-preview">
+                    <app-sample-preview
+                        [type]="item.type"
+                        [id]="item.id"
+                        [previewMode]="item.animated ? 'animated' : 'static'"
+                        [timerEnabled]="item.animated"
+                        [scale]="0.36"
+                        backgroundStyle="white">
+                    </app-sample-preview>
+                </div>
+                <div class="showcase-info">
+                    <h4>{{ item.title }}</h4>
+                    <p>{{ item.description }}</p>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <!-- ===== DIFFERENTIATORS ===== -->
+    <section class="landing-section landing-section-accent">
+        <div class="landing-section-header">
+            <h2>What makes Elise different</h2>
+            <p>Most canvas libraries are immediate-mode drawing helpers. Elise is a retained scene system with authoring tools, interop, and application infrastructure.</p>
+        </div>
+        <div class="diff-grid">
+            <div *ngFor="let d of differentiators; trackBy: trackByTitle" class="diff-card">
+                <div class="diff-icon"><span class="fas" [ngClass]="d.icon"></span></div>
+                <h3>{{ d.title }}</h3>
+                <p>{{ d.description }}</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FEATURE FAMILIES ===== -->
+    <section class="landing-section">
+        <div class="landing-section-header">
+            <h2>Ten feature families, one library</h2>
+            <p>From low-level vector primitives to a complete surface application framework, Elise covers the full lifecycle of interactive 2D content.</p>
+        </div>
+        <div class="feature-grid">
+            <div *ngFor="let f of featureFamilies; trackBy: trackByTitle" class="feature-tile">
+                <span class="fas feature-tile-icon" [ngClass]="f.icon"></span>
+                <div>
+                    <h4>{{ f.title }}</h4>
+                    <p>{{ f.description }}</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== DESIGN + SURFACE SPOTLIGHT ===== -->
+    <section class="landing-section">
+        <div class="spotlight-row">
+            <div class="spotlight-card spotlight-design">
+                <div class="spotlight-badge"><span class="fas fa-compass-drafting me-2"></span>Design Surface</div>
+                <h3>Author graphics in the browser</h3>
+                <p>
+                    DesignController transforms any model into a full editing surface. Selection, rubber-band, drag/resize/rotate,
+                    grid snapping, smart alignment guides, clipboard, undo/redo, inline rich-text editing, and 14 creation tools — all built in.
+                </p>
+                <ul class="spotlight-list">
+                    <li><span class="fas fa-check me-2"></span>Rectangle, ellipse, line, polygon, polyline, pen, arc, arrow, ring, wedge, text, image, model, and regular polygon tools</li>
+                    <li><span class="fas fa-check me-2"></span>Point editing for path, polyline, polygon, and arc elements</li>
+                    <li><span class="fas fa-check me-2"></span>Undo/redo, z-order, copy/cut/paste, and aspect-locked sizing</li>
+                    <li><span class="fas fa-check me-2"></span>Inline caret-based rich-text editing with full keyboard navigation</li>
+                </ul>
+                <a class="btn btn-sm btn-outline-light" routerLink="/tests/design">
+                    <span class="fas fa-layer-group me-2"></span>Try Design Harnesses
+                </a>
+            </div>
+            <div class="spotlight-card spotlight-surface">
+                <div class="spotlight-badge"><span class="fas fa-desktop me-2"></span>Surface Framework</div>
+                <h3>Build full applications</h3>
+                <p>
+                    Surface provides a layered application container for kiosks, signage, marketing displays, and interactive
+                    presentations — combining canvas-rendered content with HTML, image, video, and animated layers.
+                </p>
+                <ul class="spotlight-list">
+                    <li><span class="fas fa-check me-2"></span>Multi-pane navigation with 20+ built-in transitions</li>
+                    <li><span class="fas fa-check me-2"></span>Image, HTML, video, and animation layers</li>
+                    <li><span class="fas fa-check me-2"></span>Buttons, radio strips, text layers, and hidden hit zones</li>
+                    <li><span class="fas fa-check me-2"></span>Ideal for marketing kiosks with simple declarative navigation</li>
+                </ul>
+                <a class="btn btn-sm btn-outline-light" routerLink="/tests/surface">
+                    <span class="fas fa-border-all me-2"></span>Try Surface Harnesses
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== CODE EXAMPLE ===== -->
+    <section class="landing-section landing-section-code">
+        <div class="landing-section-header">
+            <h2>Write less, render more</h2>
+            <p>Create models, style elements, animate properties, and render — all through a fluent, composable API.</p>
+        </div>
+        <div class="code-block-wrapper">
+            <div class="code-block-header">
+                <span class="code-dot code-dot-red"></span>
+                <span class="code-dot code-dot-yellow"></span>
+                <span class="code-dot code-dot-green"></span>
+                <span class="code-block-title">scene.js</span>
+            </div>
+            <pre class="code-block-body"><code>{{ codeSample }}</code></pre>
+        </div>
+    </section>
+
+    <!-- ===== GALLERIES ===== -->
     <section class="landing-section">
         <div class="landing-section-header">
             <h2>Start with the galleries</h2>
-            <p>Three curated collections cover the core drawing model, motion-heavy demos, and more open-ended visual experiments.</p>
+            <p>Three curated collections cover the core drawing model, motion-heavy demos, and open-ended visual experiments.</p>
         </div>
         <div class="landing-grid landing-grid-three">
             <a *ngFor="let item of sampleLinks; trackBy: trackByRoute" class="landing-card" [routerLink]="item.route">
@@ -59,10 +204,11 @@
         </div>
     </section>
 
+    <!-- ===== TOOLCHAIN ===== -->
     <section class="landing-section landing-section-accent">
         <div class="landing-section-header">
             <h2>Build with the toolchain</h2>
-            <p>When you need to edit models, inspect storage, or script scenes directly, these routes are the operational workspace.</p>
+            <p>Edit models, inspect storage, and script scenes directly — these routes are the operational workspace.</p>
         </div>
         <div class="landing-grid landing-grid-three">
             <a *ngFor="let item of toolLinks; trackBy: trackByRoute" class="landing-card landing-card-dark" [routerLink]="item.route">
@@ -78,10 +224,11 @@
         </div>
     </section>
 
+    <!-- ===== EXPLORE ===== -->
     <section class="landing-section">
         <div class="landing-section-header">
             <h2>Investigate rendering behavior</h2>
-            <p>Use the harness routes to validate view, design, and surface behavior without jumping straight into the editor tools.</p>
+            <p>Validate view, design, and surface behavior without jumping straight into the editor tools.</p>
         </div>
         <div class="landing-grid landing-grid-three">
             <a *ngFor="let item of exploreLinks; trackBy: trackByRoute" class="landing-card landing-card-minimal" [routerLink]="item.route">
@@ -92,4 +239,5 @@
             </a>
         </div>
     </section>
+
 </div>

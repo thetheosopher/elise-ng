@@ -5,6 +5,7 @@ import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ModelService } from '../../services/model.service';
+import { SamplePreviewComponent } from '../sample-preview/sample-preview.component';
 
 interface LandingLink {
     title: string;
@@ -15,8 +16,29 @@ interface LandingLink {
     requiresAuth?: boolean;
 }
 
+interface ShowcaseItem {
+    type: string;
+    id: string;
+    title: string;
+    description: string;
+    route: string;
+    animated: boolean;
+}
+
+interface FeatureFamily {
+    icon: string;
+    title: string;
+    description: string;
+}
+
+interface DifferentiatorItem {
+    icon: string;
+    title: string;
+    description: string;
+}
+
 @Component({
-    imports: [CommonModule, RouterModule],
+    imports: [CommonModule, RouterModule, SamplePreviewComponent],
     selector: 'app-home',
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.scss']
@@ -30,25 +52,155 @@ export class HomeComponent implements OnInit {
         sketches: null as number | null
     };
 
+    /** Featured live demos in the showcase strip */
+    readonly showcaseItems: ShowcaseItem[] = [
+        {
+            type: 'animations',
+            id: 'aurora-borealis',
+            title: 'Aurora Borealis',
+            description: 'Undulating ribbon polylines over a starfield — runtime animation with timer callbacks.',
+            route: '/animations/aurora-borealis',
+            animated: true
+        },
+        {
+            type: 'animations',
+            id: 'solar-system',
+            title: 'Solar System Orrery',
+            description: 'Orbiting planets and a glowing sun — retained transforms, compositing, and timer-driven motion.',
+            route: '/animations/solar-system',
+            animated: true
+        },
+        {
+            type: 'animations',
+            id: 'spirograph',
+            title: 'Spirograph',
+            description: 'Progressive drawing with glowing pens — polyline paths, gradients, and easing curves.',
+            route: '/animations/spirograph',
+            animated: true
+        },
+        {
+            type: 'sketches',
+            id: 'flower',
+            title: 'Flower Sketch',
+            description: 'Progressive reveal of 12,000+ polygon strokes via the Sketcher engine.',
+            route: '/sketches/flower',
+            animated: true
+        },
+        {
+            type: 'animations',
+            id: 'lorenz-attractor',
+            title: 'Lorenz Attractor',
+            description: 'Chaotic system rendered as glowing evolving trails — real-time math visualization.',
+            route: '/animations/lorenz-attractor',
+            animated: true
+        },
+        {
+            type: 'animations',
+            id: 'dna-helix',
+            title: 'DNA Helix',
+            description: 'Rotating 3D double helix — color-coded base pairs with perspective transforms.',
+            route: '/animations/dna-helix',
+            animated: true
+        }
+    ];
+
+    /** Ten major feature families from the library */
+    readonly featureFamilies: FeatureFamily[] = [
+        {
+            icon: 'fa-diagram-project',
+            title: 'Retained Scene Graph',
+            description: 'Mutate elements and redraw — no immediate-mode command streams.'
+        },
+        {
+            icon: 'fa-shapes',
+            title: 'Rich Primitives',
+            description: 'Rectangles, ellipses, arcs, arrows, rings, wedges, paths, polygons, text, images, sprites, and nested models.'
+        },
+        {
+            icon: 'fa-palette',
+            title: 'Advanced Styling',
+            description: 'Gradients, image fills, model fills, shadows, blend modes, filters, clip paths, and dash patterns.'
+        },
+        {
+            icon: 'fa-database',
+            title: 'Resource System',
+            description: 'Shared bitmaps, models, and locale-aware text resources with async loading.'
+        },
+        {
+            icon: 'fa-display',
+            title: 'Dual Runtime Renderers',
+            description: 'Canvas and SVG rendering from the same retained model — choose the right target per use case.'
+        },
+        {
+            icon: 'fa-compass-drafting',
+            title: 'Design Surface',
+            description: 'Selection, drag/resize/rotate, grid snapping, smart alignment, clipboard, undo/redo, and inline rich-text editing.'
+        },
+        {
+            icon: 'fa-film',
+            title: 'Animation Engine',
+            description: 'Property tweens with 31 easing curves, sprite frame timelines, and pane transitions.'
+        },
+        {
+            icon: 'fa-file-code',
+            title: 'SVG Interop',
+            description: 'Import SVG into the model graph and export models back to standards-compliant SVG markup.'
+        },
+        {
+            icon: 'fa-layer-group',
+            title: 'Surface Framework',
+            description: 'Multi-pane application shell with canvas, HTML, image, video layers, buttons, and animated transitions.'
+        },
+        {
+            icon: 'fa-puzzle-piece',
+            title: 'Components & Commands',
+            description: 'Reusable higher-order components and declarative command routing on interactive elements.'
+        }
+    ];
+
+    /** Key differentiators for the comparison section */
+    readonly differentiators: DifferentiatorItem[] = [
+        {
+            icon: 'fa-pen-nib',
+            title: 'Built-in Design Surface',
+            description: 'Not just a renderer — Elise includes a full browser-based authoring surface with tools, selection, undo/redo, and inline rich-text editing.'
+        },
+        {
+            icon: 'fa-code-branch',
+            title: 'One Model, Multiple Outputs',
+            description: 'Render to canvas for performance, SVG for DOM inspection, or export to markup — all from the same retained model.'
+        },
+        {
+            icon: 'fa-cubes',
+            title: 'Nested Composition',
+            description: 'Embed models inside models. Reusable ModelResources act as symbols for scalable scene composition.'
+        },
+        {
+            icon: 'fa-computer',
+            title: 'Application-Ready Surfaces',
+            description: 'Build kiosks, signage, and interactive presentations with the Surface framework — panes, transitions, video layers, and navigation built in.'
+        }
+    ];
+
     readonly sampleLinks: LandingLink[] = [
         {
             title: 'Primitives',
             route: '/primitives',
-            description: 'Explore the core shapes, paths, text, and drawing fundamentals that anchor the Elise rendering model.',
+            description: 'Core shapes, paths, text, and drawing fundamentals that anchor the rendering model.',
             icon: 'fa-draw-polygon',
             eyebrow: 'Foundation'
         },
         {
             title: 'Animations',
             route: '/animations',
-            description: 'Move through kinetic demos ranging from geometric systems to physics-inspired scenes and visual effects.',
+            description: 'Kinetic demos from geometric systems to physics-inspired scenes and visual effects.',
             icon: 'fa-wand-magic-sparkles',
             eyebrow: 'Motion'
         },
         {
             title: 'Sketches',
             route: '/sketches',
-            description: 'Browse looser experiments and compositional studies that show how the library behaves in expressive use.',
+            description: 'Progressive-reveal compositions that show the Sketcher engine in expressive use.',
             icon: 'fa-pen-ruler',
             eyebrow: 'Exploration'
         }
@@ -74,7 +226,7 @@ export class HomeComponent implements OnInit {
         {
             title: 'Container Explorer',
             route: '/tests/container-explorer',
-            description: 'Manage remote files and folders, upload assets, and inspect the storage structure behind editing workflows.',
+            description: 'Manage remote files and folders, upload assets, and inspect storage behind editing workflows.',
             icon: 'fa-folder-tree',
             eyebrow: 'Storage',
             requiresAuth: true
@@ -99,11 +251,31 @@ export class HomeComponent implements OnInit {
         {
             title: 'Surface Tests',
             route: '/tests/surface',
-            description: 'Review surface rendering and composition scenarios when you need low-level visual confirmation.',
+            description: 'Review surface rendering and composition scenarios for low-level visual confirmation.',
             icon: 'fa-border-all',
             eyebrow: 'Rendering'
         }
     ];
+
+    /** Code sample displayed in the code showcase section */
+    readonly codeSample = `// Create a model and add styled elements
+var model = elise.model(640, 360).setFill('#0f172a');
+
+var card = elise.rectangle(32, 32, 280, 160)
+    .setFill('#1e293b')
+    .setStroke('#38bdf8,2')
+    .setCornerRadii(16, 16, 8, 8)
+    .setShadow({ color: 'rgba(56,189,248,0.2)', blur: 24, offsetX: 0, offsetY: 8 })
+    .setInteractive(true);
+model.add(card);
+
+// Animate on interaction
+card.animate({ opacity: 0.85, fill: '#334155' }, {
+    duration: 400, easing: 'easeOutCubic'
+});
+
+// Render to canvas or SVG — same model, dual output
+var view = elise.view(document.getElementById('host'), model);`;
 
     constructor(private modelService: ModelService) {}
 
@@ -123,5 +295,13 @@ export class HomeComponent implements OnInit {
 
     trackByRoute(_index: number, item: LandingLink): string {
         return item.route;
+    }
+
+    trackByShowcase(_index: number, item: ShowcaseItem): string {
+        return item.id;
+    }
+
+    trackByTitle(_index: number, item: FeatureFamily | DifferentiatorItem): string {
+        return item.title;
     }
 }
