@@ -3,7 +3,7 @@
 
 // Canvas background classes (previously duplicated across 12+ components)
 .grid {
-    background-image: url(/assets/images/grid.png);
+    background-image: url('../assets/images/grid.png');
 }
 
 .black {
@@ -156,7 +156,7 @@ as-split.editor-split {
     border: 1px solid $elise-gray-200;
     border-radius: 2px;
     overflow: hidden;
-    background-image: url(/assets/images/grid.png);
+    background-image: url('../assets/images/grid.png');
     background-size: 8px 8px;
 }
 
