@@ -23,6 +23,7 @@ interface ShowcaseItem {
     description: string;
     route: string;
     animated: boolean;
+    previewScale?: number;
 }
 
 interface FeatureFamily {
@@ -52,6 +53,8 @@ export class HomeComponent implements OnInit {
         sketches: null as number | null
     };
 
+    heroAnimation!: ShowcaseItem;
+
     /** Featured live demos in the showcase strip */
     readonly showcaseItems: ShowcaseItem[] = [
         {
@@ -60,15 +63,17 @@ export class HomeComponent implements OnInit {
             title: 'Aurora Borealis',
             description: 'Undulating ribbon polylines over a starfield — runtime animation with timer callbacks.',
             route: '/animations/aurora-borealis',
-            animated: true
+            animated: true,
+            previewScale: 0.38
         },
         {
             type: 'animations',
-            id: 'solar-system',
-            title: 'Solar System Orrery',
-            description: 'Orbiting planets and a glowing sun — retained transforms, compositing, and timer-driven motion.',
-            route: '/animations/solar-system',
-            animated: true
+            id: 'metaballs',
+            title: 'Metaballs',
+            description: 'Bouncing metaball blobs that merge and separate with color blending.',
+            route: '/animations/metaballs',
+            animated: true,
+            previewScale: 0.44
         },
         {
             type: 'animations',
@@ -76,7 +81,8 @@ export class HomeComponent implements OnInit {
             title: 'Spirograph',
             description: 'Progressive drawing with glowing pens — polyline paths, gradients, and easing curves.',
             route: '/animations/spirograph',
-            animated: true
+            animated: true,
+            previewScale: 0.4
         },
         {
             type: 'sketches',
@@ -84,7 +90,8 @@ export class HomeComponent implements OnInit {
             title: 'Flower Sketch',
             description: 'Progressive reveal of 12,000+ polygon strokes via the Sketcher engine.',
             route: '/sketches/flower',
-            animated: true
+            animated: true,
+            previewScale: 0.38
         },
         {
             type: 'animations',
@@ -92,7 +99,8 @@ export class HomeComponent implements OnInit {
             title: 'Lorenz Attractor',
             description: 'Chaotic system rendered as glowing evolving trails — real-time math visualization.',
             route: '/animations/lorenz-attractor',
-            animated: true
+            animated: true,
+            previewScale: 0.42
         },
         {
             type: 'animations',
@@ -100,14 +108,15 @@ export class HomeComponent implements OnInit {
             title: 'DNA Helix',
             description: 'Rotating 3D double helix — color-coded base pairs with perspective transforms.',
             route: '/animations/dna-helix',
-            animated: true
+            animated: true,
+            previewScale: 0.39
         }
     ];
 
     /** Ten major feature families from the library */
     readonly featureFamilies: FeatureFamily[] = [
         {
-            icon: 'fa-diagram-project',
+            icon: 'fa-project-diagram',
             title: 'Retained Scene Graph',
             description: 'Mutate elements and redraw — no immediate-mode command streams.'
         },
@@ -127,12 +136,12 @@ export class HomeComponent implements OnInit {
             description: 'Shared bitmaps, models, and locale-aware text resources with async loading.'
         },
         {
-            icon: 'fa-display',
+            icon: 'fa-desktop',
             title: 'Dual Runtime Renderers',
             description: 'Canvas and SVG rendering from the same retained model — choose the right target per use case.'
         },
         {
-            icon: 'fa-compass-drafting',
+            icon: 'fa-drafting-compass',
             title: 'Design Surface',
             description: 'Selection, drag/resize/rotate, grid snapping, smart alignment, clipboard, undo/redo, and inline rich-text editing.'
         },
@@ -176,7 +185,7 @@ export class HomeComponent implements OnInit {
             description: 'Embed models inside models. Reusable ModelResources act as symbols for scalable scene composition.'
         },
         {
-            icon: 'fa-computer',
+            icon: 'fa-layer-group',
             title: 'Application-Ready Surfaces',
             description: 'Build kiosks, signage, and interactive presentations with the Surface framework — panes, transitions, video layers, and navigation built in.'
         }
@@ -194,14 +203,14 @@ export class HomeComponent implements OnInit {
             title: 'Animations',
             route: '/animations',
             description: 'Kinetic demos from geometric systems to physics-inspired scenes and visual effects.',
-            icon: 'fa-wand-magic-sparkles',
+            icon: 'fa-film',
             eyebrow: 'Motion'
         },
         {
             title: 'Sketches',
             route: '/sketches',
             description: 'Progressive-reveal compositions that show the Sketcher engine in expressive use.',
-            icon: 'fa-pen-ruler',
+            icon: 'fa-pencil-ruler',
             eyebrow: 'Exploration'
         }
     ];
@@ -211,7 +220,7 @@ export class HomeComponent implements OnInit {
             title: 'Model Designer',
             route: '/tests/model-designer',
             description: 'Compose models visually with layered editing, transforms, file workflows, and element controls.',
-            icon: 'fa-compass-drafting',
+            icon: 'fa-drafting-compass',
             eyebrow: 'Authoring',
             requiresAuth: true
         },
@@ -227,7 +236,7 @@ export class HomeComponent implements OnInit {
             title: 'Container Explorer',
             route: '/tests/container-explorer',
             description: 'Manage remote files and folders, upload assets, and inspect storage behind editing workflows.',
-            icon: 'fa-folder-tree',
+            icon: 'fa-folder-open',
             eyebrow: 'Storage',
             requiresAuth: true
         }
@@ -277,7 +286,9 @@ card.animate({ opacity: 0.85, fill: '#334155' }, {
 // Render to canvas or SVG — same model, dual output
 var view = elise.view(document.getElementById('host'), model);`;
 
-    constructor(private modelService: ModelService) {}
+    constructor(private modelService: ModelService) {
+        this.heroAnimation = this.pickRandomAnimation();
+    }
 
     ngOnInit() {
         forkJoin({
@@ -303,5 +314,11 @@ var view = elise.view(document.getElementById('host'), model);`;
 
     trackByTitle(_index: number, item: FeatureFamily | DifferentiatorItem): string {
         return item.title;
+    }
+
+    private pickRandomAnimation(): ShowcaseItem {
+        const animationItems = this.showcaseItems.filter(item => item.type === 'animations');
+        const randomIndex = Math.floor(Math.random() * animationItems.length);
+        return animationItems[randomIndex];
     }
 }

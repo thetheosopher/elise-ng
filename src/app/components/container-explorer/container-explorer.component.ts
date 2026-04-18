@@ -16,6 +16,7 @@ import { AlertComponent } from '../alert/alert.component';
 import { UploadListComponent } from '../upload-list/upload-list.component';
 import { FileListComponent } from '../file-list/file-list.component';
 import { DndDirective } from '../../directives/dnd.directive';
+import { ContainerLocationService } from '../../services/container-location.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { take } from 'rxjs';
 
@@ -37,18 +38,27 @@ export class ContainerExplorerComponent implements OnInit, AfterViewInit {
 
     @Output() public selectedFolderPath?: string;
 
+    selectedContainer: ContainerDTO = { Name: 'Select Container' };
     selectedContainerID: string | null;
     folderFiles?: ManifestFileDTO[];
     uploads: Upload[] = [];
+    private restoringFolderPath: string | null = null;
 
     constructor(
         private apiService: ApiService,
         private uploadService: UploadService,
         private http: HttpClient,
-        private toasterService: ToastrService) {
+        private toasterService: ToastrService,
+        private containerLocationService: ContainerLocationService) {
     }
 
     ngOnInit() {
+        const location = this.containerLocationService.getLocation();
+        if (location.container) {
+            this.selectedContainer = location.container;
+            this.selectedContainerID = location.container.ContainerID;
+            this.restoringFolderPath = location.folderPath;
+        }
     }
 
     ngAfterViewInit() {
@@ -64,23 +74,39 @@ export class ContainerExplorerComponent implements OnInit, AfterViewInit {
 
     onContainerSelected(container: ContainerDTO | null) {
         if (container) {
+            const restoredFolderPath = this.containerLocationService.getFolderPathForContainer(container.ContainerID);
             // console.log('Host container selected: ' + container.Name);
+            this.selectedContainer = {
+                ContainerID: container.ContainerID,
+                Name: container.Name
+            };
             this.selectedContainerID = container.ContainerID;
             this.selectedFolderPath = null;
+            this.restoringFolderPath = restoredFolderPath;
             this.containerTree.containerID = container.ContainerID;
-            this.containerTree.refresh();
+            this.containerLocationService.saveLocation(this.selectedContainer, restoredFolderPath);
+            this.containerTree.refresh(restoredFolderPath ?? '/');
         }
         else {
             // console.log('Host container cleared');
+            this.selectedContainer = { Name: 'Select Container' };
             this.selectedContainerID = null;
             this.selectedFolderPath = null;
+            this.restoringFolderPath = null;
             this.containerTree.containerID = null;
+            this.containerLocationService.clear();
             this.containerTree.refresh();
         }
     }
 
     onFolderPathSelected(folderPath: string | null) {
+        if (folderPath === null && this.restoringFolderPath !== null) {
+            return;
+        }
+
         this.selectedFolderPath = folderPath;
+        this.restoringFolderPath = null;
+        this.containerLocationService.saveLocation(this.selectedContainerID ? this.selectedContainer : null, folderPath);
         this.listFolderFiles();
         this.refreshUploads();
     }

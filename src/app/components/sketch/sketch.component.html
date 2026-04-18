@@ -16,9 +16,18 @@
             <option [ngValue]="2">200%</option>
             <option [ngValue]="3">300%</option>
         </select>
+        <button class="btn btn-sm btn-outline-primary" [disabled]="!model" (click)="launchFullscreenSketch()"
+            title="Fullscreen Sketch">
+            <span class="fas fa-expand me-1"></span>Fullscreen
+        </button>
     </div>
     <div class="border" style="display: inline-block;" [ngClass]="background">
         <app-elise-view #elise [model]="model" [scale]="scale"></app-elise-view>
     </div>
     <app-code-block [code]="modelCode" language="typescript" label="TypeScript"></app-code-block>
 </div>
+
+<app-fullscreen-sketcher *ngIf="showFullscreenSketcher"
+    [modelCode]="modelCode"
+    (closed)="onFullscreenSketcherClosed()">
+</app-fullscreen-sketcher>

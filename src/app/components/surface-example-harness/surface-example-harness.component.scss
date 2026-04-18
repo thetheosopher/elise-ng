@@ -1,0 +1,20 @@
+.view-host {
+    margin-top: 8px;
+    margin-bottom: 8px;
+    display: inline-block;
+    overflow: hidden;
+}
+
+.status-bar {
+    margin-top: 4px;
+    font-size: 0.85rem;
+
+    label {
+        font-weight: 600;
+        margin-right: 6px;
+    }
+
+    .status-message {
+        color: rgba(255, 255, 255, 0.6);
+    }
+}

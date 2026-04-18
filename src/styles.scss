@@ -8,6 +8,58 @@
 @import url(./assets/fonts/stylesheet.css);
 @import '@ali-hm/angular-tree-component/css/angular-tree-component.css';
 
+/* Documentation table styles */
+.docs-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 0.9rem;
+
+    th, td {
+        padding: 10px 14px;
+        border: 1px solid var(--app-border, #dee2e6);
+        text-align: left;
+        vertical-align: top;
+    }
+
+    th {
+        background: var(--app-surface-muted, #f8f9fa);
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    tr:hover td {
+        background: var(--app-surface-muted, #f8f9fa);
+    }
+
+    code {
+        font-size: 0.85em;
+        padding: 2px 5px;
+        background: var(--app-surface-muted, #f1f3f5);
+        border-radius: 3px;
+    }
+}
+
+body.dark-theme .docs-table {
+    th {
+        background: var(--app-surface-strong, #16233b);
+    }
+
+    tr:hover td {
+        background: var(--app-surface-strong, #16233b);
+    }
+
+    code {
+        background: var(--app-surface-strong, #16233b);
+    }
+}
+
+.lead {
+    font-size: 1.15rem;
+    color: var(--app-text-muted);
+    line-height: 1.6;
+}
+
 :root {
     color-scheme: light;
     --app-bg: #{$elise-gray-50};

@@ -1,0 +1,30 @@
+<div class="docs-layout">
+    <aside class="docs-sidebar">
+        <div class="docs-sidebar-header">
+            <span class="fas fa-book me-2"></span>Documentation
+        </div>
+        <nav class="docs-nav">
+            <div *ngFor="let category of categories" class="docs-nav-category">
+                <button class="docs-nav-category-header"
+                        (click)="toggleCategory(category.id)"
+                        [class.expanded]="isCategoryExpanded(category.id)">
+                    <span class="fas me-2" [ngClass]="category.icon"></span>
+                    <span class="docs-nav-category-title">{{ category.title }}</span>
+                    <span class="fas docs-nav-chevron"
+                          [ngClass]="isCategoryExpanded(category.id) ? 'fa-chevron-down' : 'fa-chevron-right'"></span>
+                </button>
+                <div class="docs-nav-pages" *ngIf="isCategoryExpanded(category.id)">
+                    <a *ngFor="let page of category.pages"
+                       class="docs-nav-link"
+                       [routerLink]="page.route"
+                       routerLinkActive="active">
+                        {{ page.title }}
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </aside>
+    <main class="docs-content">
+        <router-outlet></router-outlet>
+    </main>
+</div>

@@ -114,6 +114,12 @@
         "displayModelJson": true
     },
     {
+        "name": "Text Path",
+        "id": "text-path",
+        "description": "Demonstrates text rendered along curved SVG paths.",
+        "displayModelJson": true
+    },
+    {
         "name": "Drop Shadow",
         "id": "drop-shadow",
         "description": "Demonstrates element shadow rendering across multiple primitive types.",

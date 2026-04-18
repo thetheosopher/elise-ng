@@ -8,7 +8,7 @@
 
         <!-- Container selector -->
         <div class='toolbar-group'>
-            <app-container-selector (containerSelected)='onContainerSelected($event)'
+            <app-container-selector [selectedContainer]="selectedContainer" (containerSelected)='onContainerSelected($event)'
                 (containerDeleted)='onContainerDeleted($event)'>
             </app-container-selector>
 
@@ -45,10 +45,15 @@
                     class='fas fa-file-upload fa-lg'></span>
             </button>
 
-            <button class='btn btn-light btn-sm' [disabled]='model == null'
-                (click)="svgImportInput.click()" aria-label="Import Local SVG">
-                <span placement="bottom" ngbTooltip="Import Local SVG"
+            <button class='btn btn-light btn-sm'
+                (click)="openVectorImportPicker(svgImportInput)" aria-label="Import Local SVG Or WMF">
+                <span placement="bottom" ngbTooltip="Import Local SVG Or WMF"
                     class='fas fa-file-import fa-lg'></span>
+            </button>
+            <button class='btn btn-light btn-sm'
+                (click)="openTraceImagePicker(traceImageInput)" aria-label="Trace Local Image">
+                <span placement="bottom" ngbTooltip="Trace Local Image"
+                    class='fas fa-image fa-lg'></span>
             </button>
             <div ngbDropdown class="d-inline-block">
                 <button class='btn btn-light btn-sm' [disabled]='!canExportModel()'
@@ -67,8 +72,10 @@
                         (click)="exportCurrentModelAsWebp()">Export as WebP</button>
                 </div>
             </div>
-            <input #svgImportInput type="file" accept=".svg,image/svg+xml" style="display: none"
-                (change)="importLocalSvg(svgImportInput.files, svgImportInput)">
+            <input #svgImportInput type="file" accept=".svg,.wmf,image/svg+xml,application/x-msmetafile,application/wmf" style="display: none"
+                (change)="importLocalVector(svgImportInput.files, svgImportInput)">
+            <input #traceImageInput type="file" accept=".png,.jpg,.jpeg,.gif,image/png,image/jpeg,image/gif" style="display: none"
+                (change)="importLocalTraceImage(traceImageInput.files, traceImageInput)">
         </div>
 
         <div class='toolbar-spacer'></div>
@@ -180,6 +187,7 @@
 
                                                 <!-- Single element property dialogs -->
                                                 <button *ngIf="singleElementType=='text'" ngbDropdownItem class="edit-dropdown-item" (click)="showTextElementModal()">Text...</button>
+                                                <button *ngIf="singleElementType=='textPath'" ngbDropdownItem class="edit-dropdown-item" (click)="showTextPathElementModal()">Text Path...</button>
                                                 <button *ngIf="singleElementType=='image'" ngbDropdownItem class="edit-dropdown-item" (click)="showImageElementModal()">Element Properties...</button>
                                                 <button *ngIf="singleElementType=='model'" ngbDropdownItem class="edit-dropdown-item" (click)="showModelElementModal()">Element Properties...</button>
                                                 <button *ngIf="singleElementType=='polyline'" ngbDropdownItem class="edit-dropdown-item" (click)="showPointsContainerModal()">Edit Points...</button>
@@ -252,6 +260,14 @@
                                 <button class='btn btn-sm btn-outline-primary' (click)="showTransformModal()"
                                     ngbTooltip="Set Transform">Transform</button>
                             </div>
+                            <div class='toolbar-divider'></div>
+                            <div class='toolbar-group'>
+                                <button class='btn btn-sm btn-outline-primary' [disabled]='model == null'
+                                    (click)="launchFullscreenSketch()"
+                                    ngbTooltip="Sketch this model in fullscreen">
+                                    <span class="fas fa-pen-fancy me-1"></span>Sketch
+                                </button>
+                            </div>
                         </div>
                         <div>
                             <div [ngClass]='backgroundClass()'>
@@ -296,6 +312,7 @@
                                         <button *ngIf="selectedElementCount === 1" class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showElementSizeModal()">Element Size...</button>
                                         <button *ngIf="singleElementType=='rectangle' || singleElementType=='polygon' || singleElementType=='path' || singleElementType=='regularPolygon' || singleElementType=='arrow' || singleElementType=='ring' || singleElementType=='arc' || singleElementType=='wedge'" class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showGeometryModal()">Geometry...</button>
                                         <button *ngIf="singleElementType=='text'" class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showTextElementModal()">Text...</button>
+                                        <button *ngIf="singleElementType=='textPath'" class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showTextPathElementModal()">Text Path...</button>
                                         <button *ngIf="singleElementType=='image'" class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showImageElementModal()">Element Properties...</button>
                                         <button *ngIf="singleElementType=='model'" class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showModelElementModal()">Element Properties...</button>
                                         <button *ngIf="singleElementType=='polyline'" class="edit-dropdown-item" (click)="closeSurfaceContextMenu(); showPointsContainerModal()">Edit Points...</button>
@@ -374,3 +391,8 @@
         </as-split-area>
     </as-split>
 </div>
+
+<app-fullscreen-sketcher *ngIf="showFullscreenSketcher"
+    [sourceModel]="model"
+    (closed)="onFullscreenSketcherClosed()">
+</app-fullscreen-sketcher>

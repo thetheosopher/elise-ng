@@ -1,0 +1,52 @@
+<div class="page-content">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a routerLink="/examples/surface">Surface Examples</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{title}}</li>
+        </ol>
+    </nav>
+    <h2>{{title}}</h2>
+    <p class="text-muted">{{description}}</p>
+    <table>
+        <tr style="vertical-align: baseline;">
+            <td>
+                <label for="scale" style="margin-right: 4px;"><strong>Scale</strong></label>
+                <select id="scale" [(ngModel)]="scale">
+                    <option [ngValue]="0.5">50%</option>
+                    <option [ngValue]="0.75">75%</option>
+                    <option [ngValue]="1">100%</option>
+                    <option [ngValue]="1.5">150%</option>
+                    <option [ngValue]="2">200%</option>
+                </select>
+            </td>
+            <td>
+                <select id="background" [(ngModel)]="background" style="margin-left: 4px;">
+                    <option value="black">Black</option>
+                    <option value="gray">Gray</option>
+                    <option value="white">White</option>
+                    <option value="grid">Grid</option>
+                </select>
+            </td>
+            <td *ngIf="mouseOverView" style="min-width: 60px;">
+                <label><strong>X:</strong></label>&nbsp;<span>{{viewMouseX}}</span>
+            </td>
+            <td *ngIf="mouseOverView" style="min-width: 60px;">
+                <label><strong>Y:</strong></label>&nbsp;<span>{{viewMouseY}}</span>
+            </td>
+        </tr>
+    </table>
+    <div [ngClass]='backgroundClass()'>
+        <app-elise-surface #elise [surface]="surface" [scale]="scale" [opacity]="opacity"
+            (mouseMovedView)="mouseMovedView($event)" (mouseEnteredView)="mouseEnteredView($event)"
+            (mouseLeftView)="mouseLeftView($event)" (mouseDownView)="mouseDownView($event)"
+            (mouseUpView)="mouseUpView($event)" (mouseEnteredElement)="mouseEnteredElement($event)"
+            (mouseLeftElement)="mouseLeftElement($event)" (mouseDownElement)="mouseDownElement($event)"
+            (mouseUpElement)="mouseUpElement($event)" (elementClicked)="elementClicked($event)"
+            (controllerSet)="controllerSet($event)" (timerTick)="timerTick($event)">
+        </app-elise-surface>
+    </div>
+    <div class="status-bar">
+        <label>Status</label>
+        <span class="status-message">{{lastMessage}}</span>
+    </div>
+</div>

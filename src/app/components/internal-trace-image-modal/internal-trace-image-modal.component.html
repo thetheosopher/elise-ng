@@ -1,0 +1,105 @@
+<div class="modal-header">
+    <h4 class="modal-title">Trace Image (Internal Tracer)</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('X')"></button>
+</div>
+
+<div class="modal-body trace-modal-body">
+    <div class="trace-controls">
+        <div>
+            <label class="form-label" for="internalTracePreset">Preset</label>
+            <select id="internalTracePreset" class="form-select" [(ngModel)]="traceOptions.presetId" (ngModelChange)="onPresetChanged()">
+                <option *ngFor="let preset of presetDefinitions" [ngValue]="preset.id">{{preset.label}}</option>
+            </select>
+            <small class="text-muted d-block mt-2">{{selectedPreset?.description}}</small>
+        </div>
+
+        <button type="button" class="btn btn-outline-secondary btn-sm" (click)="showAdvancedOptions = !showAdvancedOptions">
+            {{showAdvancedOptions ? 'Hide Advanced Options' : 'Show Advanced Options'}}
+        </button>
+
+        <div *ngIf="showAdvancedOptions" class="trace-advanced-options">
+            <div>
+                <label class="form-label" for="internalTraceColors">Number of Colors</label>
+                <input id="internalTraceColors" class="form-control" type="number" min="2" max="256" [(ngModel)]="traceOptions.numberOfColors" (ngModelChange)="onOptionsChanged()">
+            </div>
+
+            <div>
+                <label class="form-label" for="internalTraceDetail">Detail Level</label>
+                <select id="internalTraceDetail" class="form-select" [(ngModel)]="traceOptions.detailLevel" (ngModelChange)="onOptionsChanged()">
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                    <option value="very-high">Very High</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="form-label" for="internalTraceCorner">Corner Threshold</label>
+                <input id="internalTraceCorner" class="form-control" type="number" min="10" max="90" [(ngModel)]="traceOptions.cornerThreshold" (ngModelChange)="onOptionsChanged()">
+                <small class="text-muted">Degrees (lower = more corners detected)</small>
+            </div>
+
+            <div>
+                <label class="form-label" for="internalTraceDespeckle">Despeckle Size</label>
+                <input id="internalTraceDespeckle" class="form-control" type="number" min="0" max="50" [(ngModel)]="traceOptions.despeckleSize" (ngModelChange)="onOptionsChanged()">
+                <small class="text-muted">Remove regions smaller than this</small>
+            </div>
+
+            <div>
+                <label class="form-label" for="internalTraceCurveFitting">Curve Fitting</label>
+                <select id="internalTraceCurveFitting" class="form-select" [(ngModel)]="traceOptions.curveFitting" (ngModelChange)="onOptionsChanged()">
+                    <option [ngValue]="true">Quadratic Curves</option>
+                    <option [ngValue]="false">Straight Lines Only</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="alert alert-info py-2 mb-0">
+            Internal tracer with edge-preserving blur, k-means quantization, sub-pixel interpolation, and recursive curve fitting. Supports up to 256 colors.
+        </div>
+    </div>
+
+    <div class="trace-preview-grid">
+        <div>
+            <h5>Source Image</h5>
+            <div class="preview-frame">
+                <img [src]="modalInfo.source" alt="Source image preview" />
+            </div>
+            <small class="text-muted d-block mt-2">{{sourceInfo}}</small>
+        </div>
+
+        <div>
+            <h5>Traced Preview</h5>
+            <div class="preview-frame preview-frame-output" [class.preview-frame-output-busy]="isBusy">
+                <div *ngIf="isBusy" class="trace-progress-shell" aria-live="polite" aria-busy="true">
+                    <div class="trace-spinner" aria-hidden="true">
+                        <span class="trace-spinner-ring trace-spinner-ring-outer"></span>
+                        <span class="trace-spinner-ring trace-spinner-ring-inner"></span>
+                        <span class="trace-spinner-core"></span>
+                    </div>
+                    <div class="trace-progress-copy">
+                        <div class="trace-progress-kicker">Internal tracer running</div>
+                        <div class="trace-progress-label">{{traceProgressLabel}}</div>
+                        <div class="trace-progress-bar" role="progressbar" [attr.aria-valuemin]="0" [attr.aria-valuemax]="100" [attr.aria-valuenow]="traceProgress">
+                            <div class="trace-progress-bar-fill" [style.width.%]="traceProgress"></div>
+                        </div>
+                        <div class="trace-progress-meta">{{traceProgress}}%</div>
+                    </div>
+                </div>
+                <div *ngIf="!isBusy && traceError" class="alert alert-danger mb-0">{{traceError}}</div>
+                <img *ngIf="!isBusy && !traceError && tracedPreviewSource" [src]="tracedPreviewSource" alt="Traced image preview" />
+                <div *ngIf="!isBusy && !traceError && !tracedPreviewSource" class="preview-placeholder text-muted">Trace preview will appear here.</div>
+            </div>
+            <small class="text-muted d-flex align-items-center gap-2 mt-2">
+                <span>{{tracedInfo}}</span>
+                <span *ngIf="traceCompleted" class="trace-complete-pill">Trace complete</span>
+            </small>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss('Cancel')">Cancel</button>
+    <button type="button" class="btn btn-outline-primary" [disabled]="isBusy" (click)="traceImage()">Trace Preview</button>
+    <button type="button" class="btn btn-primary" [disabled]="isBusy || !traceResult" (click)="commit()">Continue</button>
+</div>

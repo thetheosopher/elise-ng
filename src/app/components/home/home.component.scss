@@ -169,18 +169,29 @@
 }
 
 .showcase-preview {
-    height: 160px;
+    height: 176px;
+    padding: 12px 16px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
     background: $elise-gray-900;
     overflow: hidden;
 
     app-sample-preview {
         display: block;
         height: 100%;
+        width: 100%;
 
         ::ng-deep .sample-preview-shell {
             height: 100%;
             border-bottom: none;
-            background: transparent;
+            background: $elise-gray-900 !important;
+        }
+
+        ::ng-deep .sample-preview-canvas {
+            height: 100%;
+            background: transparent !important;
         }
     }
 }

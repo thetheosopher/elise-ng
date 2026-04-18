@@ -5,10 +5,13 @@ import hljs from 'highlight.js/lib/core';
 import typescript from 'highlight.js/lib/languages/typescript';
 import javascript from 'highlight.js/lib/languages/javascript';
 import json from 'highlight.js/lib/languages/json';
+import xml from 'highlight.js/lib/languages/xml';
 
 hljs.registerLanguage('typescript', typescript);
 hljs.registerLanguage('javascript', javascript);
 hljs.registerLanguage('json', json);
+hljs.registerLanguage('xml', xml);
+hljs.registerLanguage('html', xml);
 
 @Component({
     imports: [CommonModule],
@@ -37,14 +40,14 @@ export class CodeBlockComponent implements OnChanges, OnDestroy {
     ngOnChanges(_changes: SimpleChanges): void {
         const source = this.code ?? '';
 
-        try {
+        if (hljs.getLanguage(this.language)) {
             const result = hljs.highlight(source, {
                 language: this.language,
                 ignoreIllegals: true
             });
             this.highlightedCode = this.sanitizer.bypassSecurityTrustHtml(result.value);
         }
-        catch {
+        else {
             const result = hljs.highlightAuto(source);
             this.highlightedCode = this.sanitizer.bypassSecurityTrustHtml(result.value);
         }

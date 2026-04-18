@@ -22,18 +22,20 @@
             </div>
         </div>
         <div class="hero-visual">
-            <app-sample-preview
-                type="animations"
-                id="aurora-borealis"
-                previewMode="animated"
-                [timerEnabled]="true"
-                [scale]="0.72"
-                backgroundStyle="white">
-            </app-sample-preview>
-            <div class="hero-visual-caption">
-                <span class="fas fa-circle-play me-1"></span>
-                Live — Aurora Borealis
-            </div>
+            <ng-container *ngIf="heroAnimation">
+                <app-sample-preview
+                    [type]="heroAnimation.type"
+                    [id]="heroAnimation.id"
+                    [previewMode]="heroAnimation.animated ? 'animated' : 'static'"
+                    [timerEnabled]="heroAnimation.animated"
+                    [scale]="0.72"
+                    backgroundStyle="white">
+                </app-sample-preview>
+                <div class="hero-visual-caption">
+                    <span class="fas fa-circle-play me-1"></span>
+                    Live — {{ heroAnimation.title }}
+                </div>
+            </ng-container>
         </div>
     </section>
 
@@ -86,7 +88,7 @@
                         [id]="item.id"
                         [previewMode]="item.animated ? 'animated' : 'static'"
                         [timerEnabled]="item.animated"
-                        [scale]="0.36"
+                        [scale]="item.previewScale ?? 0.4"
                         backgroundStyle="white">
                     </app-sample-preview>
                 </div>

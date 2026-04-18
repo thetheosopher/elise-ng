@@ -402,6 +402,33 @@ const tests: DesignSample[] = [
         }
     },
     {
+        id: 'textpath',
+        title: 'Text Path Element',
+        description: 'Demonstrates selecting, moving, and resizing text path elements that render text along a curve.',
+        configure: (viewer) => {
+            const model = defaultModel();
+            model.setFill('#f3f4f6');
+
+            elise.textPath('Drag or resize this text path', 'M 20 220 C 20 60, 300 60, 300 220')
+                .setTypeface('Coda Caption')
+                .setTypesize(20)
+                .setFill('#1e40af')
+                .setShowPath(true)
+                .addTo(model);
+
+            elise.textPath('Arc Text Path', 'M 40 300 A 120 120 0 0 1 280 300')
+                .setTypeface('Georgia')
+                .setTypesize(18)
+                .setTypestyle('italic')
+                .setFill('#059669')
+                .setAlignment('center')
+                .setShowPath(true)
+                .addTo(model);
+
+            viewer.model = model;
+        }
+    },
+    {
         id: 'arrangecommands',
         title: 'Arrange Commands',
         description: 'Tests bring forward, send backward, bring to front, and send to back on overlapping selections.',

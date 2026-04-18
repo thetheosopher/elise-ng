@@ -22,12 +22,19 @@ export class ModelActionModalComponent implements OnInit {
         if (!this.modalInfo.importMode) {
             this.modalInfo.importMode = 'embed';
         }
+        if (!this.modalInfo.importTarget) {
+            this.modalInfo.importTarget = this.modalInfo.canEmbed ? 'current-model' : 'new-model';
+        }
     }
 
     get title() {
-        const baseTitle = this.modalInfo.sourceType === 'svg' ? 'SVG Import' : 'Model Action';
+        const baseTitle = this.modalInfo.sourceType === 'model' ? 'Model Action' : `${this.sourceTypeLabel} Import`;
         const fileName = this.sourceFileName;
         return fileName ? `${baseTitle} - ${fileName}` : baseTitle;
+    }
+
+    get sourceTypeLabel() {
+        return this.modalInfo.sourceType === 'wmf' ? 'WMF' : 'SVG';
     }
 
     get sourceFileName() {
@@ -42,18 +49,30 @@ export class ModelActionModalComponent implements OnInit {
     }
 
     get editLabel() {
-        return this.modalInfo.sourceType === 'svg' ? 'Open As Model' : 'Edit Model';
+        return this.modalInfo.sourceType === 'model' ? 'Edit Model' : 'Open As Model';
     }
 
     get createLabel() {
-        if (this.modalInfo.sourceType !== 'svg') {
+        if (this.modalInfo.sourceType === 'model') {
             return 'Embed Model';
         }
         return this.modalInfo.importMode === 'decompose' ? 'Decompose Into Elements' : 'Import As Model Element';
     }
 
+    get showImportTarget() {
+        return this.modalInfo.sourceType !== 'model' && this.modalInfo.canCreateNew && this.modalInfo.canEmbed;
+    }
+
     get showImportMode() {
-        return this.modalInfo.sourceType === 'svg' && this.modalInfo.canDecompose;
+        return this.modalInfo.sourceType !== 'model' && this.modalInfo.canDecompose && this.modalInfo.importTarget === 'current-model';
+    }
+
+    get isImportingIntoCurrentModel() {
+        return this.modalInfo.importTarget === 'current-model';
+    }
+
+    get isImportingAsNewModel() {
+        return this.modalInfo.importTarget === 'new-model';
     }
 
     actionEdit() {
@@ -70,15 +89,22 @@ export class ModelActionModalComponent implements OnInit {
         this.modalInfo.action = 'add-resource';
         this.activeModal.close(this.modalInfo);
     }
+
+    actionCreateModel() {
+        this.modalInfo.action = 'create-model';
+        this.activeModal.close(this.modalInfo);
+    }
 }
 
 export class ModelActionModalInfo {
     canEmbed: boolean;
     canEdit = true;
     canDecompose = false;
+    canCreateNew = false;
     action: string;
-    sourceType: 'model' | 'svg' = 'model';
+    sourceType: 'model' | 'svg' | 'wmf' = 'model';
     importMode: 'embed' | 'decompose' = 'embed';
+    importTarget: 'new-model' | 'current-model' = 'new-model';
     containerID: string | null;
     containerName: string | null;
     scale: number;

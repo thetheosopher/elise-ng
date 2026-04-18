@@ -20,18 +20,19 @@ import { BitmapResource, Color, GridType, Model, ModelResource, Point, Region, R
     ArcElement, ArrowElement, GradientFillStop, PathElement, PolylineElement, PolygonElement, RectangleElement,
     RegularPolygonElement, RingElement, TextResource, WedgeElement, WindingMode } from 'elise-graphics';
 import { FillInfo, LinearGradientFill, PointEventParameters, RadialGradientFill, StrokeInfo, UndoState, ViewDragArgs } from 'elise-graphics';
-import { ElementBase, ImageElement, ModelElement, TextElement } from 'elise-graphics';
+import { ElementBase, ImageElement, ModelElement, TextElement, TextPathElement } from 'elise-graphics';
 import { DesignContextMenuEventArgs, DesignController } from 'elise-graphics';
-import { SVGImporter } from 'elise-graphics';
+import { SVGImporter, WmfImporter } from 'elise-graphics';
 
 // Design tools
 import { ArcTool, ArrowTool, DesignTool, EllipseTool, ImageElementTool, LineTool, ModelElementTool,
-            PenTool, PolygonTool, PolylineTool, RectangleTool, RegularPolygonTool, RingTool, TextTool, WedgeTool } from 'elise-graphics';
+            PenTool, PolygonTool, PolylineTool, RectangleTool, RegularPolygonTool, RingTool, TextTool, TextPathTool, WedgeTool } from 'elise-graphics';
 
 // Modals
 import { ImageActionModalComponent, ImageActionModalInfo } from '../image-action-modal/image-action-modal.component';
 import { ModelActionModalComponent, ModelActionModalInfo } from '../model-action-modal/model-action-modal.component';
 import { NewModelModalComponent, NewModelModalInfo } from '../new-model-modal/new-model-modal.component';
+import type { InternalTraceImageModalInfo, InternalTraceImageModalResult } from '../internal-trace-image-modal/internal-trace-image-modal.component';
 import type { StrokeModalInfo } from '../stroke-modal/stroke-modal.component';
 import type { FillModalInfo } from '../fill-modal/fill-modal.component';
 import { ImageElementModalComponent, ImageElementModalInfo } from '../image-element-modal/image-element-modal.component';
@@ -55,6 +56,8 @@ import { AlertComponent } from '../alert/alert.component';
 import { UploadListComponent } from '../upload-list/upload-list.component';
 import { FileListComponent } from '../file-list/file-list.component';
 import { DndDirective } from '../../directives/dnd.directive';
+import { FullscreenSketcherComponent } from '../fullscreen-sketcher/fullscreen-sketcher.component';
+import { ContainerLocationService } from '../../services/container-location.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { take } from 'rxjs';
 
@@ -95,8 +98,10 @@ type DesignerTextRun = {
 
 type CornerRadii = [number, number, number, number];
 
+type ImportedVectorSourceType = 'svg' | 'wmf';
+
 @Component({
-    imports: [CommonModule, FormsModule, NgbModule, AngularSplitModule, EliseDesignComponent, ContainerSelectorComponent, ContainerTreeComponent, AlertComponent, UploadListComponent, FileListComponent, DndDirective],
+    imports: [CommonModule, FormsModule, NgbModule, AngularSplitModule, EliseDesignComponent, ContainerSelectorComponent, ContainerTreeComponent, AlertComponent, UploadListComponent, FileListComponent, DndDirective, FullscreenSketcherComponent],
     selector: 'app-model-designer',
     templateUrl: './model-designer.component.html',
     styleUrls: ['./model-designer.component.scss']
@@ -119,6 +124,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         { value: 'wedge', label: 'Wedge / Sector' },
         { value: 'ring', label: 'Ring / Annulus' },
         { value: 'text', label: 'Text' },
+        { value: 'textpath', label: 'Text Path' },
         { value: 'image', label: 'Image' },
         { value: 'model', label: 'Model' }
     ];
@@ -126,6 +132,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     private readonly destroyRef = inject(DestroyRef);
     private readonly document = inject(DOCUMENT);
     private readonly platformId = inject(PLATFORM_ID);
+
 
     @ViewChild(ContainerTreeComponent, { static: true })
     containerTree: ContainerTreeComponent;
@@ -140,12 +147,14 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     @ViewChild('surfaceContextMenu', { read: ElementRef, static: false })
     surfaceContextMenuRef: ElementRef;
 
+    selectedContainer: ContainerDTO = { Name: 'Select Container' };
     selectedContainerID: string | null;
     selectedContainerName: string;
     @Output() public selectedFolderPath?: string;
 
     folderFiles?: ManifestFileDTO[];
     uploads: Upload[] = [];
+    private restoringFolderPath: string | null = null;
 
     selectedFilePath: string;
 
@@ -248,6 +257,11 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     textToolSourceUri = '';
     textToolRichText: TextModalRun[] = [];
 
+    textPathToolStartOffset = 0;
+    textPathToolStartOffsetPercent = false;
+    textPathToolShowPath = true;
+    textPathToolSide: 'left' | 'right' = 'left';
+
     activeTool?: DesignTool;
     toolOpacity = 1;
     toolLockAspect = true;
@@ -296,10 +310,18 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         private http: HttpClient,
         private toasterService: ToastrService,
         private modalService: NgbModal,
-        private changeDetectorRef: ChangeDetectorRef) {
+        private changeDetectorRef: ChangeDetectorRef,
+        private containerLocationService: ContainerLocationService) {
     }
 
     ngOnInit() {
+        const location = this.containerLocationService.getLocation();
+        if (location.container) {
+            this.selectedContainer = location.container;
+            this.selectedContainerID = location.container.ContainerID;
+            this.selectedContainerName = location.container.Name;
+            this.restoringFolderPath = location.folderPath;
+        }
         this.setColorStroke(this.strokeColor, this.strokeWidth, false, false);
         this.activeFill = 'White';
     }
@@ -770,6 +792,10 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                 this.showTextToolModal();
                 break;
 
+            case 'textpath':
+                this.showTextPathToolModal();
+                break;
+
             case 'image':
                 this.selectImageTool();
                 break;
@@ -819,6 +845,33 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             textTool.typestyle = this.buildTextStyle(this.textToolIsBold, this.textToolIsItalic);
             textTool.alignment = this.buildTextAlignment(this.textToolHAlign, this.textToolVAlign);
             this.setActiveTool(textTool);
+        }, (reason) => {
+            this.setSelectTool();
+        });
+    }
+
+    showTextPathToolModal() {
+        const modalInfo = this.createTextModalInfoFromToolState();
+        const modal = this.modalService.open(TextElementModalComponent, {
+            ariaLabelledBy: 'modal-basic-title',
+            size: 'xl',
+            scrollable: true
+        });
+        modal.componentInstance.modalInfo = modalInfo;
+        modal.result.then((result: TextElementModalInfo) => {
+            this.setTextToolStateFromModal(result);
+
+            const textPathTool = new TextPathTool();
+            textPathTool.typeface = this.textToolTypeface;
+            textPathTool.text = this.getTextPreviewFromModal(result);
+            textPathTool.typesize = this.textToolTypesize;
+            textPathTool.typestyle = this.buildTextStyle(this.textToolIsBold, this.textToolIsItalic);
+            textPathTool.alignment = this.buildTextAlignment(this.textToolHAlign, this.textToolVAlign);
+            textPathTool.startOffset = this.textPathToolStartOffset;
+            textPathTool.startOffsetPercent = this.textPathToolStartOffsetPercent;
+            textPathTool.showPath = this.textPathToolShowPath;
+            textPathTool.side = this.textPathToolSide;
+            this.setActiveTool(textPathTool);
         }, (reason) => {
             this.setSelectTool();
         });
@@ -1183,19 +1236,29 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
     onContainerSelected(container: ContainerDTO | null) {
         if (container) {
+            const restoredFolderPath = this.containerLocationService.getFolderPathForContainer(container.ContainerID);
             // console.log('Host container selected: ' + container.Name);
+            this.selectedContainer = {
+                ContainerID: container.ContainerID,
+                Name: container.Name
+            };
             this.selectedContainerID = container.ContainerID;
             this.selectedContainerName = container.Name;
             this.selectedFolderPath = null;
+            this.restoringFolderPath = restoredFolderPath;
             this.containerTree.containerID = container.ContainerID;
-            this.containerTree.refresh();
+            this.containerLocationService.saveLocation(this.selectedContainer, restoredFolderPath);
+            this.containerTree.refresh(restoredFolderPath ?? '/');
         }
         else {
             // console.log('Host container cleared');
+            this.selectedContainer = { Name: 'Select Container' };
             this.selectedContainerID = null;
             this.selectedContainerName = null;
             this.selectedFolderPath = null;
+            this.restoringFolderPath = null;
             this.containerTree.containerID = null;
+            this.containerLocationService.clear();
             this.containerTree.refresh();
             if(this.controller) {
                 this.controller.detach();
@@ -1215,7 +1278,13 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     }
 
     onFolderPathSelected(folderPath: string | null) {
+        if (folderPath === null && this.restoringFolderPath !== null) {
+            return;
+        }
+
         this.selectedFolderPath = folderPath;
+        this.restoringFolderPath = null;
+        this.containerLocationService.saveLocation(this.selectedContainerID ? this.selectedContainer : null, folderPath);
         this.listFolderFiles();
         this.refreshUploads();
     }
@@ -1297,28 +1366,57 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         this.fileUploadInputElement.value = null;
     }
 
-    importLocalSvg(files: FileList | null, input: HTMLInputElement) {
-        this.importLocalSvgAtPoint(files, input, undefined);
+    openVectorImportPicker(input: HTMLInputElement) {
+        if (!this.selectedContainerID && !this.model) {
+            this.toasterService.warning('Open a container folder or a model before importing an SVG or WMF file.');
+            return;
+        }
+
+        input.click();
     }
 
-    importLocalSvgAtPoint(files: FileList | null, input: HTMLInputElement | null, point?: Point) {
+    openTraceImagePicker(input: HTMLInputElement) {
+        if (!this.selectedContainerID && !this.model) {
+            this.toasterService.warning('Open a container folder or a model before tracing a local image.');
+            return;
+        }
+
+        input.click();
+    }
+
+    importLocalVector(files: FileList | null, input: HTMLInputElement) {
+        this.importLocalVectorAtPoint(files, input, undefined);
+    }
+
+    importLocalTraceImage(files: FileList | null, input: HTMLInputElement) {
+        void this.importLocalTraceImageAtPoint(files, input, undefined);
+    }
+
+    importLocalVectorAtPoint(files: FileList | null, input: HTMLInputElement | null, point?: Point) {
         if (!files || files.length === 0) {
             return;
         }
         const file = files[0];
-        if (this.getExtension(file.name).toLowerCase() !== '.svg') {
+        const sourceType = this.getImportedVectorSourceType(file.name);
+        if (!sourceType) {
             if (input) {
                 input.value = null;
             }
-            this.toasterService.warning('Only SVG files can be dropped directly into the model editor.');
+            this.toasterService.warning('Only SVG and WMF files can be imported directly into the model editor.');
             return;
         }
         const reader = new FileReader();
         this.isBusy = true;
         this.pendingImportPoint = point;
         reader.onload = () => {
-            const svgText = typeof reader.result === 'string' ? reader.result : '';
-            this.openSvgActionModal(svgText, file.name, null, true);
+            if (sourceType === 'svg') {
+                const svgText = typeof reader.result === 'string' ? reader.result : '';
+                this.openSvgActionModal(svgText, file.name, null, true);
+            }
+            else {
+                const wmfBuffer = reader.result instanceof ArrayBuffer ? reader.result : new ArrayBuffer(0);
+                this.openWmfActionModal(wmfBuffer, file.name, null);
+            }
             if (input) {
                 input.value = null;
             }
@@ -1331,7 +1429,56 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             }
             this.onError(`Unable to read ${file.name}.`);
         };
-        reader.readAsText(file);
+        if (sourceType === 'svg') {
+            reader.readAsText(file);
+        }
+        else {
+            reader.readAsArrayBuffer(file);
+        }
+    }
+
+    async importLocalTraceImageAtPoint(files: FileList | null, input: HTMLInputElement | null, point?: Point) {
+        if (!files || files.length === 0) {
+            return;
+        }
+
+        const file = files[0];
+        if (!this.isTraceableBitmapPath(file.name)) {
+            if (input) {
+                input.value = null;
+            }
+            this.toasterService.warning('Only PNG, JPG, JPEG, and GIF files can be traced.');
+            return;
+        }
+
+        this.isBusy = true;
+        this.pendingImportPoint = point;
+
+        try {
+            const traceImageSource = await this.loadLocalTraceImageSource(file);
+            this.isBusy = false;
+            await this.imageActionTrace({
+                source: traceImageSource.source,
+                path: file.name,
+                image: traceImageSource.image,
+                canEmbed: this.model != null,
+                action: 'trace',
+                containerID: this.selectedContainerID
+            }, traceImageSource.dispose);
+        }
+        catch (error) {
+            this.isBusy = false;
+            this.pendingImportPoint = undefined;
+            if (input) {
+                input.value = null;
+            }
+            this.onError(error);
+            return;
+        }
+
+        if (input) {
+            input.value = null;
+        }
     }
 
     uploadFile(file: File) {
@@ -1406,6 +1553,12 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                 }
                 break;
 
+            case '.wmf':
+                {
+                    this.loadWmfActionModal();
+                }
+                break;
+
             case '.jpg':
             case '.gif':
             case '.png':
@@ -1447,6 +1600,10 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                         case 'add-resource':
                             this.imageActionAddResource(result);
                             break;
+
+                        case 'trace':
+                            this.imageActionTrace(result);
+                            break;
                     }
                 }, (error) => {
                 });
@@ -1480,6 +1637,79 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         bitmapResource.image = modalInfo.image;
         bitmapResource.key = this.getResourceKey(modalInfo.path);
         this.model.resourceManager.add(bitmapResource);
+    }
+
+    async imageActionTrace(modalInfo: ImageActionModalInfo, cleanup?: () => void) {
+        try {
+            await this.openInternalTraceModal(modalInfo, cleanup);
+        }
+        catch (error) {
+            cleanup?.();
+            this.onError(error);
+        }
+    }
+
+    private async openInternalTraceModal(modalInfo: ImageActionModalInfo, cleanup?: () => void) {
+        const internalTraceModule = await import('../internal-trace-image-modal/internal-trace-image-modal.component');
+        const traceModalInfo: InternalTraceImageModalInfo = {
+            source: modalInfo.source,
+            path: modalInfo.path,
+            image: modalInfo.image
+        };
+        const modal = this.modalService.open(internalTraceModule.InternalTraceImageModalComponent, {
+            ariaLabelledBy: 'modal-basic-title',
+            size: 'xl',
+            scrollable: true
+        });
+        modal.componentInstance.modalInfo = traceModalInfo;
+        modal.result.then((result: InternalTraceImageModalResult) => {
+            this.openSvgActionModal(result.svgText, result.tracedPath, this.selectedContainerID, false);
+            cleanup?.();
+        }, () => {
+            cleanup?.();
+        });
+    }
+
+    private isTraceableBitmapPath(path: string) {
+        switch (this.getExtension(path).toLowerCase()) {
+            case '.png':
+            case '.jpg':
+            case '.jpeg':
+            case '.gif':
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private loadLocalTraceImageSource(file: File) {
+        if (!isPlatformBrowser(this.platformId)) {
+            return Promise.reject(new Error('Image tracing is only available in the browser.'));
+        }
+
+        const view = this.document.defaultView;
+        if (!view?.URL || !view.Image) {
+            return Promise.reject(new Error('Browser image helpers are unavailable.'));
+        }
+
+        const objectUrl = view.URL.createObjectURL(file);
+        return this.loadImageForTrace(objectUrl, view.Image).then((image) => ({
+            source: objectUrl,
+            image,
+            dispose: () => view.URL.revokeObjectURL(objectUrl)
+        }), (error) => {
+            view.URL.revokeObjectURL(objectUrl);
+            throw error;
+        });
+    }
+
+    private loadImageForTrace(source: string, ImageCtor: typeof Image) {
+        return new Promise<HTMLImageElement>((resolve, reject) => {
+            const image = new ImageCtor();
+            image.onload = () => resolve(image);
+            image.onerror = () => reject(new Error(`Unable to load tracing image: ${source}`));
+            image.src = source;
+        });
     }
 
     loadModelActionModal() {
@@ -1557,6 +1787,31 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         });
     }
 
+    loadWmfActionModal() {
+        const urlRequest = new SignedUrlRequestDTO();
+        urlRequest.ContainerID = this.selectedContainerID;
+        urlRequest.Path = this.selectedFilePath;
+        urlRequest.Verb = 'get';
+        this.isBusy = true;
+        this.apiService.getSignedUrl(urlRequest).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+            next: (signedUrlRequest) => {
+                this.http.get(signedUrlRequest.Url, { responseType: 'arraybuffer' }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+                    next: (wmfBuffer: ArrayBuffer) => {
+                        this.openWmfActionModal(wmfBuffer, this.selectedFilePath, this.selectedContainerID);
+                    },
+                    error: (error) => {
+                        this.isBusy = false;
+                        this.onError(error);
+                    }
+                });
+            },
+            error: (error) => {
+                this.isBusy = false;
+                this.onError(error);
+            }
+        });
+    }
+
     openSvgActionModal(svgText: string, path: string, containerID: string | null, canPrepareResources: boolean) {
         try {
             const model = SVGImporter.parse(svgText);
@@ -1569,7 +1824,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                 model.prepareResources(null, (prepareResourceResult) => {
                     this.isBusy = false;
                     if (prepareResourceResult) {
-                        this.showSvgActionModal(model, path, containerID);
+                        this.showVectorActionModal(model, path, containerID, 'svg');
                     }
                     else {
                         this.onError('Error loading SVG preview resources.');
@@ -1581,7 +1836,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                 this.toasterService.warning('Local SVG import does not resolve sibling image files. Relative image references may be skipped.');
             }
             this.isBusy = false;
-            this.showSvgActionModal(model, path, containerID);
+            this.showVectorActionModal(model, path, containerID, 'svg');
         }
         catch (error) {
             this.isBusy = false;
@@ -1589,17 +1844,35 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         }
     }
 
-    showSvgActionModal(model: Model, path: string, containerID: string | null) {
+    openWmfActionModal(wmfBuffer: ArrayBuffer, path: string, containerID: string | null) {
+        try {
+            const model = WmfImporter.parse(wmfBuffer);
+            if (containerID) {
+                model.resourceManager.urlProxy = new ContainerUrlProxy(this.apiService, containerID);
+                model.resourceManager.localResourcePath = this.getPathDirectory(path);
+            }
+            this.isBusy = false;
+            this.showVectorActionModal(model, path, containerID, 'wmf');
+        }
+        catch (error) {
+            this.isBusy = false;
+            this.onError(error);
+        }
+    }
+
+    showVectorActionModal(model: Model, path: string, containerID: string | null, sourceType: ImportedVectorSourceType) {
         const modalInfo = this.createModelActionModalInfo(
             model,
             path,
             containerID,
             this.selectedContainerName,
-            'svg');
+            sourceType);
         modalInfo.canEdit = false;
         modalInfo.canEmbed = this.model != null;
         modalInfo.canDecompose = this.model != null;
+        modalInfo.canCreateNew = !!this.selectedContainerID;
         modalInfo.importMode = 'embed';
+        modalInfo.importTarget = modalInfo.canEmbed ? 'current-model' : 'new-model';
         this.openModelActionModal(modalInfo);
     }
 
@@ -1618,12 +1891,12 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     }
 
     modelActionCreateElement(modalInfo: ModelActionModalInfo) {
-        if (modalInfo.sourceType === 'svg') {
+        if (this.isImportedVectorSourceType(modalInfo.sourceType)) {
             if (modalInfo.importMode === 'decompose') {
-                this.svgActionDecompose(modalInfo);
+                this.vectorActionDecompose(modalInfo);
             }
             else {
-                this.svgActionCreateElement(modalInfo);
+                this.vectorActionCreateElement(modalInfo);
             }
             return;
         }
@@ -1640,8 +1913,8 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     }
 
     modelActionAddResource(modalInfo: ModelActionModalInfo) {
-        if (modalInfo.sourceType === 'svg') {
-            this.svgActionAddResource(modalInfo);
+        if (this.isImportedVectorSourceType(modalInfo.sourceType)) {
+            this.vectorActionAddResource(modalInfo);
             return;
         }
         const modelResource = new ModelResource();
@@ -1651,7 +1924,24 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         this.model.resourceManager.add(modelResource);
     }
 
-    svgActionCreateElement(modalInfo: ModelActionModalInfo) {
+    modelActionCreateModel(modalInfo: ModelActionModalInfo) {
+        if (!this.isImportedVectorSourceType(modalInfo.sourceType)) {
+            return;
+        }
+        const sourceType = modalInfo.sourceType;
+        const folderPath = this.getCurrentNewModelFolderPath();
+        if (!this.selectedContainerID || !folderPath) {
+            this.toasterService.warning(`Open a container folder before importing a ${this.getImportSourceLabel(sourceType)} file as a new model.`);
+            return;
+        }
+
+        this.showImportVectorAsNewModelModal({
+            ...modalInfo,
+            sourceType
+        }, folderPath);
+    }
+
+    vectorActionCreateElement(modalInfo: ModelActionModalInfo) {
         const modelResource = this.addEmbeddedModelResource(modalInfo.path, modalInfo.model);
         const modelSize = modalInfo.model.getSize();
         const importPoint = this.pendingImportPoint ?? Point.create(0, 0);
@@ -1662,16 +1952,16 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         this.pendingImportPoint = undefined;
     }
 
-    svgActionAddResource(modalInfo: ModelActionModalInfo) {
+    vectorActionAddResource(modalInfo: ModelActionModalInfo) {
         this.addEmbeddedModelResource(modalInfo.path, modalInfo.model);
         this.pendingImportPoint = undefined;
     }
 
-    svgActionDecompose(modalInfo: ModelActionModalInfo) {
+    vectorActionDecompose(modalInfo: ModelActionModalInfo) {
         const importedElements = this.importModelElements(modalInfo.model, this.pendingImportPoint);
         if (importedElements.length === 0) {
             this.pendingImportPoint = undefined;
-            this.toasterService.warning('The SVG did not produce any importable elements.');
+            this.toasterService.warning(`The ${this.getImportSourceLabel(modalInfo.sourceType)} file did not produce any importable elements.`);
             return;
         }
         this.controller.selectedElements = importedElements;
@@ -1685,7 +1975,7 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         path: string,
         containerID: string | null,
         containerName: string,
-        sourceType: 'model' | 'svg') {
+        sourceType: 'model' | ImportedVectorSourceType) {
         const modalInfo = new ModelActionModalInfo();
         modalInfo.model = model;
         modalInfo.path = path;
@@ -1719,6 +2009,10 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
                 case 'add-resource':
                     this.modelActionAddResource(modalResult);
+                    break;
+
+                case 'create-model':
+                    this.modelActionCreateModel(modalResult);
                     break;
             }
         }, (_error) => {
@@ -1885,6 +2179,17 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
     canExportModel() {
         return !!this.model && isPlatformBrowser(this.platformId);
+    }
+
+    showFullscreenSketcher = false;
+
+    launchFullscreenSketch(): void {
+        if (!this.model) { return; }
+        this.showFullscreenSketcher = true;
+    }
+
+    onFullscreenSketcherClosed(): void {
+        this.showFullscreenSketcher = false;
     }
 
     exportCurrentModelAsSvg() {
@@ -2815,6 +3120,8 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
 
     showNewModelModal() {
         const modalInfo = new NewModelModalInfo();
+        modalInfo.title = 'New Model';
+        modalInfo.actionLabel = 'Create Model';
         modalInfo.width = 1024;
         modalInfo.height = 768;
         const modal = this.modalService.open(NewModelModalComponent);
@@ -2826,16 +3133,79 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
     }
 
     createModel(modalInfo: NewModelModalInfo) {
+        const model = Model.create(modalInfo.width, modalInfo.height);
+        this.saveNewModelToCurrentFolder(model, modalInfo, 'Model Created', 'Creating');
+    }
+
+    showImportVectorAsNewModelModal(modalInfo: ModelActionModalInfo & { sourceType: ImportedVectorSourceType }, folderPath: string) {
+        const sourceLabel = this.getImportSourceLabel(modalInfo.sourceType);
+        const importModalInfo = new NewModelModalInfo();
+        importModalInfo.title = `Import ${sourceLabel} As New Model`;
+        importModalInfo.actionLabel = `Import ${sourceLabel}`;
+        importModalInfo.showDimensions = false;
+        importModalInfo.name = this.getFileNameWithoutExtension(this.getPathFileName(modalInfo.path));
+        importModalInfo.width = modalInfo.model.getSize().width;
+        importModalInfo.height = modalInfo.model.getSize().height;
+        const modal = this.modalService.open(NewModelModalComponent);
+        modal.componentInstance.modalInfo = importModalInfo;
+        modal.result.then((result: NewModelModalInfo) => {
+            this.prepareImportedVectorModelForSave(modalInfo.model, folderPath, modalInfo.sourceType);
+            this.saveNewModelToCurrentFolder(modalInfo.model, result, `${sourceLabel} Imported`, 'Importing');
+        }, () => {
+        });
+    }
+
+    private prepareImportedVectorModelForSave(model: Model, folderPath: string, sourceType: ImportedVectorSourceType) {
+        if (sourceType === 'svg') {
+            this.normalizeImportedSvgResourceUris(model, folderPath);
+        }
+        model.resourceManager.localResourcePath = folderPath;
+        if (this.selectedContainerID) {
+            model.resourceManager.urlProxy = new ContainerUrlProxy(this.apiService, this.selectedContainerID);
+        }
+    }
+
+    private getImportedVectorSourceType(path: string): ImportedVectorSourceType | null {
+        const extension = this.getExtension(path).toLowerCase();
+        switch (extension) {
+            case '.svg':
+                return 'svg';
+            case '.wmf':
+                return 'wmf';
+            default:
+                return null;
+        }
+    }
+
+    private isImportedVectorSourceType(sourceType: ModelActionModalInfo['sourceType']): sourceType is ImportedVectorSourceType {
+        return sourceType === 'svg' || sourceType === 'wmf';
+    }
+
+    private getImportSourceLabel(sourceType: ModelActionModalInfo['sourceType']) {
+        return sourceType === 'wmf' ? 'WMF' : 'SVG';
+    }
+
+    private getCurrentNewModelFolderPath() {
+        if (!this.selectedContainerID) {
+            return null;
+        }
+
+        return this.selectedFolderPath ?? '/';
+    }
+
+    private saveNewModelToCurrentFolder(model: Model, modalInfo: NewModelModalInfo, successTitle: string, pendingMessage: string) {
+        const folderPath = this.getCurrentNewModelFolderPath();
+        if (!this.selectedContainerID || !folderPath) {
+            this.onError('A container folder must be selected before creating a model.');
+            return;
+        }
 
         this.isBusy = true;
 
-        // Create model from modal settings
-        const model = Model.create(modalInfo.width, modalInfo.height);
         const serializedModel = model.rawJSON();
         modalInfo.name = this.ensureExtension(modalInfo.name, '.mdl');
-        const newModelPath = this.selectedFolderPath + modalInfo.name;
+        const newModelPath = folderPath + modalInfo.name;
 
-        // Save model
         const urlRequest = new SignedUrlRequestDTO();
         urlRequest.ContainerID = this.selectedContainerID;
         urlRequest.Path = newModelPath;
@@ -2846,9 +3216,9 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             next: (signedUrlRequest) => {
                 const upload = Upload.createDataUpload(newModelPath, this.MODEL_MIME_TYPE,
                     serializedModel.length, signedUrlRequest.Url, serializedModel, null);
-                upload.state = new UploadState(UploadStateCode.QUEUED, 0, 'Creating');
+                upload.state = new UploadState(UploadStateCode.QUEUED, 0, pendingMessage);
                 upload.containerID = this.selectedContainerID;
-                upload.folderPath = this.selectedFolderPath;
+                upload.folderPath = folderPath;
                 upload.removeOnFailure = true;
                 upload.removeOnSuccess = true;
                 upload.callback.pipe(take(1), takeUntilDestroyed(this.destroyRef)).subscribe({
@@ -2856,8 +3226,8 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                         this.isBusy = false;
                         if (result.success) {
                             this.setModel(model, this.selectedContainerID, this.selectedContainerName, newModelPath);
-                            this.toasterService.success(upload.name, 'Model Created');
-                            if (upload.folderPath === this.selectedFolderPath) {
+                            this.toasterService.success(upload.name, successTitle);
+                            if (upload.folderPath === (this.selectedFolderPath ?? '/')) {
                                 this.listFolderFiles();
                             }
                         }
@@ -3173,6 +3543,10 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                     this.onTextElementSelected(selectedElement as TextElement);
                     break;
 
+                case 'textPath':
+                    this.onTextPathElementSelected(selectedElement as TextPathElement);
+                    break;
+
                 case 'polyline':
                     this.onPolylineElementSelected(selectedElement as PolylineElement);
                     break;
@@ -3459,6 +3833,95 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
             this.controller.draw();
         }, (reason) => {
         });
+    }
+
+    onTextPathElementSelected(textPathElement: TextPathElement) {
+        this.singleElementType = textPathElement.type;
+        this.textPathToolStartOffset = textPathElement.startOffset ?? 0;
+        this.textPathToolStartOffsetPercent = textPathElement.startOffsetPercent ?? false;
+        this.textPathToolShowPath = textPathElement.showPath ?? false;
+        this.textPathToolSide = textPathElement.side ?? 'left';
+        this.setTextToolStateFromModal(this.createTextModalInfoFromTextPathElement(textPathElement));
+    }
+
+    showTextPathElementModal() {
+        const textPathElement = this.controller.selectedElements[0] as TextPathElement;
+
+        const modalInfo = this.createTextModalInfoFromTextPathElement(textPathElement);
+        const modal = this.modalService.open(TextElementModalComponent, {
+            ariaLabelledBy: 'modal-basic-title',
+            size: 'xl',
+            scrollable: true
+        });
+        modal.componentInstance.modalInfo = modalInfo;
+        modal.result.then((result: TextElementModalInfo) => {
+            this.applyTextModalResultToTextPathElement(textPathElement, result);
+            this.setTextToolStateFromModal(result);
+            this.controller.draw();
+        }, (reason) => {
+        });
+    }
+
+    private createTextModalInfoFromTextPathElement(textPathElement: TextPathElement) {
+        const modalInfo = new TextElementModalInfo();
+        const style = this.parseTextStyle(textPathElement.typestyle);
+        const resource = textPathElement.source ? this.findTextResource(textPathElement.source) : undefined;
+        modalInfo.fonts = this.fontService.listFonts();
+        modalInfo.textResources = this.getTextResources();
+        modalInfo.typeface = textPathElement.typeface ?? this.textToolTypeface;
+        modalInfo.typesize = textPathElement.typesize ?? this.textToolTypesize;
+        modalInfo.isBold = style.isBold;
+        modalInfo.isItalic = style.isItalic;
+        modalInfo.halign = (textPathElement.alignment ?? 'left').split(',')[0] || 'left';
+        modalInfo.valign = 'top';
+        modalInfo.text = textPathElement.text ?? textPathElement.getResolvedText() ?? '';
+        modalInfo.letterSpacing = Number.isFinite(Number(textPathElement.letterSpacing)) ? Number(textPathElement.letterSpacing) : 0;
+        modalInfo.textDecoration = textPathElement.textDecoration ?? '';
+        modalInfo.sourceKey = textPathElement.source ?? '';
+        modalInfo.sourceLocale = resource?.locale ?? '';
+        modalInfo.sourceText = resource?.text ?? '';
+        modalInfo.sourceUri = resource?.uri ?? '';
+        modalInfo.contentMode = textPathElement.richText && textPathElement.richText.length > 0
+            ? 'rich'
+            : textPathElement.source
+                ? 'resource'
+                : 'inline';
+        modalInfo.resourceMode = textPathElement.source ? 'existing' : resource?.uri ? 'uri' : 'embedded';
+        modalInfo.richText = this.mapDesignerRunsToModalRuns(textPathElement.richText, modalInfo);
+        if (modalInfo.contentMode === 'rich' && modalInfo.richText.length === 0) {
+            modalInfo.richText = [this.createDefaultTextRun(modalInfo.text)];
+        }
+        return modalInfo;
+    }
+
+    private applyTextModalResultToTextPathElement(textPathElement: TextPathElement, result: TextElementModalInfo) {
+        textPathElement.typeface = result.typeface;
+        textPathElement.typesize = result.typesize;
+        textPathElement.typestyle = this.buildTextStyle(result.isBold, result.isItalic);
+        textPathElement.alignment = result.halign || 'left';
+        textPathElement.setLetterSpacing(this.normalizeTextNumber(result.letterSpacing));
+        textPathElement.setTextDecoration(this.normalizeTextDecoration(result.textDecoration) || undefined);
+
+        if (result.contentMode === 'resource') {
+            if (!this.ensureTextResource(result)) {
+                return;
+            }
+
+            textPathElement.richText = undefined;
+            textPathElement.setSource(result.sourceKey.trim());
+            this.prepareRemoteTextResourcesIfNeeded(result);
+            return;
+        }
+
+        if (result.contentMode === 'rich') {
+            textPathElement.source = undefined;
+            textPathElement.text = undefined;
+            textPathElement.setRichText(this.mapModalRunsToDesignerRuns(result.richText));
+            return;
+        }
+
+        textPathElement.richText = undefined;
+        textPathElement.setText(result.text);
     }
 
     private applyTextModalResultToElement(textElement: TextElement, result: TextElementModalInfo) {
@@ -3886,6 +4349,9 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                 if (selectedElement instanceof TextElement) {
                     this.applyTextModalResultToElement(selectedElement, this.createTextModalInfoFromToolState());
                 }
+                if (selectedElement instanceof TextPathElement) {
+                    this.applyTextModalResultToTextPathElement(selectedElement, this.createTextModalInfoFromToolState());
+                }
             });
             requiresDraw = true;
         }
@@ -3896,6 +4362,9 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
                 this.applyTransformToElement(selectedElement);
                 if (selectedElement instanceof TextElement) {
                     this.applyTextModalResultToElement(selectedElement, this.createTextModalInfoFromToolState());
+                }
+                if (selectedElement instanceof TextPathElement) {
+                    this.applyTextModalResultToTextPathElement(selectedElement, this.createTextModalInfoFromToolState());
                 }
             });
             requiresDraw = true;
@@ -3921,7 +4390,14 @@ export class ModelDesignerComponent implements OnInit, AfterViewInit {
         if (!this.model || !files || files.length === 0) {
             return;
         }
-        this.importLocalSvgAtPoint(files, null, args.location);
+
+        const file = files[0];
+        if (this.isTraceableBitmapPath(file.name)) {
+            void this.importLocalTraceImageAtPoint(files, null, args.location);
+            return;
+        }
+
+        this.importLocalVectorAtPoint(files, null, args.location);
     }
 
     log(message: string) {

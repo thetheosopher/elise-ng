@@ -98,7 +98,8 @@ export class ContainerTreeComponent implements OnInit {
                     // setTimeout(() => { this.expandAll() }, 10);
                     setTimeout(() => {
                         if(this.nodes.length > 0) {
-                            const node = this.tree.treeModel.getNodeById(reselectNode);
+                            const node = this.tree.treeModel.getNodeById(reselectNode)
+                                ?? this.tree.treeModel.getNodeById('/');
                             if(node) {
                                 node.ensureVisible();
                                 node.setIsActive(true);

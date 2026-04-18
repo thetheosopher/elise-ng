@@ -1,6 +1,7 @@
 <div #previewHost class="sample-preview-shell">
     <div class="sample-preview-canvas" [ngClass]="backgroundClass()" *ngIf="model; else previewState">
-        <app-elise-design [model]="model" [scale]="scale" [selectionEnabled]="false"></app-elise-design>
+        <app-elise-design [model]="model" [scale]="scale" [selectionEnabled]="false"
+            (controllerSet)="controllerSet($event)"></app-elise-design>
     </div>
 
     <ng-template #previewState>

@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, DestroyRef, ElementRef, Input, OnDestroy, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Model } from 'elise-graphics/lib/core/model';
+import { DesignController, GridType } from 'elise-graphics';
 import { EliseDesignComponent } from '../../elise/design/elise-design.component';
 import { DesignSample } from '../../interfaces/design-sample';
 import { ISampleDesigner } from '../../interfaces/sample-designer';
@@ -23,7 +24,7 @@ export class DesignTestPreviewComponent implements AfterViewInit, OnDestroy {
     @Input({ required: true }) test: DesignSample;
 
     model: Model | null = null;
-    background: 'grid' | 'black' | 'white' | 'gray' = 'black';
+    background: 'grid' | 'black' | 'white' | 'gray' = 'white';
     scale = 1;
     loadFailed = false;
     isLoaded = false;
@@ -52,6 +53,15 @@ export class DesignTestPreviewComponent implements AfterViewInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.observer?.disconnect();
+    }
+
+    controllerSet(controller: DesignController | null): void {
+        if (!controller) {
+            return;
+        }
+
+        controller.setGridType(GridType.None);
+        controller.draw();
     }
 
     backgroundClass() {
@@ -101,7 +111,7 @@ export class DesignTestPreviewComponent implements AfterViewInit, OnDestroy {
             model: Model.create(320, 320),
             scale: 1,
             displayModel: false,
-            background: 'black'
+            background: 'white'
         };
     }
 

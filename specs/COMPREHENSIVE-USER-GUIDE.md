@@ -414,9 +414,9 @@ Type-specific options:
 
 ```javascript
 var gaugeArc = elise.arc(40, 40, 180, 180)
-    .setStroke('#22c55e,10');
-gaugeArc.startAngle = 210;
-gaugeArc.endAngle = 40;
+  .setStroke('#22c55e,10')
+  .setStartAngle(210)
+  .setEndAngle(40);
 ```
 
 ```json
@@ -443,10 +443,10 @@ Type-specific options:
 ```javascript
 var arrow = elise.arrow(40, 120, 220, 50)
     .setFill('#f97316')
-    .setStroke('#7c2d12,2');
-arrow.headLengthScale = 0.4;
-arrow.headWidthScale = 0.8;
-arrow.shaftWidthScale = 0.28;
+  .setStroke('#7c2d12,2')
+  .setHeadLengthScale(0.4)
+  .setHeadWidthScale(0.8)
+  .setShaftWidthScale(0.28);
 ```
 
 ```json
@@ -475,9 +475,9 @@ Type-specific options:
 ```javascript
 var badge = elise.regularPolygon(80, 80, 140, 140)
     .setFill('#a78bfa')
-    .setStroke('#4c1d95,2');
-badge.sides = 6;
-badge.rotation = -30;
+  .setStroke('#4c1d95,2')
+  .setSides(6)
+  .setShapeRotation(-30);
 ```
 
 ```json
@@ -504,8 +504,8 @@ Type-specific options:
 ```javascript
 var ring = elise.ring(60, 60, 180, 180)
     .setFill('#0ea5e9')
-    .setStroke('#082f49,2');
-ring.innerRadiusScale = 0.62;
+  .setStroke('#082f49,2')
+  .setInnerRadiusScale(0.62);
 ```
 
 ```json
@@ -531,9 +531,9 @@ Type-specific options:
 ```javascript
 var wedge = elise.wedge(120, 80, 180, 180)
     .setFill('#fb7185')
-    .setStroke('#881337,2');
-wedge.startAngle = 300;
-wedge.endAngle = 40;
+  .setStroke('#881337,2')
+  .setStartAngle(300)
+  .setEndAngle(40);
 ```
 
 ```json
@@ -594,8 +594,8 @@ var route = elise.polyline()
     .addPoint(elise.point(80, 60))
     .addPoint(elise.point(150, 140))
     .addPoint(elise.point(240, 70))
-    .setStroke('#2563eb,4');
-route.smoothPoints = true;
+  .setStroke('#2563eb,4')
+  .setSmoothPoints(true);
 ```
 
 ```json

@@ -35,6 +35,12 @@
                 </select>
             </td>
             <td>
+                <label for="gridType" style="margin-left: 8px; margin-right: 4px;"><strong>Grid</strong></label>
+                <select id="gridType" [(ngModel)]="gridType" (ngModelChange)="gridTypeChanged()">
+                    <option *ngFor="let option of gridTypeOptions" [ngValue]="option.value">{{option.label}}</option>
+                </select>
+            </td>
+            <td>
                 <button type="button" class="btn btn-sm btn-outline-primary toolbar-icon-button" [disabled]="!canUndo"
                     (click)="undo()" title="Undo (Ctrl+Z)" aria-label="Undo">
                     <span class="fas fa-undo"></span>

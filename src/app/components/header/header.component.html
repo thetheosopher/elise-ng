@@ -10,7 +10,9 @@
         <ul class='navbar-nav me-auto'>
             <!-- Samples dropdown -->
             <div ngbDropdown>
-                <button class="btn btn-link nav-link" id="samplesdrop" ngbDropdownToggle>Samples</button>
+                <button class="btn btn-link nav-link" id="samplesdrop" ngbDropdownToggle>
+                    <span class="fas fa-flask me-1"></span>Samples
+                </button>
                 <div ngbDropdownMenu aria-labelledby="samplesdrop">
                     <a ngbDropdownItem routerLink='/primitives' routerLinkActive='active'>Primitives</a>
                     <a ngbDropdownItem routerLink="/animations" routerLinkActive='active'>Animations</a>
@@ -20,24 +22,37 @@
 
             <!-- Explore dropdown -->
             <div ngbDropdown>
-                <button class="btn btn-link nav-link" id="exploredrop" ngbDropdownToggle>Explore</button>
+                <button class="btn btn-link nav-link" id="exploredrop" ngbDropdownToggle>
+                    <span class="fas fa-compass me-1"></span>Explore
+                </button>
                 <div ngbDropdownMenu aria-labelledby="exploredrop">
                     <a ngbDropdownItem routerLink='/tests/view' routerLinkActive='active'>View Tests</a>
                     <a ngbDropdownItem routerLink='/tests/design' routerLinkActive='active'>Design Tests</a>
                     <a ngbDropdownItem routerLink='/tests/surface' routerLinkActive='active'>Surface Tests</a>
                     <a ngbDropdownItem routerLink='/tests/model-playground' routerLinkActive='active'>Model Playground</a>
+                    <div class="dropdown-divider"></div>
+                    <a ngbDropdownItem routerLink='/examples/surface' routerLinkActive='active'>Surface Examples</a>
                 </div>
             </div>
 
             <!-- Tools dropdown -->
             <div *ngIf="isLoggedIn" ngbDropdown>
-                <button class="btn btn-link nav-link" id="toolsdrop" ngbDropdownToggle>Tools</button>
+                <button class="btn btn-link nav-link" id="toolsdrop" ngbDropdownToggle>
+                    <span class="fas fa-tools me-1"></span>Tools
+                </button>
                 <div ngbDropdownMenu aria-labelledby="toolsdrop">
                     <a ngbDropdownItem routerLink='/tests/model-designer' routerLinkActive='active'>Model Designer</a>
                     <a ngbDropdownItem routerLink='/tests/container-explorer' routerLinkActive='active'>Container Explorer</a>
                     <a ngbDropdownItem routerLink='/api-tests' routerLinkActive='active'>API Tests</a>
                 </div>
             </div>
+
+            <!-- Docs link -->
+            <li class="nav-item">
+                <a class="nav-link" routerLink="/docs" routerLinkActive="active">
+                    <span class="fas fa-book me-1"></span>Docs
+                </a>
+            </li>
         </ul>
 
         <!-- User menu (right side) -->

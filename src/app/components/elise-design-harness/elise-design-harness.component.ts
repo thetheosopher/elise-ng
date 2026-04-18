@@ -8,6 +8,7 @@ import { PointEventParameters } from 'elise-graphics/lib/core/point-event-parame
 import { DesignController } from 'elise-graphics/lib/design/design-controller';
 import { ElementBase } from 'elise-graphics/lib/elements/element-base';
 import { UndoState } from 'elise-graphics';
+import { GridType } from 'elise-graphics';
 
 import { EliseDesignComponent } from '../../elise/design/elise-design.component';
 import { DesignTestService } from '../../services/design-test.service';
@@ -15,6 +16,11 @@ import { ISampleDesigner } from '../../interfaces/sample-designer';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+
+interface GridTypeOption {
+    label: string;
+    value: GridType;
+}
 
 @Component({
     imports: [CommonModule, FormsModule, RouterModule, EliseDesignComponent],
@@ -36,7 +42,8 @@ export class EliseDesignHarnessComponent implements OnInit, ISampleDesigner {
     testId: string | null = null;
 
     scale = 1;
-    background = 'black';
+    background = 'white';
+    gridType = GridType.None;
     viewMouseX: number;
     viewMouseY: number;
     mouseOverView = false;
@@ -45,6 +52,12 @@ export class EliseDesignHarnessComponent implements OnInit, ISampleDesigner {
     selectionEnabled: boolean;
     canUndo = false;
     canRedo = false;
+
+    readonly gridTypeOptions: GridTypeOption[] = [
+        { label: 'None', value: GridType.None },
+        { label: 'Dots', value: GridType.Dots },
+        { label: 'Lines', value: GridType.Lines }
+    ];
 
     constructor(
         private _designTestService: DesignTestService,
@@ -170,7 +183,19 @@ export class EliseDesignHarnessComponent implements OnInit, ISampleDesigner {
 
     controllerSet(controller: DesignController) {
         this.controller = controller;
+        if (this.controller) {
+            this.controller.setGridType(this.gridType);
+        }
         this.syncUndoState();
+    }
+
+    gridTypeChanged() {
+        if (!this.controller) {
+            return;
+        }
+
+        this.controller.setGridType(this.gridType);
+        this.controller.draw();
     }
 
     undoChanged(state: UndoState) {

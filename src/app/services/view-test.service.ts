@@ -681,6 +681,40 @@ const tests: ViewSample[] = [
         }
     },
     {
+        id: 'textpath',
+        title: 'Text Path Element',
+        description: 'Tests text rendered along a curved SVG path with typography and path display options.',
+        configure: (viewer) => {
+            const model = Model.create(420, 320);
+            model.setFill('#111827');
+
+            elise.textPath('Curved Text Path', 'M 30 200 C 30 60, 210 60, 210 200')
+                .setTypeface('Coda Caption')
+                .setTypesize(22)
+                .setFill('#60a5fa')
+                .setShowPath(true)
+                .addTo(model);
+
+            elise.textPath('S-Curve Path', 'M 230 260 C 230 140, 330 140, 330 200 C 330 260, 400 260, 400 140')
+                .setTypeface('Georgia')
+                .setTypesize(18)
+                .setTypestyle('italic')
+                .setFill('#c084fc')
+                .setShowPath(true)
+                .addTo(model);
+
+            elise.textPath('Arc Text', 'M 40 290 A 100 100 0 0 1 240 290')
+                .setTypeface('Coda Caption')
+                .setTypesize(18)
+                .setFill('#34d399')
+                .setAlignment('center')
+                .setShowPath(true)
+                .addTo(model);
+
+            viewer.model = model;
+        }
+    },
+    {
         id: 'imageopacity',
         title: 'Image Element Opacity',
         description: 'Tests image element rendering with full and partial opacity.',

@@ -103,6 +103,10 @@ export class EliseSurfaceComponent implements AfterViewInit, OnDestroy {
             if (!this.controller) {
                 this.initializeController();
             }
+            else if (this.controller.surface !== this.surface) {
+                this.clearController();
+                this.initializeController();
+            }
             else {
                 this.refreshController();
             }
@@ -113,11 +117,14 @@ export class EliseSurfaceComponent implements AfterViewInit, OnDestroy {
     }
 
     private clearController() {
-        if (this.surface) {
+        const boundSurface = this.controller?.surface as Surface | undefined;
+        if (boundSurface) {
+            boundSurface.unbind();
+        }
+        else if (this.surface) {
             this.surface.unbind();
         }
         if (this.controller) {
-            this.controller.detach();
             this.controller = undefined;
             this.controllerSet.emit(null);
         }

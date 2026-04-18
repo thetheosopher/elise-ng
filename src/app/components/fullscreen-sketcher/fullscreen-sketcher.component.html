@@ -1,0 +1,65 @@
+<div #sketcherHost class="sketcher-host" (contextmenu)="onContextMenu($event)">
+    <div class="sketcher-canvas">
+        <app-elise-view #elise [model]="model" [scale]="scale"></app-elise-view>
+    </div>
+
+    <!-- Context menu -->
+    <div *ngIf="contextMenuVisible"
+         #contextMenu
+         class="sketcher-context-menu"
+         [style.left.px]="contextMenuX"
+         [style.top.px]="contextMenuY"
+         (contextmenu)="$event.preventDefault()">
+
+        <div class="context-menu-header">Sketcher Parameters</div>
+
+        <div class="context-menu-field">
+            <label>Timer Delay (ms)</label>
+            <input type="number" [(ngModel)]="timerDelay" min="1" max="1000" class="context-menu-input">
+        </div>
+
+        <div class="context-menu-field">
+            <label>Stroke Batch Size</label>
+            <input type="number" [(ngModel)]="strokeBatchSize" min="1" max="512" class="context-menu-input">
+        </div>
+
+        <div class="context-menu-field">
+            <label>Fill Batch Size</label>
+            <input type="number" [(ngModel)]="fillBatchSize" min="1" max="512" class="context-menu-input">
+        </div>
+
+        <div class="context-menu-field">
+            <label>Stroke Opacity (0–255)</label>
+            <input type="number" [(ngModel)]="strokeOpacity" min="0" max="255" class="context-menu-input">
+        </div>
+
+        <div class="context-menu-field">
+            <label>Sketch Color</label>
+            <input type="checkbox" [(ngModel)]="sketchColor" class="form-check-input">
+        </div>
+
+        <div class="context-menu-field">
+            <label>Repeat</label>
+            <input type="checkbox" [(ngModel)]="repeat" class="form-check-input">
+        </div>
+
+        <div class="context-menu-field">
+            <label>Repeat Delay (ms)</label>
+            <input type="number" [(ngModel)]="repeatDelay" min="0" max="60000" class="context-menu-input">
+        </div>
+
+        <div class="context-menu-field">
+            <label>Fill Delay (ms)</label>
+            <input type="number" [(ngModel)]="fillDelay" min="0" max="60000" class="context-menu-input">
+        </div>
+
+        <div class="context-menu-divider"></div>
+
+        <button class="context-menu-action" (click)="applyAndRestart()">
+            <span class="fas fa-sync-alt me-2"></span>Apply &amp; Restart
+        </button>
+        <button class="context-menu-action" (click)="closeContextMenu()">
+            <span class="fas fa-times me-2"></span>Close Menu
+        </button>
+    </div>
+</div>

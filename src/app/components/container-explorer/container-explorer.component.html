@@ -8,7 +8,7 @@
 
         <!-- Container selector -->
         <div class='toolbar-group'>
-            <app-container-selector (containerSelected)='onContainerSelected($event)'>
+            <app-container-selector [selectedContainer]="selectedContainer" (containerSelected)='onContainerSelected($event)'>
             </app-container-selector>
 
             <!-- New Folder Button -->

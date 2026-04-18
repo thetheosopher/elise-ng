@@ -9,10 +9,11 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { EliseViewComponent } from '../../elise/view/elise-view.component';
 import { CodeBlockComponent } from '../code-block/code-block.component';
+import { FullscreenSketcherComponent } from '../fullscreen-sketcher/fullscreen-sketcher.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-    imports: [CommonModule, FormsModule, RouterModule, EliseViewComponent, CodeBlockComponent],
+    imports: [CommonModule, FormsModule, RouterModule, EliseViewComponent, CodeBlockComponent, FullscreenSketcherComponent],
     selector: 'app-sketch',
     templateUrl: './sketch.component.html',
     styleUrls: [ './sketch.component.scss' ]
@@ -32,12 +33,23 @@ export class SketchComponent implements OnInit {
     @ViewChild('elise', { read: ElementRef, static: true })
     elise: ElementRef;
 
+    showFullscreenSketcher = false;
+
     constructor(
         private modelService: ModelService,
         private route: ActivatedRoute,
         private location: Location,
         private toasterService: ToastrService) {
         this.scale = 1.0;
+    }
+
+    launchFullscreenSketch(): void {
+        if (!this.modelCode) { return; }
+        this.showFullscreenSketcher = true;
+    }
+
+    onFullscreenSketcherClosed(): void {
+        this.showFullscreenSketcher = false;
     }
 
     createModel() {

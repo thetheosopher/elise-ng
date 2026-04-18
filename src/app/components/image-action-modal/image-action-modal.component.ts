@@ -40,12 +40,17 @@ export class ImageActionModalComponent implements OnInit {
         this.modalInfo.action = 'add-resource';
         this.activeModal.close(this.modalInfo);
     }
+
+    imageActionTrace() {
+        this.modalInfo.action = 'trace';
+        this.activeModal.close(this.modalInfo);
+    }
 }
 
 export class ImageActionModalInfo {
     source: string;
     canEmbed: boolean;
-    action: string;
+    action: 'view' | 'create-element' | 'add-resource' | 'trace';
     containerID: string;
     path: string;
     image: HTMLImageElement;

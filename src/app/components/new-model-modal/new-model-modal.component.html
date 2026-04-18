@@ -1,6 +1,6 @@
 <!-- Modal Header -->
 <div class="modal-header">
-    <h4 class="modal-title">New Model</h4>
+    <h4 class="modal-title">{{modalInfo.title}}</h4>
     <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('X')"></button>
 </div>
 
@@ -15,7 +15,10 @@
                 Model Name Is Required
             </div>
         </div>
-        <div class="row">
+        <div *ngIf="!modalInfo.showDimensions" class="mb-3 text-muted">
+            Imported model size: {{modalInfo.width}} x {{modalInfo.height}}
+        </div>
+        <div class="row" *ngIf="modalInfo.showDimensions">
             <div class="col">
                 <label for="modelwidth">Width</label>
                 <input type="number" min="1" max="32768" id="modelwidth" name="modelwidth" #modelwidth="ngModel"
@@ -38,6 +41,6 @@
 
 <!-- Modal footer -->
 <div class="modal-footer">
-    <button type="button" class="btn btn-primary" (click)="commit()">Create Model</button>
+    <button type="button" class="btn btn-primary" (click)="commit()">{{modalInfo.actionLabel}}</button>
     <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss('Cancel')">Cancel</button>
 </div>

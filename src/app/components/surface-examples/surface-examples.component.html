@@ -1,0 +1,16 @@
+<div class="page-content">
+    <div class="page-header">
+        <h2>Surface Examples <span class="badge bg-secondary" *ngIf="examples">{{examples.length}}</span></h2>
+        <p class="text-muted">Interactive application examples built with the Elise surface layer — marketing kiosks, galleries, and product showcases.</p>
+    </div>
+    <div class="sample-grid">
+        <a *ngFor="let ex of examples; trackBy: trackById"
+           class="sample-card" [routerLink]="['/examples/surface', ex.id]">
+            <app-surface-example-preview [example]="ex"></app-surface-example-preview>
+            <div class="sample-card-body">
+                <span class="sample-card-title">{{ex.title}}</span>
+                <p class="sample-card-description">{{ex.description}}</p>
+            </div>
+        </a>
+    </div>
+</div>

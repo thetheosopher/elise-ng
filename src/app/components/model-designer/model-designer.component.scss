@@ -55,11 +55,13 @@ pre {
 }
 
 .tool-dropdown-menu {
-    min-width: 13rem;
+    min-width: 10.5rem;
+    width: max-content;
 }
 
 .tool-dropdown-toggle {
-    min-width: 12rem;
+    min-width: 9.5rem;
+    width: auto;
     text-align: left;
 }
 
